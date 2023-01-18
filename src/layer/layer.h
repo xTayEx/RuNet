@@ -24,6 +24,7 @@ public:
     float momentum;
 
     float* data;
+    float* diff;
     cudnnTensorDescriptor_t data_desc;
 
 };

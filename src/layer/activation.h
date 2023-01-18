@@ -8,7 +8,8 @@ class Activation: public Layer {
 public:
     Activation(Layer* prev, 
                cudnnActivationMode_t mode, 
-               cudnnNanPropagation_t prop, float coef);
+               cudnnNanPropagation_t prop, 
+               float coef);
     virtual ~Activation() = 0;
 
     void forward();

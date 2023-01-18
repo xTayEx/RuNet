@@ -18,6 +18,7 @@ Activation::Activation(Layer* prev, cudnnActivationMode_t mode,
     cudnnCreateTensorDescriptor(&this->data_desc);
     cudnnSetTensor4dDescriptor(this->data_desc, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
     cudaMalloc(&this->data, data_size);
+    cudaMalloc(&this->diff, data_size);
 
 }
 
