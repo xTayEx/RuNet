@@ -10,12 +10,21 @@ namespace layer {
 
 class Layer {
 public:
-    Layer();
+    Layer(float alpha = 0.0f, float momemtum = 0.5f);
     virtual ~Layer();
 
-    virtual void forward();
-    virtual void backward();
-    virtual void update();
+    virtual void forward() = 0;
+    virtual void backward() = 0;
+    virtual void update() = 0;
+
+    Layer* prev_layer;
+    Layer* next_layer;
+
+    float alpha;
+    float momentum;
+
+    float* data;
+    cudnnTensorDescriptor_t data_desc;
 
 };
 
