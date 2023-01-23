@@ -9,7 +9,7 @@ public:
     Activation(Layer* prev, 
                cudnnActivationMode_t mode, 
                cudnnNanPropagation_t prop, 
-               float coef);
+               double coef);
     virtual ~Activation() = 0;
 
     void forward();
