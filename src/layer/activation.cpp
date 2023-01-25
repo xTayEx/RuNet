@@ -5,11 +5,11 @@
 namespace layer {
 
 Activation::Activation(Layer *prev, cudnnActivationMode_t mode,
-                       cudnnNanPropagation_t prop, double coef) {
+                       cudnnNanPropagation_t prop, float coef) {
   checkCudnn(cudnnCreateActivationDescriptor(&activation_desc));
   checkCudnn(cudnnSetActivationDescriptor(activation_desc, mode, prop, coef));
 
-  Layer *prev_ = prev;
+  prev_layer = prev;
   prev->next_layer = this;
 
   cudnnDataType_t data_type;
