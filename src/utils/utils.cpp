@@ -1,7 +1,7 @@
+#include "utils.h"
 #include <cuda_runtime.h>
 #include <iostream>
 #include <sstream>
-#include "utils.h"
 
 inline void fatalError(std::string err) {
   std::stringstream pos, msg;

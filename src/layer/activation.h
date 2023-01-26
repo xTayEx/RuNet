@@ -3,7 +3,7 @@
 
 #include "layer.h"
 
-namespace layer {
+namespace RuNet {
 class Activation: public Layer {
 public:
     Activation(Layer* prev, 

@@ -16,5 +16,7 @@ add_executable(RuNet
         src/layer/activation.h
         src/layer/layer.cpp
         src/layer/layer.h
-        src/utils.cpp
-        src/utils.h)
+        src/utils/utils.cpp
+        src/utils/utils.h
+        src/tensor/tensor.cpp
+        src/tensor/tensor.h src/layer/convolution.h src/layer/convolution.cpp src/utils/gpu_operations.cu src/utils/gpu_operations.cuh)

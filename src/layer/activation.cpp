@@ -1,16 +1,13 @@
 #include "activation.h"
 #include "global.h"
-#include "utils.h"
+#include "utils/utils.h"
 
-namespace layer {
+namespace RuNet {
 
 Activation::Activation(Layer *prev, cudnnActivationMode_t mode,
                        cudnnNanPropagation_t prop, float coef) {
   checkCudnn(cudnnCreateActivationDescriptor(&activation_desc));
   checkCudnn(cudnnSetActivationDescriptor(activation_desc, mode, prop, coef));
-
-  prev_layer = prev;
-  prev->next_layer = this;
 
   cudnnDataType_t data_type;
   int _n, _c, _h, _w;
@@ -36,7 +33,7 @@ Activation::~Activation() noexcept {
 void Activation::forward() {
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
-  checkCudnn(cudnnActivationForward(global::cudnnHandle, activation_desc, alpha,
+  checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle, activation_desc, alpha,
                                     prev_layer->data_desc, prev_layer->data,
                                     beta, data_desc, data));
 }
@@ -45,7 +42,7 @@ void Activation::backward() {
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
 
-  checkCudnn(cudnnActivationBackward(global::cudnnHandle, activation_desc,
+  checkCudnn(cudnnActivationBackward(RuNet::global_cudnn_handle, activation_desc,
                                      alpha, data_desc, data, data_desc,
                                      next_layer->diff, prev_layer->data_desc,
                                      prev_layer->data, beta, data_desc, diff));
@@ -53,4 +50,4 @@ void Activation::backward() {
 
 void Activation::update() {}
 
-}; // namespace layer
+}; // namespace RuNet

@@ -3,9 +3,9 @@
 
 #include <cudnn.h>
 
-namespace global {
-extern cudnnHandle_t cudnnHandle;
+namespace RuNet {
+extern cudnnHandle_t global_cudnn_handle;
 
-};  // namespace global
+};  // namespace RuNet
 
 #endif

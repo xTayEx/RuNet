@@ -6,28 +6,29 @@
 #include <cuda_runtime.h>
 #include <cudnn.h>
 
-namespace layer {
+#include "tensor/tensor.h"
 
-class Layer {
-public:
-  Layer(float alpha = 0.0f, float momemtum = 0.5f);
-  virtual ~Layer();
+namespace RuNet {
 
-  virtual void forward() = 0;
-  virtual void backward() = 0;
-  virtual void update() = 0;
+  class Layer {
+  public:
+    Layer(float alpha = 0.0f, float momemtum = 0.5f);
+    virtual ~Layer();
 
-  Layer *prev_layer;
-  Layer *next_layer;
+    virtual void forward(Tensor tensor) = 0;
+    virtual void backward() = 0;
+    virtual void update() = 0;
 
-  float alpha;
-  float momentum;
+    float alpha;
+    float momentum;
 
-  float *data;
-  float *diff;
-  cudnnTensorDescriptor_t data_desc;
-};
+    float *diff;
+    float *param;
+    int param_size;
+    float *bias_param;
+    int bias_param_size;
+  };
 
-}; // namespace layer
+};// namespace RuNet
 
 #endif

@@ -1,6 +1,6 @@
 #include "layer.h"
 
-namespace layer {
+namespace RuNet {
 
 Layer::~Layer() {
 
