@@ -20,16 +20,16 @@ namespace RuNet {
     cudaFree(data);
   }
 
-  void Tensor::getTensorInfo(cudnnDataType_t *data_type, int *_n, int *_c, int *_h, int *_w) {
+  void Tensor::getTensorInfo(cudnnDataType_t *data_type, int *_n, int *_c, int *_h, int *_w) const {
     int _;
     cudnnGetTensor4dDescriptor(desc, data_type, _n, _c, _h, _w, &_, &_, &_, &_);
   }
 
-  cudnnTensorDescriptor_t Tensor::getTensorDescriptor() {
+  cudnnTensorDescriptor_t Tensor::getTensorDescriptor() const {
     return desc;
   }
 
-  float *Tensor::getTensorData() {
+  float *Tensor::getTensorData() const {
     return data;
   }
 

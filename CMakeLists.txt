@@ -19,4 +19,4 @@ add_executable(RuNet
         src/utils/utils.cpp
         src/utils/utils.h
         src/tensor/tensor.cpp
-        src/tensor/tensor.h src/layer/convolution.h src/layer/convolution.cpp src/utils/gpu_operations.cu src/utils/gpu_operations.cuh)
+        src/tensor/tensor.h src/layer/convolution.h src/layer/convolution.cpp src/utils/gpu_operations.cu src/utils/gpu_operations.cuh src/utils/constants.h)

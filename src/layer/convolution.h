@@ -12,20 +12,21 @@ namespace RuNet {
                 int stride = 1, int dilation = 1);
     ~Convolution();
 
-    void forward(Tensor input_tensor);
-    void backward();
-    void udpate();
+    void forward(const Tensor& tensor);
+    void backward(const Tensor& tensor);
+    void update();
 
   private:
     cudnnFilterDescriptor_t kernel_desc;
-    cudnnConvolutionFwdAlgo_t conv_algo_desc;
+    cudnnConvolutionFwdAlgo_t conv_fwd_algo_desc;
+    cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo_desc;
     cudnnConvolutionDescriptor_t conv_desc;
-    cudnnTensorDescriptor_t output_desc;
 
-    float *conv_workspace;
-    size_t conv_workspace_size;
+    float *conv_fwd_workspace;
+    size_t conv_fwd_workspace_size;
 
-    float *dev_output;
+    float *conv_bwd_workspace;
+    size_t conv_bwd_workspace_size;
 
   };
 
