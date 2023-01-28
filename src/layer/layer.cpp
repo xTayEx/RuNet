@@ -1,4 +1,4 @@
-#include "../../include/layer.h"
+#include "layer.h"
 
 namespace RuNet {
 

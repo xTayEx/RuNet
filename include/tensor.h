@@ -1,14 +1,13 @@
 #ifndef _TENSOR_H
 #define _TENSOR_H
 
-#include <cudnn_ops_infer.h>
-
 #include "cudnn.h"
 
 namespace RuNet {
 class Tensor {
  public:
   Tensor(int n, int c, int h, int w, float *ori_data = nullptr);
+  Tensor();
   ~Tensor();
   void getTensorInfo(
       cudnnDataType_t *data_type, int *_n, int *_c, int *_h, int *_w) const;

@@ -1,7 +1,7 @@
-#include "../../include/activation.h"
+#include "activation.h"
 
-#include "../../include/global.h"
-#include "../../include/utils.h"
+#include "global.h"
+#include "utils.h"
 
 namespace RuNet {
 

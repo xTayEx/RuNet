@@ -1,9 +1,9 @@
-#include "../../include/convolution.h"
+#include "convolution.h"
 
-#include "../../include/global.h"
-#include "../../include/constants.h"
-#include "../../include/gpu_operations.cuh"
-#include "../../include/utils.h"
+#include "global.h"
+#include "constants.h"
+#include "gpu_operations.cuh"
+#include "utils.h"
 
 namespace RuNet {
 Convolution::Convolution(int in_channels,

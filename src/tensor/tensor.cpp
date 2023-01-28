@@ -1,5 +1,6 @@
-#include "../../include/tensor.h"
+#include "tensor.h"
 
+#include <iostream>
 #include <cuda_runtime.h>
 
 namespace RuNet {
@@ -17,6 +18,10 @@ Tensor::Tensor(int n, int c, int h, int w, float *ori_data) {
   }
 }
 
+Tensor::Tensor() {
+  data = nullptr;
+}
+
 Tensor::~Tensor() {
   cudnnDestroyTensorDescriptor(desc);
   cudaFree(data);
@@ -30,6 +35,12 @@ void Tensor::getTensorInfo(
 
 cudnnTensorDescriptor_t Tensor::getTensorDescriptor() const { return desc; }
 
-float *Tensor::getTensorData() const { return data; }
+float *Tensor::getTensorData() const {
+  if (!data) {
+    std::cerr << "data in this tensor is nullptr!" << std::endl;
+    exit(1);
+  }
+  return data;
+}
 
 }  // namespace RuNet

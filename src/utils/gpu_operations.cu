@@ -1,4 +1,4 @@
-#include "../../include/gpu_operations.cuh"
+#include "gpu_operations.cuh"
 #include <ctime>
 
 namespace RuNet {
