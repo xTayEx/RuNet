@@ -60,8 +60,6 @@ namespace RuNet {
 
   Convolution::Convolution(const Convolution &conv_obj) {}
 
-  Convolution &Convolution::operator=(const Convolution &conv_obj) {}
-
   void Convolution::forward(const Tensor &tensor) {
     input_tensor_p = &tensor;
 
