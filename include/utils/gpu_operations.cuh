@@ -1,9 +1,9 @@
 #ifndef GPU_OPERATIONS_CUH
 #define GPU_OPERATIONS_CUH
 
-#include "../../../../../usr/include/c++/9/ctime"
+#include "ctime"
 
-#include "../../../../../usr/local/cuda/include/curand.h"
+#include "curand.h"
 
 namespace RuNet {
 namespace Utils {

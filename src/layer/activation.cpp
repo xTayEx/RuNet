@@ -1,7 +1,7 @@
-#include "activation.h"
+#include "layer/activation.h"
 
-#include "global.h"
-#include "utils.h"
+#include "global/global.h"
+#include "utils/utils.h"
 
 namespace RuNet {
 
@@ -30,12 +30,12 @@ Activation::Activation(Layer *prev,
   checkCudnn(cudnnSetTensor4dDescriptor(
       data_desc, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, _n, _c, _h, _w));
   checkCuda(cudaMalloc(&data, data_size));
-  checkCuda(cudaMalloc(&diff, data_size));
+  checkCuda(cudaMalloc(&diff_for_prev, data_size));
 }
 
 Activation::~Activation() noexcept {
   checkCuda(cudaFree(&data));
-  checkCuda(cudaFree(&diff));
+  checkCuda(cudaFree(&diff_for_prev));
   checkCudnn(cudnnDestroyTensorDescriptor(data_desc));
   checkCudnn(cudnnDestroyActivationDescriptor(activation_desc));
 }
@@ -63,12 +63,12 @@ void Activation::backward() {
                                      data_desc,
                                      data,
                                      data_desc,
-                                     next_layer->diff,
+                                     next_layer->diff_for_prev,
                                      prev_layer->data_desc,
                                      prev_layer->data,
                                      beta,
                                      data_desc,
-                                     diff));
+                                     diff_for_prev));
 }
 
 void Activation::update() {}

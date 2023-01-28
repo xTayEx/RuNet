@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "utils/utils.h"
 
 #include <cuda_runtime.h>
 
@@ -17,7 +17,7 @@ inline void fatalError(std::string err) {
 inline void checkCudnn(cudnnStatus_t status) {
   std::stringstream err;
   if (status != CUDNN_STATUS_SUCCESS) {
-    err << "CuDNN error: " << cudnnGetErrorString(status);
+    err << "cuDNN error: " << cudnnGetErrorString(status);
     fatalError(err.str());
   }
 }
@@ -26,6 +26,14 @@ inline void checkCuda(cudaError_t status) {
   std::stringstream err;
   if (status != cudaSuccess) {
     err << "CUDA error: " << status;
+    fatalError(err.str());
+  }
+}
+
+inline void checkCublas(cublasStatus_t status) {
+  std::stringstream err;
+  if (status != CUBLAS_STATUS_SUCCESS) {
+    err << "cuBLAS error: " << status;
     fatalError(err.str());
   }
 }
