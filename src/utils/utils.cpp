@@ -1,5 +1,7 @@
-#include "utils.h"
+#include "../../include/utils.h"
+
 #include <cuda_runtime.h>
+
 #include <iostream>
 #include <sstream>
 

@@ -1,13 +1,8 @@
-#include "layer.h"
+#include "../../include/layer.h"
 
 namespace RuNet {
 
-Layer::~Layer() {
+Layer::~Layer() {}
 
-}
-
-Layer::Layer(float alpha, float momentum):
-    alpha(alpha), momentum(momentum) {
-    
-}
-};
+Layer::Layer(float alpha, float momentum) : alpha(alpha), momentum(momentum) {}
+};  // namespace RuNet

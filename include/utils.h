@@ -1,8 +1,9 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include <cudnn.h>
 #include <cuda_runtime.h>
+#include <cudnn.h>
+
 #include <string>
 
 void fatalError(std::string error);

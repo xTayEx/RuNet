@@ -1,24 +1,34 @@
-#include "activation.h"
-#include "global.h"
-#include "utils/utils.h"
+#include "../../include/activation.h"
+
+#include "../../include/global.h"
+#include "../../include/utils.h"
 
 namespace RuNet {
 
-Activation::Activation(Layer *prev, cudnnActivationMode_t mode,
-                       cudnnNanPropagation_t prop, float coef) {
+Activation::Activation(Layer *prev,
+                       cudnnActivationMode_t mode,
+                       cudnnNanPropagation_t prop,
+                       float coef) {
   checkCudnn(cudnnCreateActivationDescriptor(&activation_desc));
   checkCudnn(cudnnSetActivationDescriptor(activation_desc, mode, prop, coef));
 
   cudnnDataType_t data_type;
   int _n, _c, _h, _w;
   int _n_stride, _c_stride, _h_stride, _w_stride;
-  checkCudnn(cudnnGetTensor4dDescriptor(prev->data_desc, &data_type, &_n, &_c,
-                                        &_h, &_w, &_n_stride, &_c_stride,
-                                        &_h_stride, &_w_stride));
+  checkCudnn(cudnnGetTensor4dDescriptor(prev->data_desc,
+                                        &data_type,
+                                        &_n,
+                                        &_c,
+                                        &_h,
+                                        &_w,
+                                        &_n_stride,
+                                        &_c_stride,
+                                        &_h_stride,
+                                        &_w_stride));
   auto data_size = _n * _c * _h * _w;
   checkCudnn(cudnnCreateTensorDescriptor(&data_desc));
-  checkCudnn(cudnnSetTensor4dDescriptor(data_desc, CUDNN_TENSOR_NHWC,
-                                        CUDNN_DATA_FLOAT, _n, _c, _h, _w));
+  checkCudnn(cudnnSetTensor4dDescriptor(
+      data_desc, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, _n, _c, _h, _w));
   checkCuda(cudaMalloc(&data, data_size));
   checkCuda(cudaMalloc(&diff, data_size));
 }
@@ -33,21 +43,34 @@ Activation::~Activation() noexcept {
 void Activation::forward() {
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
-  checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle, activation_desc, alpha,
-                                    prev_layer->data_desc, prev_layer->data,
-                                    beta, data_desc, data));
+  checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle,
+                                    activation_desc,
+                                    alpha,
+                                    prev_layer->data_desc,
+                                    prev_layer->data,
+                                    beta,
+                                    data_desc,
+                                    data));
 }
 
 void Activation::backward() {
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
 
-  checkCudnn(cudnnActivationBackward(RuNet::global_cudnn_handle, activation_desc,
-                                     alpha, data_desc, data, data_desc,
-                                     next_layer->diff, prev_layer->data_desc,
-                                     prev_layer->data, beta, data_desc, diff));
+  checkCudnn(cudnnActivationBackward(RuNet::global_cudnn_handle,
+                                     activation_desc,
+                                     alpha,
+                                     data_desc,
+                                     data,
+                                     data_desc,
+                                     next_layer->diff,
+                                     prev_layer->data_desc,
+                                     prev_layer->data,
+                                     beta,
+                                     data_desc,
+                                     diff));
 }
 
 void Activation::update() {}
 
-}; // namespace RuNet
+};  // namespace RuNet
