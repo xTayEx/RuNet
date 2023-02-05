@@ -40,19 +40,19 @@ namespace RuNet {
                                                CUDNN_DATA_FLOAT));
 
     param_size = in_channels * out_channels * kernel_size * kernel_size;
-    checkCuda(cudaMalloc(&param, param_size * sizeof(float)));
+    param.alloc(param_size * sizeof(float));
 
     // set kernel value
     Utils::setGpuNormalValue(
-            param, param_size, Constants::NormalMean, Constants::NormalSigma);
+            param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
 
     // bias initialization
     cudnnCreateTensorDescriptor(&bias_desc);
     cudnnSetTensor4dDescriptor(
             bias_desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
     bias_param_size = out_channels;
-    checkCuda(cudaMalloc(&bias_param, bias_param_size * sizeof(float)));
-    Utils::setGpuNormalValue(bias_param,
+    bias_param.alloc(bias_param_size * sizeof(float));
+    Utils::setGpuNormalValue(bias_param.data(),
                              bias_param_size,
                              Constants::NormalMean,
                              Constants::NormalSigma);
@@ -89,8 +89,8 @@ namespace RuNet {
     // allocate dev_output and initiate
     size_t output_size =
             output_n * output_c * output_h * output_w * sizeof(float);
-    checkCuda(cudaMalloc(&dev_output, output_size));
-    checkCuda(cudaMemset(dev_output, 0, output_size));
+    dev_output.alloc(output_size);
+    dev_output.memset(0, output_size);
 
     // find algorithm
     cudnnConvolutionFwdAlgoPerf_t fwd_algo_perf;
@@ -116,7 +116,7 @@ namespace RuNet {
                                                     &conv_fwd_workspace_size));
 
     // allocate workspace
-    checkCuda(cudaMalloc(&conv_fwd_workspace, conv_fwd_workspace_size));
+    conv_fwd_workspace.alloc(conv_fwd_workspace_size);
 
     // do convolution
     float a[1] = {1.0f};
@@ -126,23 +126,23 @@ namespace RuNet {
                                        tensor.getTensorDescriptor(),
                                        tensor.getTensorData(),
                                        kernel_desc,
-                                       param,
+                                       param.data(),
                                        conv_desc,
                                        conv_fwd_algo_desc,
-                                       conv_fwd_workspace,
+                                       conv_fwd_workspace.data(),
                                        conv_fwd_workspace_size,
                                        b,
                                        output_desc,
-                                       dev_output));
+                                       dev_output.data()));
 
     // add bias
     checkCudnn(cudnnAddTensor(global_cudnn_handle,
                               a,
                               bias_desc,
-                              bias_param,
+                              bias_param.data(),
                               a,
                               output_desc,
-                              dev_output));
+                              dev_output.data()));
   }
 
   void Convolution::backward(const Tensor &diff) {
@@ -177,7 +177,7 @@ namespace RuNet {
             kernel_desc,
             conv_bwd_filter_algo_desc,
             &conv_bwd_filter_workspace_size));
-    checkCuda(cudaMalloc(&conv_bwd_filter_workspace, conv_bwd_filter_workspace_size));
+    conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
     checkCudnn(
             cudnnConvolutionBackwardFilter(global_cudnn_handle,
                                            a,
@@ -187,7 +187,7 @@ namespace RuNet {
                                            diff.getTensorData(),
                                            conv_desc,
                                            conv_bwd_filter_algo_desc,
-                                           conv_bwd_filter_workspace,
+                                           conv_bwd_filter_workspace.data(),
                                            conv_bwd_filter_workspace_size,
                                            b,
                                            kernel_desc,
@@ -211,16 +211,16 @@ namespace RuNet {
                                                             output_desc,
                                                             conv_bwd_data_algo_desc,
                                                             &conv_bwd_data_workspace_size));
-    checkCuda(cudaMalloc(&conv_bwd_data_workspace, conv_bwd_data_workspace_size));
+    conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
                                             kernel_desc,
-                                            param,
+                                            param.data(),
                                             diff.getTensorDescriptor(),
                                             diff.getTensorData(),
                                             conv_desc,
                                             conv_bwd_data_algo_desc,
-                                            conv_bwd_data_workspace,
+                                            conv_bwd_data_workspace.data(),
                                             conv_bwd_data_workspace_size,
                                             b,
                                             input_tensor_p->getTensorDescriptor(),
@@ -229,8 +229,8 @@ namespace RuNet {
 
   void Convolution::update() {
     float a = 1.0 - weight_decay;
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, param_size, &a, param_gradient, 1, param, 1));
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient, 1, bias_param, 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, param_size, &a, param_gradient, 1, param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient, 1, bias_param.data(), 1));
   }
 
   Convolution::~Convolution() noexcept {
@@ -238,13 +238,7 @@ namespace RuNet {
     checkCudnn(cudnnDestroyConvolutionDescriptor(conv_desc));
     checkCudnn(cudnnDestroyTensorDescriptor(output_desc));
     checkCudnn(cudnnDestroyTensorDescriptor(bias_desc));
-    checkCuda(cudaFree(conv_fwd_workspace));
-    checkCuda(cudaFree(conv_bwd_data_workspace));
-    checkCuda(cudaFree(conv_bwd_filter_workspace));
-    checkCuda(cudaFree(dev_output));
-    checkCuda(cudaFree(diff_for_prev));
-    checkCuda(cudaFree(bias_gradient));
-    checkCuda(cudaFree(param_gradient));
+
   }
 
 };  // namespace RuNet

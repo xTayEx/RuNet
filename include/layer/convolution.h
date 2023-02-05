@@ -3,6 +3,7 @@
 
 #include "layer.h"
 #include "tensor/tensor.h"
+#include "cuda/cuda_memory.h"
 
 namespace RuNet {
   class Convolution : public Layer {
@@ -42,13 +43,13 @@ namespace RuNet {
     cudnnConvolutionBwdDataAlgo_t conv_bwd_data_algo_desc;
     cudnnConvolutionDescriptor_t conv_desc;
 
-    float *conv_fwd_workspace;
+    CudaMemory conv_fwd_workspace;
     size_t conv_fwd_workspace_size;
 
-    float *conv_bwd_filter_workspace;
+    CudaMemory conv_bwd_filter_workspace;
     size_t conv_bwd_filter_workspace_size;
 
-    float *conv_bwd_data_workspace;
+    CudaMemory conv_bwd_data_workspace;
     size_t conv_bwd_data_workspace_size;
   };
 

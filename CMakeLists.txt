@@ -23,7 +23,7 @@ add_executable(${PROJECT_NAME} src/global/global.cpp
         src/tensor/tensor.cpp
         src/utils/gpu_operations.cu
         src/utils/utils.cpp
-        src/runet.cpp)
+        src/runet.cpp src/cuda/cuda_memory.cpp include/cuda/cuda_memory.h)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)

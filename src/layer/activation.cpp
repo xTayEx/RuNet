@@ -5,69 +5,72 @@
 
 namespace RuNet {
 
-Activation::Activation(Layer *prev,
-                       cudnnActivationMode_t mode,
+Activation::Activation(cudnnActivationMode_t mode,
                        cudnnNanPropagation_t prop,
                        float coef) {
   checkCudnn(cudnnCreateActivationDescriptor(&activation_desc));
   checkCudnn(cudnnSetActivationDescriptor(activation_desc, mode, prop, coef));
 
+}
+
+void Activation::forward(const Tensor &tensor) {
+  input_tensor_p = &tensor;
+  // get input size
   cudnnDataType_t data_type;
-  int _n, _c, _h, _w;
-  int _n_stride, _c_stride, _h_stride, _w_stride;
-  checkCudnn(cudnnGetTensor4dDescriptor(prev->data_desc,
-                                        &data_type,
-                                        &_n,
-                                        &_c,
-                                        &_h,
-                                        &_w,
-                                        &_n_stride,
-                                        &_c_stride,
-                                        &_h_stride,
-                                        &_w_stride));
-  auto data_size = _n * _c * _h * _w;
-  checkCudnn(cudnnCreateTensorDescriptor(&data_desc));
-  checkCudnn(cudnnSetTensor4dDescriptor(
-      data_desc, CUDNN_TENSOR_NHWC, CUDNN_DATA_FLOAT, _n, _c, _h, _w));
-  checkCuda(cudaMalloc(&data, data_size));
-  checkCuda(cudaMalloc(&diff_for_prev, data_size));
-}
+  int input_n, input_c, input_h, input_w;
+  tensor.getTensorInfo(&data_type, &input_n, &input_c, &input_h, &input_w);
+  size_t input_size = input_n * input_c * input_w * input_h;
 
-Activation::~Activation() noexcept {
-  checkCuda(cudaFree(&data));
-  checkCuda(cudaFree(&diff_for_prev));
-  checkCudnn(cudnnDestroyTensorDescriptor(data_desc));
-  checkCudnn(cudnnDestroyActivationDescriptor(activation_desc));
-}
+  // create output descriptor
+  checkCudnn(cudnnCreateTensorDescriptor(&output_desc));
+  checkCudnn(cudnnSetTensor4dDescriptor(output_desc,
+                                        CUDNN_TENSOR_NCHW,
+                                        CUDNN_DATA_FLOAT,
+                                        input_n,
+                                        input_c,
+                                        input_h,
+                                        input_w));
+  checkCuda(cudaMalloc(&dev_output, input_size));
+  checkCuda(cudaMemset(dev_output, 0, input_size));
+  checkCuda(cudaMalloc(&diff_for_prev, input_size));
+  checkCuda(cudaMemset(diff_for_prev, 0, input_size));
 
-void Activation::forward() {
+
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
   checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle,
                                     activation_desc,
                                     alpha,
-                                    prev_layer->data_desc,
-                                    prev_layer->data,
+                                    tensor.getTensorDescriptor(),
+                                    tensor.getTensorData(),
                                     beta,
-                                    data_desc,
-                                    data));
+                                    output_desc,
+                                    dev_output));
 }
 
-void Activation::backward() {
+Activation::~Activation() noexcept {
+  checkCuda(cudaFree(&dev_output));
+  checkCuda(cudaFree(&diff_for_prev));
+  checkCudnn(cudnnDestroyTensorDescriptor(output_desc));
+  checkCudnn(cudnnDestroyActivationDescriptor(activation_desc));
+}
+
+
+void Activation::backward(const Tensor &diff) {
   float alpha[1] = {1.0f};
   float beta[1] = {0.0f};
 
   checkCudnn(cudnnActivationBackward(RuNet::global_cudnn_handle,
                                      activation_desc,
                                      alpha,
-                                     data_desc,
-                                     data,
-                                     data_desc,
-                                     next_layer->diff_for_prev,
-                                     prev_layer->data_desc,
-                                     prev_layer->data,
+                                     output_desc,
+                                     dev_output,
+                                     output_desc,
+                                     diff.getTensorData(),
+                                     input_tensor_p->getTensorDescriptor(),
+                                     input_tensor_p->getTensorData(),
                                      beta,
-                                     data_desc,
+                                     input_tensor_p->getTensorDescriptor(),
                                      diff_for_prev));
 }
 

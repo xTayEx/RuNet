@@ -6,14 +6,13 @@
 namespace RuNet {
 class Activation : public Layer {
  public:
-  Activation(Layer* prev,
-             cudnnActivationMode_t mode,
+  Activation(cudnnActivationMode_t mode,
              cudnnNanPropagation_t prop,
              float coef);
   virtual ~Activation() = 0;
 
-  void forward();
-  void backward();
+  void forward(const Tensor &tensor);
+  void backward(const Tensor &tensor);
   void update();
 
  private:

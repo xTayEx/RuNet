@@ -4,11 +4,11 @@
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <cudnn.h>
-
 #include <functional>
 #include <iostream>
 
 #include "tensor/tensor.h"
+#include "cuda/cuda_memory.h"
 
 namespace RuNet {
 
@@ -30,17 +30,17 @@ namespace RuNet {
     float momentum;
     float weight_decay;
 
-    float *param;
+    CudaMemory param;
     int param_size;
 
     cudnnTensorDescriptor_t bias_desc;
-    float *bias_param;
+    CudaMemory bias_param;
     int bias_param_size;
 
     float *param_gradient;
     float *bias_gradient;
     float *diff_for_prev; // diff_for_prev for previous layer;
-    float *dev_output;
+    CudaMemory dev_output;
     cudnnTensorDescriptor_t output_desc;
 
     const Tensor *input_tensor_p;
