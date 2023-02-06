@@ -24,7 +24,7 @@ namespace RuNet {
 
     virtual void update() = 0;
 
-    Layer *next_layer; // TODO: should be set by network builder
+    // Layer *next_layer; // TODO: should be set by network builder
 
     float alpha;
     float momentum;

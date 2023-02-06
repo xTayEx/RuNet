@@ -4,8 +4,10 @@ if (NOT DEFINED ${CMAKE_CUDA_ARCHITECTURES})
 endif ()
 message(STATUS "CUDA architectures set to ${CMAKE_CUDA_ARCHITECTURES}")
 
-project(RuNet LANGUAGES CXX CUDA)
+project(RuNet LANGUAGES CUDA CXX)
 
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_MAKE_PROGRAM /usr/bin/ninja)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CUDA_STANDARD 11)
@@ -15,15 +17,18 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
 include_directories(include)
 include_directories(/usr/local/cuda/include)
+link_directories(/usr/local/cuda/lib64)
+find_library(CUDNN_LIB cudnn)
 
-add_executable(${PROJECT_NAME} src/global/global.cpp
+add_executable(runet_test src/global/global.cpp
         src/layer/layer.cpp
         src/layer/activation.cpp
         src/layer/convolution.cpp
         src/tensor/tensor.cpp
         src/utils/gpu_operations.cu
-        src/utils/utils.cpp
-        src/runet.cpp src/cuda/cuda_memory.cpp include/cuda/cuda_memory.h)
+        src/runet.cpp src/cuda/cuda_memory.cpp src/cuda/cudnn_descriptor.cpp include/cuda/cudnn_descriptor.h)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+target_link_libraries(runet_test ${CUDNN_LIB} curand cublas)
+
+set_target_properties(runet_test PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)

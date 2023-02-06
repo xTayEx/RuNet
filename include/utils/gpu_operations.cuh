@@ -7,7 +7,7 @@
 
 namespace RuNet {
 namespace Utils {
-void setGpuValue(float *x, int n, float val);
+__global__ void setGpuValue(float *x, int n, float val);
 void setGpuNormalValue(float *x, int n, float mean, float stddev);
 };  // namespace Utils
 }  // namespace RuNet

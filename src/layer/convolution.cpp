@@ -17,10 +17,9 @@ namespace RuNet {
                            int dilation)
           : Layer(alpha, momentum) {
     // create kernel descriptor
-    cudnnDataType_t data_type;
     checkCudnn(cudnnCreateFilterDescriptor(&kernel_desc));
     checkCudnn(cudnnSetFilter4dDescriptor(kernel_desc,
-                                          data_type,
+                                          CUDNN_DATA_FLOAT,
                                           CUDNN_TENSOR_NCHW,
                                           out_channels,
                                           in_channels,
@@ -57,8 +56,6 @@ namespace RuNet {
                              Constants::NormalMean,
                              Constants::NormalSigma);
   }
-
-  Convolution::Convolution(const Convolution &conv_obj) {}
 
   void Convolution::forward(const Tensor &tensor) {
     input_tensor_p = &tensor;
@@ -236,9 +233,8 @@ namespace RuNet {
   Convolution::~Convolution() noexcept {
     checkCudnn(cudnnDestroyFilterDescriptor(kernel_desc));
     checkCudnn(cudnnDestroyConvolutionDescriptor(conv_desc));
-    checkCudnn(cudnnDestroyTensorDescriptor(output_desc));
+    cudnnDestroyTensorDescriptor(output_desc);
     checkCudnn(cudnnDestroyTensorDescriptor(bias_desc));
-
   }
 
 };  // namespace RuNet

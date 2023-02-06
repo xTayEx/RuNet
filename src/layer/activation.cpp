@@ -30,8 +30,8 @@ void Activation::forward(const Tensor &tensor) {
                                         input_c,
                                         input_h,
                                         input_w));
-  checkCuda(cudaMalloc(&dev_output, input_size));
-  checkCuda(cudaMemset(dev_output, 0, input_size));
+  dev_output.alloc(input_size);
+  dev_output.memset(0, input_size);
   checkCuda(cudaMalloc(&diff_for_prev, input_size));
   checkCuda(cudaMemset(diff_for_prev, 0, input_size));
 
@@ -45,7 +45,7 @@ void Activation::forward(const Tensor &tensor) {
                                     tensor.getTensorData(),
                                     beta,
                                     output_desc,
-                                    dev_output));
+                                    dev_output.data()));
 }
 
 Activation::~Activation() noexcept {
@@ -64,7 +64,7 @@ void Activation::backward(const Tensor &diff) {
                                      activation_desc,
                                      alpha,
                                      output_desc,
-                                     dev_output,
+                                     dev_output.data(),
                                      output_desc,
                                      diff.getTensorData(),
                                      input_tensor_p->getTensorDescriptor(),

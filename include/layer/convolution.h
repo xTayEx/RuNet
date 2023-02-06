@@ -11,7 +11,7 @@ namespace RuNet {
     Convolution(int in_channels,
                 int out_channels,
                 int kernel_size,
-                float alpha,
+                float alpha = 0.1f,
                 float momentum = 0.9f,
                 int pad_h = 0,
                 int pad_w = 0,
@@ -23,10 +23,10 @@ namespace RuNet {
 
      https://en.cppreference.com/w/cpp/language/rule_of_three
      */
-    // TODO must define copy constructor and copy assignment operator properly!
-    Convolution(const Convolution &conv_obj);
-
+    // TODO copy constructor and copy assignment operator must be defined properly or deleted!
     Convolution &operator=(const Convolution &conv_obj) = delete;
+
+    Convolution(const Convolution &conv) = delete;
 
     ~Convolution();
 

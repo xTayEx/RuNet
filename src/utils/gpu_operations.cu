@@ -3,7 +3,7 @@
 
 namespace RuNet {
 namespace Utils {
-void setGpuValue(float *x, int n, float val) {
+__global__ void setGpuValue(float *x, int n, float val) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if (i < n) {
     x[i] = val;
