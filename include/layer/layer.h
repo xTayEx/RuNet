@@ -41,7 +41,7 @@ namespace RuNet {
 
     float *param_gradient;
     float *bias_gradient;
-    float *diff_for_prev; // diff_for_prev for previous layer;
+    CudaMemory diff_for_prev; // diff_for_prev for previous layer;
     CudaMemory dev_output;
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 

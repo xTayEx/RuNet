@@ -17,26 +17,22 @@ namespace RuNet {
                            int dilation)
           : Layer(alpha, momentum) {
     // create kernel descriptor
-    checkCudnn(cudnnCreateFilterDescriptor(&kernel_desc));
-    checkCudnn(cudnnSetFilter4dDescriptor(kernel_desc,
-                                          CUDNN_DATA_FLOAT,
-                                          CUDNN_TENSOR_NCHW,
-                                          out_channels,
-                                          in_channels,
-                                          kernel_size,
-                                          kernel_size));
+    kernel_desc = std::make_unique<KernelDescriptor>(CUDNN_DATA_FLOAT,
+                                                     CUDNN_TENSOR_NCHW,
+                                                     out_channels,
+                                                     in_channels,
+                                                     kernel_size,
+                                                     kernel_size);
 
     // create convolution descriptor
-    checkCudnn(cudnnCreateConvolutionDescriptor(&conv_desc));
-    checkCudnn(cudnnSetConvolution2dDescriptor(conv_desc,
-                                               pad_h,
-                                               pad_w,
-                                               stride,
-                                               stride,
-                                               dilation,
-                                               dilation,
-                                               CUDNN_CROSS_CORRELATION,
-                                               CUDNN_DATA_FLOAT));
+    conv_desc = std::make_unique<ConvolutionDescriptor>(pad_h,
+                                                        pad_w,
+                                                        stride,
+                                                        stride,
+                                                        dilation,
+                                                        dilation,
+                                                        CUDNN_CROSS_CORRELATION,
+                                                        CUDNN_DATA_FLOAT);
 
     param_size = in_channels * out_channels * kernel_size * kernel_size;
     param.alloc(param_size * sizeof(float));
@@ -46,7 +42,8 @@ namespace RuNet {
             param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
 
     // bias initialization
-    bias_desc = std::make_unique<DescriptorWrapper<cudnnTensorDescriptor_t>>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
+    bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,
+                                                   out_channels, 1, 1);
     bias_param_size = out_channels;
     bias_param.alloc(bias_param_size * sizeof(float));
     Utils::setGpuNormalValue(bias_param.data(),
@@ -65,14 +62,19 @@ namespace RuNet {
 
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};
-    checkCudnn(cudnnGetConvolution2dForwardOutputDim(conv_desc,
+    checkCudnn(cudnnGetConvolution2dForwardOutputDim(conv_desc->getDescriptor(),
                                                      tensor.getTensorDescriptor(),
-                                                     kernel_desc,
+                                                     kernel_desc->getDescriptor(),
                                                      &output_c,
                                                      &output_c,
                                                      &output_h,
                                                      &output_w));
-    output_desc = std::make_unique<DescriptorWrapper<cudnnTensorDescriptor_t>>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, output_n, output_c, output_w, output_h);
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW,
+                                                     CUDNN_DATA_FLOAT,
+                                                     output_n,
+                                                     output_c,
+                                                     output_w,
+                                                     output_h);
 
     // allocate dev_output and initiate
     size_t output_size =
@@ -85,8 +87,8 @@ namespace RuNet {
     int returned_algo_count{0};
     cudnnGetConvolutionForwardAlgorithm_v7(global_cudnn_handle,
                                            tensor.getTensorDescriptor(),
-                                           kernel_desc,
-                                           conv_desc,
+                                           kernel_desc->getDescriptor(),
+                                           conv_desc->getDescriptor(),
                                            output_desc->getDescriptor(),
                                            1,
                                            &returned_algo_count,
@@ -97,8 +99,8 @@ namespace RuNet {
     checkCudnn(
             cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
                                                     tensor.getTensorDescriptor(),
-                                                    kernel_desc,
-                                                    conv_desc,
+                                                    kernel_desc->getDescriptor(),
+                                                    conv_desc->getDescriptor(),
                                                     output_desc->getDescriptor(),
                                                     conv_fwd_algo_desc,
                                                     &conv_fwd_workspace_size));
@@ -113,9 +115,9 @@ namespace RuNet {
                                        a,
                                        tensor.getTensorDescriptor(),
                                        tensor.getTensorData(),
-                                       kernel_desc,
+                                       kernel_desc->getDescriptor(),
                                        param.data(),
-                                       conv_desc,
+                                       conv_desc->getDescriptor(),
                                        conv_fwd_algo_desc,
                                        conv_fwd_workspace.data(),
                                        conv_fwd_workspace_size,
@@ -150,8 +152,8 @@ namespace RuNet {
             global_cudnn_handle,
             input_tensor_p->getTensorDescriptor(),
             diff.getTensorDescriptor(),
-            conv_desc,
-            kernel_desc,
+            conv_desc->getDescriptor(),
+            kernel_desc->getDescriptor(),
             1,
             &returned_algo_count,
             &conv_bwd_filter_perf));
@@ -161,8 +163,8 @@ namespace RuNet {
             global_cudnn_handle,
             input_tensor_p->getTensorDescriptor(),
             diff.getTensorDescriptor(),
-            conv_desc,
-            kernel_desc,
+            conv_desc->getDescriptor(),
+            kernel_desc->getDescriptor(),
             conv_bwd_filter_algo_desc,
             &conv_bwd_filter_workspace_size));
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
@@ -173,19 +175,19 @@ namespace RuNet {
                                            input_tensor_p->getTensorData(),
                                            diff.getTensorDescriptor(),
                                            diff.getTensorData(),
-                                           conv_desc,
+                                           conv_desc->getDescriptor(),
                                            conv_bwd_filter_algo_desc,
                                            conv_bwd_filter_workspace.data(),
                                            conv_bwd_filter_workspace_size,
                                            b,
-                                           kernel_desc,
+                                           kernel_desc->getDescriptor(),
                                            param_gradient));
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
-                                                           kernel_desc,
+                                                           kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
-                                                           conv_desc,
+                                                           conv_desc->getDescriptor(),
                                                            output_desc->getDescriptor(),
                                                            1,
                                                            &returned_algo_count,
@@ -193,20 +195,20 @@ namespace RuNet {
     conv_bwd_data_algo_desc = conv_bwd_data_perf.algo;
 
     checkCudnn(cudnnGetConvolutionBackwardDataWorkspaceSize(global_cudnn_handle,
-                                                            kernel_desc,
+                                                            kernel_desc->getDescriptor(),
                                                             diff.getTensorDescriptor(),
-                                                            conv_desc,
+                                                            conv_desc->getDescriptor(),
                                                             output_desc->getDescriptor(),
                                                             conv_bwd_data_algo_desc,
                                                             &conv_bwd_data_workspace_size));
     conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
-                                            kernel_desc,
+                                            kernel_desc->getDescriptor(),
                                             param.data(),
                                             diff.getTensorDescriptor(),
                                             diff.getTensorData(),
-                                            conv_desc,
+                                            conv_desc->getDescriptor(),
                                             conv_bwd_data_algo_desc,
                                             conv_bwd_data_workspace.data(),
                                             conv_bwd_data_workspace_size,
@@ -221,9 +223,5 @@ namespace RuNet {
     checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient, 1, bias_param.data(), 1));
   }
 
-  Convolution::~Convolution() noexcept {
-    checkCudnn(cudnnDestroyFilterDescriptor(kernel_desc));
-    checkCudnn(cudnnDestroyConvolutionDescriptor(conv_desc));
-  }
-
+  Convolution::~Convolution() {}
 };  // namespace RuNet

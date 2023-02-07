@@ -37,11 +37,11 @@ namespace RuNet {
     void update();
 
   private:
-    cudnnFilterDescriptor_t kernel_desc;
     cudnnConvolutionFwdAlgo_t conv_fwd_algo_desc;
     cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo_desc;
     cudnnConvolutionBwdDataAlgo_t conv_bwd_data_algo_desc;
-    cudnnConvolutionDescriptor_t conv_desc;
+    std::unique_ptr<KernelDescriptor> kernel_desc;
+    std::unique_ptr<ConvolutionDescriptor> conv_desc;
 
     CudaMemory conv_fwd_workspace;
     size_t conv_fwd_workspace_size;

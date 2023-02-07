@@ -9,14 +9,14 @@ class Activation : public Layer {
   Activation(cudnnActivationMode_t mode,
              cudnnNanPropagation_t prop,
              float coef);
-  virtual ~Activation() = 0;
+  ~Activation();
 
   void forward(const Tensor &tensor);
   void backward(const Tensor &tensor);
   void update();
 
  private:
-  cudnnActivationDescriptor_t activation_desc;
+  std::unique_ptr<ActivationDescriptor> activation_desc;
 };
 
 };  // namespace RuNet

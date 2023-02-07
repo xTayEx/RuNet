@@ -20,31 +20,39 @@ namespace RuNet {
 
   private:
     T desc;
-    bool desc_is_created = false;
   };
 
   template<>
   template<typename ...ARGS>
   DescriptorWrapper<cudnnTensorDescriptor_t>::DescriptorWrapper(ARGS ...args) {
-    cudnnStatus_t create_status;
-    cudnnStatus_t set_status;
-    checkCudnn((create_status = cudnnCreateTensorDescriptor(&desc)));
-    checkCudnn((set_status = cudnnSetTensor4dDescriptor(desc, std::forward<ARGS>(args)...)));
-    if (create_status == CUDNN_STATUS_SUCCESS && set_status == CUDNN_STATUS_SUCCESS) {
-      desc_is_created = true;
-    }
+    checkCudnn(cudnnCreateTensorDescriptor(&desc));
+    checkCudnn(cudnnSetTensor4dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+  using TensorDescriptor = DescriptorWrapper<cudnnTensorDescriptor_t>;
 
   template<>
   template<typename ...ARGS>
   DescriptorWrapper<cudnnConvolutionDescriptor_t>::DescriptorWrapper(ARGS ...args) {
-    cudnnStatus_t status;
-    checkCudnn((status = cudnnCreateConvolutionDescriptor(std::forward<ARGS>(args)...)));
-    if (status == CUDNN_STATUS_SUCCESS) {
-      desc_is_created = true;
-    }
+    checkCudnn(cudnnCreateConvolutionDescriptor(&desc));
+    checkCudnn(cudnnSetConvolution2dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+  using ConvolutionDescriptor = DescriptorWrapper<cudnnConvolutionDescriptor_t>;
 
+  template<>
+  template<typename ...ARGS>
+  DescriptorWrapper<cudnnFilterDescriptor_t>::DescriptorWrapper(ARGS ...args) {
+    checkCudnn(cudnnCreateFilterDescriptor(&desc));
+    checkCudnn(cudnnSetFilter4dDescriptor(desc, std::forward<ARGS>(args)...));
+  }
+  using KernelDescriptor = DescriptorWrapper<cudnnFilterDescriptor_t>;
+
+  template<>
+  template<typename ...ARGS>
+  DescriptorWrapper<cudnnActivationDescriptor_t>::DescriptorWrapper(ARGS ...args) {
+    checkCudnn(cudnnCreateActivationDescriptor(&desc));
+    checkCudnn(cudnnSetActivationDescriptor(desc, std::forward<ARGS>(args)...));
+  }
+  using ActivationDescriptor = DescriptorWrapper<cudnnActivationDescriptor_t>;
 
 };
 
