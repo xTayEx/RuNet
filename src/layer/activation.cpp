@@ -22,14 +22,7 @@ void Activation::forward(const Tensor &tensor) {
   size_t input_size = input_n * input_c * input_w * input_h;
 
   // create output descriptor
-  checkCudnn(cudnnCreateTensorDescriptor(&output_desc));
-  checkCudnn(cudnnSetTensor4dDescriptor(output_desc,
-                                        CUDNN_TENSOR_NCHW,
-                                        CUDNN_DATA_FLOAT,
-                                        input_n,
-                                        input_c,
-                                        input_h,
-                                        input_w));
+  output_desc = std::make_unique<DescriptorWrapper<cudnnTensorDescriptor_t>>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h, input_w);
   dev_output.alloc(input_size);
   dev_output.memset(0, input_size);
   checkCuda(cudaMalloc(&diff_for_prev, input_size));
@@ -44,14 +37,12 @@ void Activation::forward(const Tensor &tensor) {
                                     tensor.getTensorDescriptor(),
                                     tensor.getTensorData(),
                                     beta,
-                                    output_desc,
+                                    output_desc->getDescriptor(),
                                     dev_output.data()));
 }
 
 Activation::~Activation() noexcept {
-  checkCuda(cudaFree(&dev_output));
   checkCuda(cudaFree(&diff_for_prev));
-  checkCudnn(cudnnDestroyTensorDescriptor(output_desc));
   checkCudnn(cudnnDestroyActivationDescriptor(activation_desc));
 }
 
@@ -63,9 +54,9 @@ void Activation::backward(const Tensor &diff) {
   checkCudnn(cudnnActivationBackward(RuNet::global_cudnn_handle,
                                      activation_desc,
                                      alpha,
-                                     output_desc,
+                                     output_desc->getDescriptor(),
                                      dev_output.data(),
-                                     output_desc,
+                                     output_desc->getDescriptor(),
                                      diff.getTensorData(),
                                      input_tensor_p->getTensorDescriptor(),
                                      input_tensor_p->getTensorData(),

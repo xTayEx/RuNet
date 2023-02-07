@@ -2,14 +2,17 @@
 #define _CUDNN_DESCRIPTOR_H
 
 #include <cudnn.h>
-#include <memory>
+#include <utility>
+#include "utils/utils.h"
 
 namespace RuNet {
   template<typename T>
   class DescriptorWrapper {
   public:
     template<typename ...ARGS>
-    DescriptorWrapper(ARGS &&...args);
+    explicit DescriptorWrapper(ARGS ...args);
+    DescriptorWrapper() = delete;
+    ~DescriptorWrapper();
 
     const T &getDescriptor() {
       return desc;
@@ -20,22 +23,29 @@ namespace RuNet {
     bool desc_is_created = false;
   };
 
-  class TensorDescriptor {
-  public:
-    TensorDescriptor(cudnnTensorFormat_t format, cudnnDataType_t data_type, int n, int c, int h, int w);
+  template<>
+  template<typename ...ARGS>
+  DescriptorWrapper<cudnnTensorDescriptor_t>::DescriptorWrapper(ARGS ...args) {
+    cudnnStatus_t create_status;
+    cudnnStatus_t set_status;
+    checkCudnn((create_status = cudnnCreateTensorDescriptor(&desc)));
+    checkCudnn((set_status = cudnnSetTensor4dDescriptor(desc, std::forward<ARGS>(args)...)));
+    if (create_status == CUDNN_STATUS_SUCCESS && set_status == CUDNN_STATUS_SUCCESS) {
+      desc_is_created = true;
+    }
+  }
 
-    ~TensorDescriptor();
+  template<>
+  template<typename ...ARGS>
+  DescriptorWrapper<cudnnConvolutionDescriptor_t>::DescriptorWrapper(ARGS ...args) {
+    cudnnStatus_t status;
+    checkCudnn((status = cudnnCreateConvolutionDescriptor(std::forward<ARGS>(args)...)));
+    if (status == CUDNN_STATUS_SUCCESS) {
+      desc_is_created = true;
+    }
+  }
 
-  };
 
-  class ConvolutionDescriptor {
-  public:
-    ConvolutionDescriptor(int pad_h, int pad_w, int u, int v, int dilation_h, int dilation_w,
-                          cudnnConvolutionMode_t mode, cudnnDataType_t compute_type);
-
-    ~ConvolutionDescriptor();
-
-  };
 };
 
 #endif // _CUDNN_DESCRIPTOR_H

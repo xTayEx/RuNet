@@ -11,7 +11,7 @@ set(CMAKE_MAKE_PROGRAM /usr/bin/ninja)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CUDA_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
@@ -26,7 +26,10 @@ add_executable(runet_test src/global/global.cpp
         src/layer/convolution.cpp
         src/tensor/tensor.cpp
         src/utils/gpu_operations.cu
-        src/runet.cpp src/cuda/cuda_memory.cpp src/cuda/cudnn_descriptor.cpp include/cuda/cudnn_descriptor.h)
+        src/runet.cpp
+        src/cuda/cuda_memory.cpp
+        include/cuda/cudnn_descriptor.h
+        src/cuda/cudnn_descriptor.cpp)
 
 target_link_libraries(runet_test ${CUDNN_LIB} curand cublas)
 

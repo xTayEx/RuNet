@@ -1,7 +1,18 @@
 #include "cuda/cudnn_descriptor.h"
+#include <iostream>
 
 namespace RuNet {
-  TensorDescriptor::TensorDescriptor(cudnnTensorFormat_t format, cudnnDataType_t data_type, int n, int c, int h, int w) {
-    
+  template<>
+  DescriptorWrapper<cudnnTensorDescriptor_t>::~DescriptorWrapper() {
+    if (desc_is_created) {
+      cudnnDestroyTensorDescriptor(desc);
+    }
+  }
+
+  template<>
+  DescriptorWrapper<cudnnConvolutionDescriptor_t>::~DescriptorWrapper() {
+    if (desc_is_created) {
+      cudnnDestroyConvolutionDescriptor(desc);
+    }
   }
 };

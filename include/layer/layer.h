@@ -6,9 +6,11 @@
 #include <cudnn.h>
 #include <functional>
 #include <iostream>
+#include <memory>
 
 #include "tensor/tensor.h"
 #include "cuda/cuda_memory.h"
+#include "cuda/cudnn_descriptor.h"
 
 namespace RuNet {
 
@@ -33,7 +35,7 @@ namespace RuNet {
     CudaMemory param;
     int param_size;
 
-    cudnnTensorDescriptor_t bias_desc;
+    std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     CudaMemory bias_param;
     int bias_param_size;
 
@@ -41,7 +43,7 @@ namespace RuNet {
     float *bias_gradient;
     float *diff_for_prev; // diff_for_prev for previous layer;
     CudaMemory dev_output;
-    cudnnTensorDescriptor_t output_desc;
+    std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
     const Tensor *input_tensor_p;
   };
