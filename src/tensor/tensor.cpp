@@ -76,4 +76,29 @@ namespace RuNet {
   }
 
 
+  std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {
+    int n, c, h, w;
+    cudnnDataType_t _;
+    tensor.getTensorInfo(&_, &n, &c, &h, &w);
+
+    std::vector<float> tensor_data(n * c * h * w);
+    cudaMemcpy(tensor_data.data(), tensor.getTensorData(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost);
+
+    for (int batch = 0; batch < n; ++batch) {
+      std::cout << "[ ";
+      for (int channel = 0; channel < c; ++channel) {
+        std::cout << "[ ";
+        for (int x = 0; x < w; ++x) {
+          std::cout << "[ ";
+          for (int y = 0; y < h; ++y) {
+            std::cout << tensor_data[batch * n + c * channel + x * w + y] << ", ";
+          }
+          std::cout << " ] " << std::endl;
+        }
+        std::cout << " ] " << std::endl;
+      }
+      std::cout << " ] " << std::endl;
+    }
+    return os;
+  }
 }  // namespace RuNet

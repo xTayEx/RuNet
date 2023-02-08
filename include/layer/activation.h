@@ -9,6 +9,7 @@ class Activation : public Layer {
   Activation(cudnnActivationMode_t mode,
              cudnnNanPropagation_t prop,
              float coef);
+  Activation(const Activation&) = delete;
   ~Activation();
 
   void forward(const Tensor &tensor);

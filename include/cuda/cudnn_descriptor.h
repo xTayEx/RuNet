@@ -12,6 +12,8 @@ namespace RuNet {
     template<typename ...ARGS>
     explicit DescriptorWrapper(ARGS ...args);
     DescriptorWrapper() = delete;
+    DescriptorWrapper(const DescriptorWrapper&) = delete;
+    DescriptorWrapper(DescriptorWrapper&&);
     ~DescriptorWrapper();
 
     const T &getDescriptor() {

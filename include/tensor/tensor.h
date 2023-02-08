@@ -7,6 +7,7 @@
 #include "cuda/cudnn_descriptor.h"
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace RuNet {
   class Tensor {
@@ -18,6 +19,9 @@ namespace RuNet {
     Tensor(std::vector<png::image<png::rgb_pixel>>);
 
     Tensor(const Tensor&) = delete;
+
+    // TODO implement move semantics
+    // Tensor(Tensor&&);
 
     Tensor &operator=(const Tensor&) = delete;
 
@@ -40,6 +44,8 @@ namespace RuNet {
     int _h;
     int _w;
   };
+
+  std::ostream &operator<<(std::ostream &os, const Tensor& tensor);
 }  // namespace RuNet
 
 #endif

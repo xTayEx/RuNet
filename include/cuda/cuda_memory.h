@@ -9,6 +9,10 @@ namespace RuNet {
   public:
     CudaMemory(size_t size);
 
+    CudaMemory(const CudaMemory&) = delete;
+
+    CudaMemory(CudaMemory&&);
+
     CudaMemory();
 
     ~CudaMemory();
