@@ -1,4 +1,5 @@
 #include "png.hpp"
+#include "tensor/tensor.h"
 #include <iostream>
 
 int main() {

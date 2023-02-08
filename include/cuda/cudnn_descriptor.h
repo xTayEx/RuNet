@@ -3,7 +3,7 @@
 
 #include <cudnn.h>
 #include <utility>
-#include "utils/utils.h"
+#include "utils/check.h"
 
 namespace RuNet {
   template<typename T>

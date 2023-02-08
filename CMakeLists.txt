@@ -35,7 +35,7 @@ add_executable(runet_test
         src/utils/gpu_operations.cu
         src/cuda/cuda_memory.cpp
         include/cuda/cudnn_descriptor.h
-        src/cuda/cudnn_descriptor.cpp)
+        src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp)
 
 add_dependencies(runet_test png++)
 target_link_libraries(runet_test ${CUDNN_LIB} curand cublas png)

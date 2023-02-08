@@ -1,44 +1,13 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include <cuda_runtime.h>
-#include <cudnn.h>
-#include <cublas_v2.h>
-#include <sstream>
-#include <iostream>
+#include "png.hpp"
+#include <vector>
 
-#define fatalError(err) do {                                           \
-  std::stringstream pos, msg;                                          \
-  pos << "In " << __FILE__ << ": " << __LINE__ << "\n";                 \
-  msg << std::string(err) << "\n";                                     \
-  std::cerr << pos.str () << msg.str();                                \
-  cudaDeviceReset();                                                   \
-  exit(1);                                                             \
-} while(0)                                                             \
+namespace RuNet {
+  float extract_channel_pixel(const png::image<png::rgb_pixel> &img, size_t x, size_t y, size_t channel);
+  void extract_image(const png::image<png::rgb_pixel> &img, std::vector<float> &buf);
+  void extract_image_vector(const std::vector<png::image<png::rgb_pixel>> &img_vec, std::vector<float> buf);
+};
 
-#define checkCudnn(status) do {                                        \
-  std::stringstream err;                                               \
-  if (status != CUDNN_STATUS_SUCCESS) {                                \
-    err << "cuDNN error: " << cudnnGetErrorString(status);             \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
-
-
-#define checkCuda(status) do {                                         \
-  std::stringstream err;                                               \
-  if (status != cudaSuccess) {                                         \
-    err << "CUDA error: " << status;                                   \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
-
-#define checkCublas(status) do {                                       \
-  std::stringstream err;                                               \
-  if (status != CUBLAS_STATUS_SUCCESS) {                               \
-    err << "cuBLAS error: " << status;                                 \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
-
-#endif
+#endif //_UTILS_H

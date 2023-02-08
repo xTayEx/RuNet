@@ -3,7 +3,7 @@
 #include "global/global.h"
 #include "utils/constants.h"
 #include "utils/gpu_operations.cuh"
-#include "utils/utils.h"
+#include "utils/check.h"
 
 namespace RuNet {
   Convolution::Convolution(int in_channels,

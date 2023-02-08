@@ -1,7 +1,7 @@
 #include "layer/activation.h"
 
 #include "global/global.h"
-#include "utils/utils.h"
+#include "utils/check.h"
 
 namespace RuNet {
 
