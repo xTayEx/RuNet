@@ -24,6 +24,7 @@ include_directories(${PNGPP_INCLUDE_DIR})
 message(STATUS "PNGPP_INCLUDE_DIR: ${PNGPP_INCLUDE_DIR}")
 link_directories(/usr/local/cuda/lib64)
 find_library(CUDNN_LIB cudnn)
+find_package(OpenCV REQUIRED)
 
 add_executable(runet_test
         src/runet_img_conv_test.cpp
@@ -38,6 +39,6 @@ add_executable(runet_test
         src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp)
 
 add_dependencies(runet_test png++)
-target_link_libraries(runet_test ${CUDNN_LIB} curand cublas png)
+target_link_libraries(runet_test ${CUDNN_LIB} curand cublas png ${OpenCV_LIBS})
 set_target_properties(runet_test PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)

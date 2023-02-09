@@ -29,3 +29,5 @@ void RuNet::extract_image_vector(const std::vector<png::image<png::rgb_pixel>> &
     extract_image(single_img, buf);
   }
 }
+
+// convert a single-batch tensor to an png::image

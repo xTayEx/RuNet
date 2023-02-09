@@ -13,8 +13,8 @@ namespace RuNet {
                 int kernel_size,
                 float alpha = 0.1f,
                 float momentum = 0.9f,
-                int pad_h = 0,
-                int pad_w = 0,
+                int pad_h = 1,
+                int pad_w = 1,
                 int stride = 1,
                 int dilation = 1);
     /* RULE OF THREE
@@ -36,10 +36,11 @@ namespace RuNet {
 
     void update();
 
+
   private:
-    cudnnConvolutionFwdAlgo_t conv_fwd_algo_desc;
-    cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo_desc;
-    cudnnConvolutionBwdDataAlgo_t conv_bwd_data_algo_desc;
+    cudnnConvolutionFwdAlgo_t conv_fwd_algo;
+    cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo;
+    cudnnConvolutionBwdDataAlgo_t conv_bwd_data_algo;
     std::unique_ptr<KernelDescriptor> kernel_desc;
     std::unique_ptr<ConvolutionDescriptor> conv_desc;
 

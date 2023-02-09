@@ -28,7 +28,7 @@
 #define checkCuda(status) do {                                         \
   std::stringstream err;                                               \
   if (status != cudaSuccess) {                                         \
-    err << "CUDA error: " << status;                                   \
+    err << "CUDA error: " << cudaGetErrorString(status);               \
     fatalError(err.str());                                             \
   }                                                                    \
 } while(0)                                                             \

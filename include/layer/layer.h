@@ -26,6 +26,7 @@ namespace RuNet {
 
     virtual void update() = 0;
 
+    std::vector<float> get_output();
     // Layer *next_layer; // TODO: should be set by network builder
 
     float alpha;
@@ -46,6 +47,7 @@ namespace RuNet {
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
     const Tensor *input_tensor_p;
+
   };
 
 };  // namespace RuNet
