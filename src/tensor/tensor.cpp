@@ -1,6 +1,7 @@
 #include "tensor/tensor.h"
 
 #include <iostream>
+#include <exception>
 #include <cuda_runtime.h>
 
 namespace RuNet {
@@ -42,11 +43,11 @@ namespace RuNet {
     return data->data();
   }
 
-  Tensor::Tensor(png::image<png::rgb_pixel> img) {
+  Tensor::Tensor(const cv::Mat& img) {
     _n = 1;
     _c = 3;
-    _h = img.get_height();
-    _w = img.get_width();
+    _h = img.rows;
+    _w = img.cols;
     desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
 
     std::vector<float> buf;
@@ -57,11 +58,18 @@ namespace RuNet {
     data->memcpy(buf.data(), data_size, cudaMemcpyHostToDevice);
   }
 
-  Tensor::Tensor(std::vector<png::image<png::rgb_pixel>> img_vec) {
+  Tensor::Tensor(const std::vector<cv::Mat> &img_vec) {
     _n = img_vec.size();
     _c = 3;
-    _h = img_vec[0].get_height();
-    _w = img_vec[0].get_width();
+    _h = img_vec[0].rows;
+    _w = img_vec[0].cols;
+    for (auto img: img_vec) {
+      auto tmp_h = img.rows;
+      auto tmp_w = img.cols;
+      if (tmp_h != _h || tmp_w != _w) {
+        throw std::invalid_argument("image size in img_vec is not uniform");
+      }
+    }
     desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
 
     std::vector<float> buf;
@@ -91,28 +99,25 @@ namespace RuNet {
     data = std::make_unique<CudaMemory>(ori_data);
   }
 
-  png::image<png::rgb_pixel> Tensor::convert_to_png_image() {
+  cv::Mat Tensor::convert_to_png_image() {
     int n, c, h, w;
     n = _n;
     c = _c;
     h = _h;
     w = _w;
+    cv::Mat ret_img(h, w, CV_8UC3, cv::Scalar(0, 0, 1));
 
-    std::vector<float> buf;
-    const float *tensor_data = data->data();
     std::vector<float> tensor_data_copy(n * c * h * w);
     cudaMemcpy(tensor_data_copy.data(), data->data(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost);
     for (size_t height = 0; height < h; ++height) {
       for (size_t width = 0; width < w; ++width) {
-        for (size_t channel = 0; channel < c; ++channel) {
+        auto &this_pixel = ret_img.at<cv::Vec3b>(height, width);
+        this_pixel[2] = static_cast<unsigned char>(tensor_data_copy[0 * h * w + height * w + width]);
+        this_pixel[1] = static_cast<unsigned char>(tensor_data_copy[1 * h * w + height * w + width]);
+        this_pixel[0] = static_cast<unsigned char>(tensor_data_copy[2 * h * w + height * w + width]);
 //          std::cout << channel * h * w + w * height + width << std::endl;
-          buf.push_back(static_cast<unsigned char>(tensor_data_copy[channel * h * w + w * height + width]));
-        }
       }
     }
-    std::stringstream png_construct_istream;
-    std::copy(buf.begin(), buf.end(), std::ostream_iterator<unsigned char>(png_construct_istream, ""));
-    png::image<png::rgb_pixel> ret_img(png_construct_istream);
     return ret_img;
   }
 

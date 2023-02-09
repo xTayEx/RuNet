@@ -2,11 +2,11 @@
 #define _TENSOR_H
 
 #include "cudnn.h"
-#include "png.hpp"
 #include "utils/utils.h"
 #include "cuda/cudnn_descriptor.h"
 #include "cuda/cuda_memory.h"
 #include <vector>
+#include <opencv4/opencv2/opencv.hpp>
 #include <memory>
 #include <iostream>
 
@@ -19,9 +19,9 @@ namespace RuNet {
 
     Tensor(int n, int c, int h, int w, const std::vector<float> &ori_data);
 
-    Tensor(png::image<png::rgb_pixel>);
+    Tensor(const cv::Mat&);
 
-    Tensor(std::vector<png::image<png::rgb_pixel>>);
+    Tensor(const std::vector<cv::Mat>&);
 
     Tensor(const Tensor &) = delete;
 
@@ -39,8 +39,8 @@ namespace RuNet {
 
     cudnnTensorDescriptor_t getTensorDescriptor() const;
 
-    // convert a single-batch tensor to an png::image
-    png::image<png::rgb_pixel> convert_to_png_image();
+    // convert a single-batch tensor to a png::image
+    cv::Mat convert_to_png_image();
 
     float *getTensorData() const;
 
