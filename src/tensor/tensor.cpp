@@ -50,35 +50,10 @@ namespace RuNet {
     _w = img.cols;
     desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
 
-    std::vector<float> buf;
-    extract_image(img, buf);
-
-    int data_size = _n * _c * _h * _w * sizeof(float);
+    cv::Mat reshaped_img = cv::dnn::blobFromImage(img);
+    int data_size = _n * _c * _h * _w;
     data = std::make_unique<CudaMemory>(data_size);
-    data->memcpy(buf.data(), data_size, cudaMemcpyHostToDevice);
-  }
-
-  Tensor::Tensor(const std::vector<cv::Mat> &img_vec) {
-    _n = img_vec.size();
-    _c = 3;
-    _h = img_vec[0].rows;
-    _w = img_vec[0].cols;
-    for (auto img: img_vec) {
-      auto tmp_h = img.rows;
-      auto tmp_w = img.cols;
-      if (tmp_h != _h || tmp_w != _w) {
-        throw std::invalid_argument("image size in img_vec is not uniform");
-      }
-    }
-    desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
-
-    std::vector<float> buf;
-    extract_image_vector(img_vec, buf);
-
-    int data_size = _n * _c * _h * _w * sizeof(float);
-
-    data = std::make_unique<CudaMemory>(data_size);
-    data->memcpy(buf.data(), data_size, cudaMemcpyHostToDevice);
+    data->memcpy(reshaped_img.ptr<float>(0), data_size * sizeof(float), cudaMemcpyHostToDevice);
   }
 
   Tensor::Tensor(int n, int c, int h, int w, const CudaMemory &ori_data) {
@@ -101,24 +76,29 @@ namespace RuNet {
 
   cv::Mat Tensor::convert_to_png_image() {
     int n, c, h, w;
-    n = _n;
-    c = _c;
     h = _h;
     w = _w;
-    cv::Mat ret_img(h, w, CV_8UC3, cv::Scalar(0, 0, 1));
-
-    std::vector<float> tensor_data_copy(n * c * h * w);
-    cudaMemcpy(tensor_data_copy.data(), data->data(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost);
-    for (size_t height = 0; height < h; ++height) {
-      for (size_t width = 0; width < w; ++width) {
-        auto &this_pixel = ret_img.at<cv::Vec3b>(height, width);
-        this_pixel[2] = static_cast<unsigned char>(tensor_data_copy[0 * h * w + height * w + width]);
-        this_pixel[1] = static_cast<unsigned char>(tensor_data_copy[1 * h * w + height * w + width]);
-        this_pixel[0] = static_cast<unsigned char>(tensor_data_copy[2 * h * w + height * w + width]);
-//          std::cout << channel * h * w + w * height + width << std::endl;
+    n = _n;
+    c = _c;
+    cv::Mat img(h, w, CV_32FC3);
+    std::vector<float> move_from_device(n * c * h * w);
+    checkCuda(cudaMemcpy(move_from_device.data(), data->data(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost));
+    for (int batch = 0; batch < n; ++batch) {
+      for (int cur_row = 0; cur_row < h; ++cur_row) {
+        for (int cur_col = 0; cur_col < w; ++cur_col) {
+          for (int channel = 0; channel < c; ++channel) {
+//            std::cout << "batch: " << batch << " cur_row: " << cur_row << " cur_col: " << cur_col << " channel: " << channel << " value: " << move_from_device[batch * n + channel * h * w + cur_row * w + cur_col] << std::endl;
+            img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = move_from_device[batch * n + channel * h * w + cur_row * w + cur_col];
+//            std::cout << img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] << std::endl;
+          }
+        }
       }
     }
-    return ret_img;
+    cv::threshold(img, img, 0.0f, 0.0f, cv::THRESH_TOZERO);
+    cv::normalize(img, img, 0.0f, 255.0f, cv::NORM_MINMAX);
+
+    img.convertTo(img, CV_8UC3);
+    return img;
   }
 
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {

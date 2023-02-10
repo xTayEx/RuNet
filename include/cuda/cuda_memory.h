@@ -26,13 +26,13 @@ namespace RuNet {
 
     size_t size();
 
-    void memset(int value, size_t count);
+    void memset(int value, size_t byte_count);
 
-    void memcpy(const void* src, size_t count, cudaMemcpyKind kind);
+    void memcpy(const void* src, size_t byte_count, cudaMemcpyKind kind);
 
   private:
     float *memory;
-    size_t _size;
+    size_t _size; // element count, **not size in byte**
   };
 }
 

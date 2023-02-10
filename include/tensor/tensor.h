@@ -7,6 +7,7 @@
 #include "cuda/cuda_memory.h"
 #include <vector>
 #include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/dnn/dnn.hpp>
 #include <memory>
 #include <iostream>
 
@@ -20,8 +21,6 @@ namespace RuNet {
     Tensor(int n, int c, int h, int w, const std::vector<float> &ori_data);
 
     Tensor(const cv::Mat&);
-
-    Tensor(const std::vector<cv::Mat>&);
 
     Tensor(const Tensor &) = delete;
 

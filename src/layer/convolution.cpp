@@ -37,19 +37,38 @@ namespace RuNet {
     param_size = in_channels * out_channels * kernel_size * kernel_size;
     param.alloc(param_size * sizeof(float));
 
+    const float kernel_template[3][3] = {
+            {1, 1, 1},
+            {1, -8, 1},
+            {1, 1, 1}
+    };
+
+    float h_kernel[3][3][3][3];
+    for (int kernel = 0; kernel < 3; ++kernel) {
+      for (int channel = 0; channel < 3; ++channel) {
+        for (int row = 0; row < 3; ++row) {
+          for (int column = 0; column < 3; ++column) {
+            h_kernel[kernel][channel][row][column] = kernel_template[row][column];
+          }
+        }
+      }
+    }
+    checkCuda(cudaMemcpy(param.data(), h_kernel, param_size * sizeof(float), cudaMemcpyHostToDevice));
+
     // set kernel value
-    Utils::setGpuNormalValue(
-            param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
+//    Utils::setGpuNormalValue(
+//            param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
 
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,
                                                    out_channels, 1, 1);
     bias_param_size = out_channels;
     bias_param.alloc(bias_param_size * sizeof(float));
-    Utils::setGpuNormalValue(bias_param.data(),
-                             bias_param_size,
-                             Constants::NormalMean,
-                             Constants::NormalSigma);
+    bias_param.memset(0, bias_param_size * sizeof(float));
+//    Utils::setGpuNormalValue(bias_param.data(),
+//                             bias_param_size,
+//                             Constants::NormalMean,
+//                             Constants::NormalSigma);
   }
 
   void Convolution::forward(const Tensor &tensor) {
@@ -58,7 +77,6 @@ namespace RuNet {
     cudnnDataType_t data_type;
     int input_n, input_c, input_h, input_w;
     tensor.getTensorInfo(&data_type, &input_n, &input_c, &input_h, &input_w);
-    size_t input_size = input_n * input_c * input_h * input_w * sizeof(float);
 
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};
@@ -78,10 +96,10 @@ namespace RuNet {
                                                      output_w);
 
     // allocate dev_output and initiate
-    size_t output_size =
-            output_n * output_c * output_h * output_w * sizeof(float);
+    // element count
+    size_t output_size = output_n * output_c * output_h * output_w;
     dev_output.alloc(output_size);
-    dev_output.memset(0, output_size);
+    dev_output.memset(0, output_size * sizeof(float));
 
     // find algorithm
     cudnnConvolutionFwdAlgoPerf_t fwd_algo_perf;
@@ -96,21 +114,7 @@ namespace RuNet {
                                            &fwd_algo_perf);
     conv_fwd_algo = fwd_algo_perf.algo;
 
-    cudnnDataType_t _t;
-    int _n, _c, _h, _w, _s;
-
     // get workspace size
-    // The tensor yDesc or wDesc are not of the same dimension as xDesc?
-    cudnnGetTensor4dDescriptor(tensor.getTensorDescriptor(), &_t, &_n, &_c, &_h, &_w, &_s, &_s, &_s, &_s);
-    std::cout << "xdesc dim " << _n << " " << _c << " " << _h << " " << _w << std::endl;
-
-    cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &_t, &_n, &_c, &_h, &_w, &_s, &_s, &_s, &_s);
-    std::cout << "ydesc dim " << _n << " " << _c << " " << _h << " " << _w << std::endl;
-
-    int _k;
-    cudnnTensorFormat_t _f;
-    cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &_t, &_f, &_k, &_c, &_h, &_w);
-    std::cout << "wdesc dim " << _k << " " << _c << " " << _h << " " << _w << std::endl;
     checkCudnn(
             cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
                                                     tensor.getTensorDescriptor(),
@@ -120,12 +124,14 @@ namespace RuNet {
                                                     conv_fwd_algo,
                                                     &conv_fwd_workspace_size));
 
+
     // allocate workspace
     conv_fwd_workspace.alloc(conv_fwd_workspace_size);
 
     // do convolution
     float a[1] = {1.0f};
     float b[1] = {0.0f};
+
     checkCudnn(cudnnConvolutionForward(global_cudnn_handle,
                                        a,
                                        tensor.getTensorDescriptor(),

@@ -4,7 +4,7 @@
 namespace RuNet {
   CudaMemory::CudaMemory(size_t size) {
     this->_size = size;
-    checkCuda(cudaMalloc(&memory, size * sizeof(float)));
+    checkCuda(cudaMalloc(&memory, this->_size * sizeof(float)));
   }
 
   CudaMemory::CudaMemory() {
@@ -32,15 +32,15 @@ namespace RuNet {
 
   void CudaMemory::alloc(size_t size) {
     this->_size = size;
-    checkCuda(cudaMalloc(&memory, size * sizeof(float)));
+    checkCuda(cudaMalloc(&memory, this->_size * sizeof(float)));
   }
 
   float *CudaMemory::data() {
     return memory;
   }
 
-  void CudaMemory::memset(int value, size_t count) {
-    checkCuda(cudaMemset(memory, value, count));
+  void CudaMemory::memset(int value, size_t byte_count) {
+    checkCuda(cudaMemset(memory, value, byte_count));
   }
 
   CudaMemory::~CudaMemory() {
@@ -53,7 +53,7 @@ namespace RuNet {
     return this->_size;
   }
 
-  void CudaMemory::memcpy(const void *src, size_t count, cudaMemcpyKind kind) {
-    checkCuda(cudaMemcpy(this->memory, src, count, kind));
+  void CudaMemory::memcpy(const void *src, size_t byte_count, cudaMemcpyKind kind) {
+    checkCuda(cudaMemcpy(this->memory, src, byte_count, kind));
   }
 }
