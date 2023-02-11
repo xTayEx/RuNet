@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cudnn.h>
+
 namespace RuNet {
 namespace Constants {
 const float NormalSigma = 0.01f;

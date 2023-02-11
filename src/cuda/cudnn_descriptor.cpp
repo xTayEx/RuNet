@@ -4,21 +4,26 @@
 namespace RuNet {
   template<>
   DescriptorWrapper<cudnnTensorDescriptor_t>::~DescriptorWrapper() {
-    cudnnDestroyTensorDescriptor(desc);
+    checkCudnn(cudnnDestroyTensorDescriptor(desc));
   }
 
   template<>
   DescriptorWrapper<cudnnConvolutionDescriptor_t>::~DescriptorWrapper() {
-    cudnnDestroyConvolutionDescriptor(desc);
+    checkCudnn(cudnnDestroyConvolutionDescriptor(desc));
   }
 
   template<>
   DescriptorWrapper<cudnnFilterDescriptor_t>::~DescriptorWrapper() {
-    cudnnDestroyFilterDescriptor(desc);
+    checkCudnn(cudnnDestroyFilterDescriptor(desc));
   }
 
   template<>
   DescriptorWrapper<cudnnActivationDescriptor_t>::~DescriptorWrapper() {
-    cudnnDestroyActivationDescriptor(desc);
+    checkCudnn(cudnnDestroyActivationDescriptor(desc));
+  }
+
+  template<>
+  DescriptorWrapper<cudnnPoolingDescriptor_t>::~DescriptorWrapper() {
+    checkCudnn(cudnnDestroyPoolingDescriptor(desc));
   }
 };

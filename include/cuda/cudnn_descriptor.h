@@ -56,6 +56,14 @@ namespace RuNet {
   }
   using ActivationDescriptor = DescriptorWrapper<cudnnActivationDescriptor_t>;
 
+  template<>
+  template<typename ...ARGS>
+  DescriptorWrapper<cudnnPoolingDescriptor_t>::DescriptorWrapper(ARGS ...args) {
+    checkCudnn(cudnnCreatePoolingDescriptor(&desc));
+    checkCudnn(cudnnSetPooling2dDescriptor(desc, std::forward<ARGS>(args)...));
+  }
+  using PoolingDescriptor = DescriptorWrapper<cudnnPoolingDescriptor_t>;
+
 };
 
 #endif // _CUDNN_DESCRIPTOR_H

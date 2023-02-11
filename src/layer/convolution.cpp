@@ -37,31 +37,11 @@ namespace RuNet {
     param_size = in_channels * out_channels * kernel_size * kernel_size;
     param.alloc(param_size * sizeof(float));
 
-    const float kernel_template[3][3] = {
-            {1, 1, 1},
-            {1, -8, 1},
-            {1, 1, 1}
-    };
-
-    float h_kernel[3][3][3][3];
-    for (int kernel = 0; kernel < 3; ++kernel) {
-      for (int channel = 0; channel < 3; ++channel) {
-        for (int row = 0; row < 3; ++row) {
-          for (int column = 0; column < 3; ++column) {
-            h_kernel[kernel][channel][row][column] = kernel_template[row][column];
-          }
-        }
-      }
-    }
-    checkCuda(cudaMemcpy(param.data(), h_kernel, param_size * sizeof(float), cudaMemcpyHostToDevice));
-
     // set kernel value
-//    Utils::setGpuNormalValue(
-//            param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
+    Utils::setGpuNormalValue(param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
 
     // bias initialization
-    bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,
-                                                   out_channels, 1, 1);
+    bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,out_channels, 1, 1);
     bias_param_size = out_channels;
     bias_param.alloc(bias_param_size * sizeof(float));
     bias_param.memset(0, bias_param_size * sizeof(float));
@@ -235,7 +215,7 @@ namespace RuNet {
                                             conv_bwd_data_workspace_size,
                                             b,
                                             input_tensor_p->getTensorDescriptor(),
-                                            input_tensor_p->getTensorData()));
+                                            diff_for_prev.data()));
   }
 
   void Convolution::update() {
