@@ -33,10 +33,10 @@ add_executable(runet_test
         src/layer/activation.cpp
         src/layer/convolution.cpp
         src/tensor/tensor.cpp
-        src/utils/gpu_operations.cu
+        src/utils/gpu_operations.cpp
         src/cuda/cuda_memory.cpp
         include/cuda/cudnn_descriptor.h
-        src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp src/layer/pooling.cpp include/layer/pooling.h)
+        src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp src/layer/pooling.cpp include/layer/pooling.h src/layer/linear.cpp include/layer/linear.h)
 
 add_dependencies(runet_test png++)
 target_link_libraries(runet_test ${CUDNN_LIB} curand cublas png ${OpenCV_LIBS})

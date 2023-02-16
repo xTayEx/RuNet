@@ -87,7 +87,6 @@ namespace RuNet {
       for (int cur_row = 0; cur_row < h; ++cur_row) {
         for (int cur_col = 0; cur_col < w; ++cur_col) {
           for (int channel = 0; channel < c; ++channel) {
-//            std::cout << "batch: " << batch << " cur_row: " << cur_row << " cur_col: " << cur_col << " channel: " << channel << " value: " << move_from_device[batch * n + channel * h * w + cur_row * w + cur_col] << std::endl;
             img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = move_from_device[batch * n + channel * h * w + cur_row * w + cur_col];
 //            std::cout << img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] << std::endl;
           }

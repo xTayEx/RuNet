@@ -4,7 +4,7 @@ namespace RuNet {
 
   Layer::~Layer() {}
 
-  Layer::Layer(float alpha, float momentum, float weight_decay) : alpha(alpha), momentum(momentum),
+  Layer::Layer(float alpha, float momentum, float weight_decay) : learning_rate(alpha), momentum(momentum),
                                                                   weight_decay(weight_decay) {}
 
   std::vector<float> Layer::get_output() {

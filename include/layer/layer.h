@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 
+#include "global/global.h"
 #include "tensor/tensor.h"
 #include "cuda/cuda_memory.h"
 #include "cuda/cudnn_descriptor.h"
@@ -29,21 +30,23 @@ namespace RuNet {
     std::vector<float> get_output();
     // Layer *next_layer; // TODO: should be set by network builder
 
-    float alpha;
+    float learning_rate;
     float momentum;
     float weight_decay;
+    int batch_size;
 
     CudaMemory param;
     int param_size;
 
-    std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     CudaMemory bias_param;
     int bias_param_size;
 
-    float *param_gradient;
-    float *bias_gradient;
+    CudaMemory param_gradient;
+    CudaMemory bias_gradient;
     CudaMemory diff_for_prev; // diff_for_prev for previous layer;
     CudaMemory dev_output;
+
+    std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
     const Tensor *input_tensor_p;

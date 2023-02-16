@@ -35,7 +35,8 @@ namespace RuNet {
                                                         CUDNN_DATA_FLOAT);
 
     param_size = in_channels * out_channels * kernel_size * kernel_size;
-    param.alloc(param_size * sizeof(float));
+    param.alloc(param_size);
+    param_gradient.alloc(param_size);
 
     // set kernel value
     Utils::setGpuNormalValue(param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
@@ -43,8 +44,10 @@ namespace RuNet {
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,out_channels, 1, 1);
     bias_param_size = out_channels;
-    bias_param.alloc(bias_param_size * sizeof(float));
+    bias_param.alloc(bias_param_size );
     bias_param.memset(0, bias_param_size * sizeof(float));
+    bias_gradient.alloc(bias_param_size);
+    bias_gradient.memset(0, bias_param_size * sizeof(float));
 //    Utils::setGpuNormalValue(bias_param.data(),
 //                             bias_param_size,
 //                             Constants::NormalMean,
@@ -137,7 +140,7 @@ namespace RuNet {
   }
 
   void Convolution::backward(const Tensor &diff) {
-    float a[1] = {this->alpha};
+    float a[1] = {this->learning_rate};
     float b[1] = {this->momentum};
     checkCudnn(cudnnConvolutionBackwardBias(global_cudnn_handle,
                                             a,
@@ -145,7 +148,7 @@ namespace RuNet {
                                             diff.getTensorData(),
                                             b,
                                             bias_desc->getDescriptor(),
-                                            bias_gradient));
+                                            bias_gradient.data()));
 
     cudnnConvolutionBwdFilterAlgoPerf_t conv_bwd_filter_perf;
     int returned_algo_count{0};
@@ -182,7 +185,7 @@ namespace RuNet {
                                            conv_bwd_filter_workspace_size,
                                            b,
                                            kernel_desc->getDescriptor(),
-                                           param_gradient));
+                                           param_gradient.data()));
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
@@ -220,8 +223,8 @@ namespace RuNet {
 
   void Convolution::update() {
     float a = 1.0 - weight_decay;
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, param_size, &a, param_gradient, 1, param.data(), 1));
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient, 1, bias_param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, param_size, &a, param_gradient.data(), 1, param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient.data(), 1, bias_param.data(), 1));
   }
 
   Convolution::~Convolution() {}
