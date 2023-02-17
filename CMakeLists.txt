@@ -6,9 +6,6 @@ message(STATUS "CUDA architectures set to ${CMAKE_CUDA_ARCHITECTURES}")
 
 project(RuNet LANGUAGES CUDA CXX)
 
-include(ExternalProject)
-include(${PROJECT_SOURCE_DIR}/cmake/png++.cmake)
-
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_MAKE_PROGRAM /usr/bin/ninja)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -18,7 +15,6 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
-message(STATUS "PNGPP_INCLUDE_DIR: ${PNGPP_INCLUDE_DIR}")
 link_directories(/usr/local/cuda/lib64)
 find_library(CUDNN_LIB cudnn)
 find_package(OpenCV REQUIRED)
@@ -37,9 +33,7 @@ add_executable(runet_test
 
 target_include_directories(runet_test PUBLIC include)
 target_include_directories(runet_test PUBLIC /usr/local/cuda/include)
-target_include_directories(runet_test PUBLIC ${PNGPP_INCLUDE_DIR})
 
-add_dependencies(runet_test png++)
-target_link_libraries(runet_test ${CUDNN_LIB} curand cublas png ${OpenCV_LIBS})
+target_link_libraries(runet_test ${CUDNN_LIB} curand cublas ${OpenCV_LIBS})
 set_target_properties(runet_test PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)
