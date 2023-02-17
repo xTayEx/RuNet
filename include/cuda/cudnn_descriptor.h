@@ -24,6 +24,12 @@ namespace RuNet {
     T desc;
   };
 
+  template<typename T>
+  DescriptorWrapper<T>::DescriptorWrapper(DescriptorWrapper<T> &&other) {
+    desc = other.desc;
+    other.desc = nullptr;
+  }
+
   template<>
   template<typename ...ARGS>
   DescriptorWrapper<cudnnTensorDescriptor_t>::DescriptorWrapper(ARGS ...args) {
