@@ -23,7 +23,6 @@ namespace RuNet {
 
      https://en.cppreference.com/w/cpp/language/rule_of_three
      */
-    // TODO copy constructor and copy assignment operator must be defined properly or deleted!
     Convolution &operator=(const Convolution &conv_obj) = delete;
 
     Convolution(const Convolution &conv) = delete;

@@ -33,7 +33,7 @@ add_executable(runet_test
         src/utils/gpu_operations.cu
         src/cuda/cuda_memory.cpp
         include/cuda/cudnn_descriptor.h
-        src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp src/layer/pooling.cpp include/layer/pooling.h src/layer/linear.cpp include/layer/linear.h include/layer/softmax.cuh src/layer/softmax.cu)
+        src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp src/layer/pooling.cpp include/layer/pooling.h src/layer/linear.cpp include/layer/linear.h include/layer/softmax.cuh src/layer/softmax.cu include/layer/output.cuh src/layer/output.cu)
 
 target_include_directories(runet_test PUBLIC include)
 target_include_directories(runet_test PUBLIC /usr/local/cuda/include)
