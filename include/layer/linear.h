@@ -7,7 +7,7 @@
 namespace RuNet {
   class Linear : public Layer {
   public:
-    Linear(int in_features, int out_features, bool bias);
+    Linear(int in_features, int out_features);
 
     Linear(const Linear&) = delete;
 

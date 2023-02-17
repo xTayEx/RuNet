@@ -30,16 +30,13 @@ namespace RuNet {
     std::vector<float> get_output();
     // Layer *next_layer; // TODO: should be set by network builder
 
-    float learning_rate;
-    float momentum;
-    float weight_decay;
-    int batch_size;
+    float m_learning_rate;
+    float m_momentum;
+    float m_weight_decay;
+    int m_batch_size;
 
     CudaMemory param;
-    int param_size;
-
     CudaMemory bias_param;
-    int bias_param_size;
 
     CudaMemory param_gradient;
     CudaMemory bias_gradient;

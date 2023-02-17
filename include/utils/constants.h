@@ -5,8 +5,9 @@
 
 namespace RuNet {
 namespace Constants {
-const float NormalSigma = 0.01f;
-const float NormalMean = 0.0f;
+constexpr float NormalSigma = 0.01f;
+constexpr float NormalMean = 0.0f;
+constexpr int CudaBandWidth = 128;
 }  // namespace Constants
 }  // namespace RuNet
 

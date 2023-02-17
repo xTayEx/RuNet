@@ -34,7 +34,7 @@ namespace RuNet {
                                                         CUDNN_CROSS_CORRELATION,
                                                         CUDNN_DATA_FLOAT);
 
-    param_size = in_channels * out_channels * kernel_size * kernel_size;
+    int param_size = in_channels * out_channels * kernel_size * kernel_size;
     param.alloc(param_size);
     param_gradient.alloc(param_size);
 
@@ -43,15 +43,15 @@ namespace RuNet {
 
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,out_channels, 1, 1);
-    bias_param_size = out_channels;
+    int bias_param_size = out_channels;
     bias_param.alloc(bias_param_size );
     bias_param.memset(0, bias_param_size * sizeof(float));
     bias_gradient.alloc(bias_param_size);
     bias_gradient.memset(0, bias_param_size * sizeof(float));
-//    Utils::setGpuNormalValue(bias_param.data(),
-//                             bias_param_size,
-//                             Constants::NormalMean,
-//                             Constants::NormalSigma);
+    Utils::setGpuNormalValue(bias_param.data(),
+                             bias_param_size,
+                             Constants::NormalMean,
+                             Constants::NormalSigma);
   }
 
   void Convolution::forward(const Tensor &tensor) {
@@ -140,8 +140,8 @@ namespace RuNet {
   }
 
   void Convolution::backward(const Tensor &diff) {
-    float a[1] = {this->learning_rate};
-    float b[1] = {this->momentum};
+    float a[1] = {this->m_learning_rate};
+    float b[1] = {this->m_momentum};
     checkCudnn(cudnnConvolutionBackwardBias(global_cudnn_handle,
                                             a,
                                             diff.getTensorDescriptor(),
@@ -222,11 +222,9 @@ namespace RuNet {
   }
 
   void Convolution::update() {
-    float a = 1.0 - weight_decay;
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, param_size, &a, param_gradient.data(), 1, param.data(), 1));
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param_size, &a, bias_gradient.data(), 1, bias_param.data(), 1));
+    float a = 1.0f - m_weight_decay;
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), &a, param_gradient.data(), 1, param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param.size(), &a, bias_gradient.data(), 1, bias_param.data(), 1));
   }
-
-  Convolution::~Convolution() {}
 
 };  // namespace RuNet

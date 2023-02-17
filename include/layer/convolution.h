@@ -28,7 +28,7 @@ namespace RuNet {
 
     Convolution(const Convolution &conv) = delete;
 
-    ~Convolution();
+    ~Convolution() = default;
 
     void forward(const Tensor &tensor);
 
