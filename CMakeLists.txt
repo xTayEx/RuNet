@@ -15,9 +15,9 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
-link_directories(/usr/local/cuda/lib64)
 find_library(CUDNN_LIB cudnn)
 find_package(OpenCV REQUIRED)
+find_package(CUDAToolkit REQUIRED)
 
 add_executable(runet_test
         src/runet_img_conv_test.cpp
@@ -32,8 +32,8 @@ add_executable(runet_test
         src/cuda/cudnn_descriptor.cpp include/utils/check.h include/utils/utils.h src/utils/utils.cpp src/layer/pooling.cpp include/layer/pooling.h src/layer/linear.cpp include/layer/linear.h include/layer/softmax.cuh src/layer/softmax.cu include/layer/output.cuh src/layer/output.cu)
 
 target_include_directories(runet_test PUBLIC include)
-target_include_directories(runet_test PUBLIC /usr/local/cuda/include)
+target_include_directories(runet_test PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
-target_link_libraries(runet_test ${CUDNN_LIB} curand cublas ${OpenCV_LIBS})
+target_link_libraries(runet_test ${CUDNN_LIB} ${OpenCV_LIBS} CUDA::cudart CUDA::cublas CUDA::curand)
 set_target_properties(runet_test PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)
