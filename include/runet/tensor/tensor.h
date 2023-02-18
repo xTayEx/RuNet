@@ -20,7 +20,7 @@ namespace RuNet {
 
     Tensor(int n, int c, int h, int w, const std::vector<float> &ori_data);
 
-    Tensor(const cv::Mat&);
+    explicit Tensor(const cv::Mat&);
 
     Tensor(const Tensor &) = delete;
 

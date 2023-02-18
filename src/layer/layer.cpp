@@ -2,8 +2,6 @@
 
 namespace RuNet {
 
-  Layer::~Layer() {}
-
   Layer::Layer(float alpha, float momentum, float weight_decay) : m_learning_rate(alpha), m_momentum(momentum),
                                                                   m_weight_decay(weight_decay) {}
 

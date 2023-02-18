@@ -15,11 +15,11 @@ namespace RuNet {
 
     Pooling &operator=(const Pooling &) = delete;
 
-    void forward(const Tensor &tensor);
+    void forward(const Tensor &tensor) override;
 
-    void backward(const Tensor &tensor);
+    void backward(const Tensor &tensor) override;
 
-    void update();
+    void update() override;
 
   private:
     std::unique_ptr<PoolingDescriptor> pooling_desc;

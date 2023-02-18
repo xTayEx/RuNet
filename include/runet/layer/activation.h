@@ -12,9 +12,9 @@ class Activation : public Layer {
   Activation(const Activation&) = delete;
   ~Activation() = default;
 
-  void forward(const Tensor &tensor);
-  void backward(const Tensor &tensor);
-  void update();
+  void forward(const Tensor &tensor) override;
+  void backward(const Tensor &tensor) override;
+  void update() override;
 
  private:
   std::unique_ptr<ActivationDescriptor> activation_desc;

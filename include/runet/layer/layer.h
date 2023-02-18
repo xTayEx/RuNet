@@ -19,7 +19,7 @@ namespace RuNet {
   public:
     Layer(float alpha = 0.0f, float momentum = 0.5f, float weight_decay = 0.0f);
 
-    virtual ~Layer();
+    virtual ~Layer() = default;
 
     virtual void forward(const Tensor &tensor) = 0;
 
