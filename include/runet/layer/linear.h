@@ -1,8 +1,8 @@
 #ifndef _LINEAR_H
 #define _LINEAR_H
 
-#include "layer.h"
-#include "utils/gpu_operations.cuh"
+#include <runet/layer/layer.h>
+#include <runet/utils/gpu_operations.cuh>
 
 namespace RuNet {
   class Linear : public Layer {

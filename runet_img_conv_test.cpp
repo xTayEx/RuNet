@@ -1,7 +1,7 @@
-#include <tensor/tensor.h>
-#include <layer/convolution.h>
-#include <layer/softmax.cuh>
-#include <global/global.h>
+#include <runet/tensor/tensor.h>
+#include <runet/layer/convolution.h>
+#include <runet/layer/softmax.cuh>
+#include <runet/global/global.h>
 #include <vector>
 #include <opencv4/opencv2/opencv.hpp>
 

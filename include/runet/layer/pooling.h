@@ -1,8 +1,8 @@
 #ifndef _POOLING_H
 #define _POOLING_H
 
-#include "layer.h"
-#include "tensor/tensor.h"
+#include <runet/layer/layer.h>
+#include <runet/tensor/tensor.h>
 
 namespace RuNet {
   class Pooling : public Layer {

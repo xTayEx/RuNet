@@ -1,7 +1,7 @@
 #ifndef _ACTIVATION_H
 #define _ACTIVATION_H
 
-#include "layer.h"
+#include <runet/layer/layer.h>
 
 namespace RuNet {
 class Activation : public Layer {

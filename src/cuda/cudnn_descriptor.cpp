@@ -1,4 +1,4 @@
-#include "cuda/cudnn_descriptor.h"
+#include <runet/cuda/cudnn_descriptor.h>
 
 namespace RuNet {
   template<>

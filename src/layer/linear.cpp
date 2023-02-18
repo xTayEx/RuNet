@@ -1,7 +1,4 @@
-//
-// Created by xtayex on 2/11/23.
-//
-#include "layer/linear.h"
+#include <runet/layer/linear.h>
 
 namespace RuNet {
 

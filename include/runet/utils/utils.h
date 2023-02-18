@@ -1,7 +1,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include "tensor/tensor.h"
+#include <runet/tensor/tensor.h>
 #include <vector>
 #include <sstream>
 #include <iterator>

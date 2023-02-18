@@ -1,10 +1,10 @@
 #ifndef _TENSOR_H
 #define _TENSOR_H
 
-#include "cudnn.h"
-#include "utils/utils.h"
-#include "cuda/cudnn_descriptor.h"
-#include "cuda/cuda_memory.h"
+#include <cudnn.h>
+#include <runet/utils/utils.h>
+#include <runet/cuda/cudnn_descriptor.h>
+#include <runet/cuda/cuda_memory.h>
 #include <vector>
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/dnn/dnn.hpp>

@@ -1,4 +1,4 @@
-#include "layer/softmax.cuh"
+#include <runet/layer/softmax.cuh>
 
 namespace RuNet {
   __global__ void softmaxBackward(const float *label, int num_labels, int batch_size, float *diff) {

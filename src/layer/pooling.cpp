@@ -1,5 +1,5 @@
-#include "layer/pooling.h"
-#include "global/global.h"
+#include <runet/layer/pooling.h>
+#include <runet/global/global.h>
 
 namespace RuNet {
   Pooling::Pooling(int window_size, cudnnPoolingMode_t mode, int pad, int stride) {

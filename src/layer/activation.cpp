@@ -1,7 +1,6 @@
-#include "layer/activation.h"
-
-#include "global/global.h"
-#include "utils/check.h"
+#include <runet/layer/activation.h>
+#include <runet/global/global.h>
+#include <runet/utils/check.h>
 
 namespace RuNet {
 

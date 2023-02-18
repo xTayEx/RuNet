@@ -1,5 +1,5 @@
-#include "global/global.h"
-#include "layer/activation.h"
+#include <runet/global/global.h>
+#include <runet/layer/activation.h>
 #include <iostream>
 
 int main() {

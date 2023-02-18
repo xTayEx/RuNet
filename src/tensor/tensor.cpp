@@ -1,7 +1,6 @@
-#include "tensor/tensor.h"
+#include <runet/tensor/tensor.h>
 
 #include <iostream>
-#include <exception>
 #include <cuda_runtime.h>
 
 namespace RuNet {

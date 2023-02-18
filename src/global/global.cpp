@@ -1,4 +1,4 @@
-#include "global/global.h"
+#include <runet/global/global.h>
 
 namespace RuNet {
   cudnnHandle_t global_cudnn_handle;

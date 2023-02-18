@@ -1,9 +1,9 @@
 #ifndef _CONVOLUTION_H
 #define _CONVOLUTION_H
 
-#include "layer.h"
-#include "tensor/tensor.h"
-#include "cuda/cuda_memory.h"
+#include <runet/layer/layer.h>
+#include <runet/tensor/tensor.h>
+#include <runet/cuda/cuda_memory.h>
 
 namespace RuNet {
   class Convolution : public Layer {

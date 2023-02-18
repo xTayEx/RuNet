@@ -1,5 +1,5 @@
-#include <layer/softmax.cuh>
-#include <layer/output.cuh>
+#include <runet/layer/softmax.cuh>
+#include <runet/layer/output.cuh>
 
 namespace RuNet {
   template<>

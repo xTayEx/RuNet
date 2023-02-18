@@ -1,4 +1,4 @@
-#include "utils/gpu_operations.cuh"
+#include <runet/utils/gpu_operations.cuh>
 
 namespace RuNet {
 namespace Utils {

@@ -1,5 +1,5 @@
-#include "cuda/cuda_memory.h"
-#include "utils/check.h"
+#include <runet/cuda/cuda_memory.h>
+#include <runet/utils/check.h>
 
 namespace RuNet {
   CudaMemory::CudaMemory(size_t size) {

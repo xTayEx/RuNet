@@ -1,10 +1,10 @@
 #ifndef RUNET_OUTPUT_CUH
 #define RUNET_OUTPUT_CUH
 
-#include <cuda/cuda_memory.h>
-#include <tensor/tensor.h>
-#include <layer/softmax.cuh>
-#include <utils/constants.h>
+#include <runet/cuda/cuda_memory.h>
+#include <runet/tensor/tensor.h>
+#include <runet/layer/softmax.cuh>
+#include <runet/utils/constants.h>
 
 namespace RuNet {
   template<typename T>

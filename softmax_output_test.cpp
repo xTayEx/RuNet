@@ -1,7 +1,7 @@
-#include <layer/softmax.cuh>
-#include <layer/output.cuh>
-#include <global/global.h>
-#include <cuda/cuda_memory.h>
+#include <runet/layer/softmax.cuh>
+#include <runet/layer/output.cuh>
+#include <runet/global/global.h>
+#include <runet/cuda/cuda_memory.h>
 #include <vector>
 
 int main() {

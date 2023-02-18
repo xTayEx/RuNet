@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cuda_runtime.h>
 #include <curand.h>
-#include "utils/constants.h"
+#include <runet/utils/constants.h>
 
 namespace RuNet {
 namespace Utils {

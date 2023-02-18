@@ -8,10 +8,10 @@
 #include <iostream>
 #include <memory>
 
-#include "global/global.h"
-#include "tensor/tensor.h"
-#include "cuda/cuda_memory.h"
-#include "cuda/cudnn_descriptor.h"
+#include <runet/global/global.h>
+#include <runet/tensor/tensor.h>
+#include <runet/cuda/cuda_memory.h>
+#include <runet/cuda/cudnn_descriptor.h>
 
 namespace RuNet {
 

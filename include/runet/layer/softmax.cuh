@@ -1,9 +1,9 @@
 #ifndef RUNET_SOFTMAX_CUH
 #define RUNET_SOFTMAX_CUH
 
-#include <layer/layer.h>
-#include <cuda/cudnn_descriptor.h>
-#include <utils/constants.h>
+#include <runet/layer/layer.h>
+#include <runet/cuda/cudnn_descriptor.h>
+#include <runet/utils/constants.h>
 #include <cmath>
 
 namespace RuNet {
