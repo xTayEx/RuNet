@@ -13,6 +13,8 @@ namespace RuNet {
 
     Linear& operator=(const Linear&) = delete;
 
+    ~Linear() = default;
+
     void forward(const Tensor &tensor);
 
     void backward(const Tensor &tensor);

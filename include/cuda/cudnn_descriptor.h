@@ -70,30 +70,6 @@ namespace RuNet {
   }
   using PoolingDescriptor = DescriptorWrapper<cudnnPoolingDescriptor_t>;
 
-  template<>
-  DescriptorWrapper<cudnnTensorDescriptor_t>::~DescriptorWrapper() {
-    checkCudnn(cudnnDestroyTensorDescriptor(desc));
-  }
-
-  template<>
-  DescriptorWrapper<cudnnConvolutionDescriptor_t>::~DescriptorWrapper() {
-    checkCudnn(cudnnDestroyConvolutionDescriptor(desc));
-  }
-
-  template<>
-  DescriptorWrapper<cudnnFilterDescriptor_t>::~DescriptorWrapper() {
-    checkCudnn(cudnnDestroyFilterDescriptor(desc));
-  }
-
-  template<>
-  DescriptorWrapper<cudnnActivationDescriptor_t>::~DescriptorWrapper() {
-    checkCudnn(cudnnDestroyActivationDescriptor(desc));
-  }
-
-  template<>
-  DescriptorWrapper<cudnnPoolingDescriptor_t>::~DescriptorWrapper() {
-    checkCudnn(cudnnDestroyPoolingDescriptor(desc));
-  }
 };
 
 #endif // _CUDNN_DESCRIPTOR_H

@@ -40,9 +40,6 @@ namespace RuNet {
                                       dev_output.data()));
   }
 
-  Activation::~Activation() {}
-
-
   void Activation::backward(const Tensor &diff) {
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};

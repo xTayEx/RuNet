@@ -9,7 +9,7 @@ namespace RuNet {
   public:
     Pooling(int window_size, cudnnPoolingMode_t pool, int pad, int stride);
 
-    ~Pooling();
+    ~Pooling() = default;
 
     Pooling(const Pooling &pool) = delete;
 

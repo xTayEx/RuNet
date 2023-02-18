@@ -30,6 +30,15 @@ namespace RuNet {
     std::vector<float> get_output();
     // Layer *next_layer; // TODO: should be set by network builder
 
+    float getMLearningRate() const;
+
+    float getMMomentum() const;
+
+    float getMWeightDecay() const;
+
+    int getMBatchSize() const;
+
+  protected:
     float m_learning_rate;
     float m_momentum;
     float m_weight_decay;

@@ -1,6 +1,7 @@
-#include "tensor/tensor.h"
-#include "layer/convolution.h"
-#include "global/global.h"
+#include <tensor/tensor.h>
+#include <layer/convolution.h>
+#include <layer/softmax.cuh>
+#include <global/global.h>
 #include <vector>
 #include <opencv4/opencv2/opencv.hpp>
 

@@ -12,4 +12,20 @@ namespace RuNet {
     cudaMemcpy(ret.data(), dev_output.data(), dev_output.size() * sizeof(float), cudaMemcpyDeviceToHost);
     return ret;
   }
+
+  float Layer::getMLearningRate() const {
+    return m_learning_rate;
+  }
+
+  float Layer::getMMomentum() const {
+    return m_momentum;
+  }
+
+  float Layer::getMWeightDecay() const {
+    return m_weight_decay;
+  }
+
+  int Layer::getMBatchSize() const {
+    return m_batch_size;
+  }
 };  // namespace RuNet

@@ -10,7 +10,7 @@ class Activation : public Layer {
              cudnnNanPropagation_t prop,
              float coef);
   Activation(const Activation&) = delete;
-  ~Activation();
+  ~Activation() = default;
 
   void forward(const Tensor &tensor);
   void backward(const Tensor &tensor);
