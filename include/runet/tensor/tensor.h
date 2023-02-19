@@ -22,15 +22,15 @@ namespace RuNet {
 
     explicit Tensor(const cv::Mat &);
 
-    Tensor(const Tensor &) = delete;
+    Tensor(const Tensor &);
+
+    Tensor &operator=(const Tensor &);
 
     Tensor(Tensor&&) noexcept;
 
-    Tensor &operator=(const Tensor &) = delete;
-
     Tensor() = default;
 
-    ~Tensor();
+    ~Tensor() = default;
 
     std::tuple<int, int, int, int> getTensorInfo() const;
 
@@ -42,8 +42,8 @@ namespace RuNet {
     float *getTensorData() const;
 
   private:
-    std::unique_ptr<TensorDescriptor> desc;
-    std::unique_ptr<CudaMemory> data;
+    std::shared_ptr<TensorDescriptor> desc;
+    std::shared_ptr<CudaMemory> data;
     int _n;
     int _c;
     int _h;

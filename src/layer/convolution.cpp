@@ -55,7 +55,7 @@ namespace RuNet {
   }
 
   void Convolution::forward(const Tensor &tensor) {
-    input_tensor_p = &tensor;
+    m_input_tensor = tensor;
 
     cudnnDataType_t data_type;
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
@@ -153,7 +153,7 @@ namespace RuNet {
     int returned_algo_count{0};
     checkCudnn(cudnnGetConvolutionBackwardFilterAlgorithm_v7(
             global_cudnn_handle,
-            input_tensor_p->getTensorDescriptor(),
+            m_input_tensor.getTensorDescriptor(),
             diff.getTensorDescriptor(),
             conv_desc->getDescriptor(),
             kernel_desc->getDescriptor(),
@@ -164,7 +164,7 @@ namespace RuNet {
 
     checkCudnn(cudnnGetConvolutionBackwardFilterWorkspaceSize(
             global_cudnn_handle,
-            input_tensor_p->getTensorDescriptor(),
+            m_input_tensor.getTensorDescriptor(),
             diff.getTensorDescriptor(),
             conv_desc->getDescriptor(),
             kernel_desc->getDescriptor(),
@@ -174,8 +174,8 @@ namespace RuNet {
     checkCudnn(
             cudnnConvolutionBackwardFilter(global_cudnn_handle,
                                            a,
-                                           input_tensor_p->getTensorDescriptor(),
-                                           input_tensor_p->getTensorData(),
+                                           m_input_tensor.getTensorDescriptor(),
+                                           m_input_tensor.getTensorData(),
                                            diff.getTensorDescriptor(),
                                            diff.getTensorData(),
                                            conv_desc->getDescriptor(),
@@ -216,7 +216,7 @@ namespace RuNet {
                                             conv_bwd_data_workspace.data(),
                                             conv_bwd_data_workspace_size,
                                             b,
-                                            input_tensor_p->getTensorDescriptor(),
+                                            m_input_tensor.getTensorDescriptor(),
                                             diff_for_prev.data()));
   }
 

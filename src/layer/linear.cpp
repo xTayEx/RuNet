@@ -17,7 +17,7 @@ namespace RuNet {
   }
 
   void Linear::forward(const Tensor &tensor) {
-    input_tensor_p = &tensor;
+    m_input_tensor = tensor;
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
@@ -36,7 +36,7 @@ namespace RuNet {
 
     checkCublas(
             cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_T, in_features, out_features, m_batch_size, a,
-                           input_tensor_p->getTensorData(), in_features, diff.getTensorData(), out_features, b,
+                           m_input_tensor.getTensorData(), in_features, diff.getTensorData(), out_features, b,
                            param_gradient.data(), in_features));
 
     checkCublas(cublasSgemv_v2(global_cublas_handle, CUBLAS_OP_N, out_features, m_batch_size, a, diff.getTensorData(),

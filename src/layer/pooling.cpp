@@ -14,7 +14,7 @@ namespace RuNet {
   }
 
   void Pooling::forward(const Tensor &tensor) {
-    input_tensor_p = &tensor;
+    m_input_tensor = tensor;
     int output_n, output_c, output_h, output_w;
     checkCudnn(cudnnGetPooling2dForwardOutputDim(pooling_desc->getDescriptor(),
                                                  tensor.getTensorDescriptor(),
@@ -55,10 +55,10 @@ namespace RuNet {
                                     dev_output.data(),
                                     diff.getTensorDescriptor(),
                                     diff.getTensorData(),
-                                    input_tensor_p->getTensorDescriptor(),
-                                    input_tensor_p->getTensorData(),
+                                    m_input_tensor.getTensorDescriptor(),
+                                    m_input_tensor.getTensorData(),
                                     b,
-                                    input_tensor_p->getTensorDescriptor(),
+                                    m_input_tensor.getTensorDescriptor(),
                                     diff_for_prev.data()));
   }
 

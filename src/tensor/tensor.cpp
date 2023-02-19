@@ -9,10 +9,10 @@ namespace RuNet {
     _c = c;
     _h = h;
     _w = w;
-    desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w);
+    desc = std::make_shared<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w);
 
     int data_size = n * c * h * w * sizeof(float);
-    data = std::make_unique<CudaMemory>(data_size);
+    data = std::make_shared<CudaMemory>(data_size);
 
     if (ori_data != nullptr) {
       data->memcpy(ori_data, data_size, cudaMemcpyHostToDevice);
@@ -21,8 +21,6 @@ namespace RuNet {
     }
   }
 
-
-  Tensor::~Tensor() {}
 
   std::tuple<int, int, int, int> Tensor::getTensorInfo() const {
     return {_n, _c, _h, _w};
@@ -43,11 +41,11 @@ namespace RuNet {
     _c = 3;
     _h = img.rows;
     _w = img.cols;
-    desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
+    desc = std::make_shared<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
 
     cv::Mat reshaped_img = cv::dnn::blobFromImage(img);
     int data_size = _n * _c * _h * _w;
-    data = std::make_unique<CudaMemory>(data_size);
+    data = std::make_shared<CudaMemory>(data_size);
     data->memcpy(reshaped_img.ptr<float>(0), data_size * sizeof(float), cudaMemcpyHostToDevice);
   }
 
@@ -56,8 +54,8 @@ namespace RuNet {
     _c = c;
     _h = h;
     _w = w;
-    desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
-    data = std::make_unique<CudaMemory>(ori_data);
+    desc = std::make_shared<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
+    data = std::make_shared<CudaMemory>(ori_data);
   }
 
   Tensor::Tensor(int n, int c, int h, int w, const std::vector<float> &ori_data) {
@@ -65,8 +63,8 @@ namespace RuNet {
     _c = c;
     _h = h;
     _w = w;
-    desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
-    data = std::make_unique<CudaMemory>(ori_data);
+    desc = std::make_shared<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
+    data = std::make_shared<CudaMemory>(ori_data);
   }
 
   cv::Mat Tensor::convert_to_png_image() {
@@ -105,6 +103,27 @@ namespace RuNet {
     data = std::move(other.data);
     other.desc = nullptr;
     other.data = nullptr;
+  }
+
+  Tensor::Tensor(const Tensor &other) {
+    _n = other._n;
+    _c = other._c;
+    _h = other._h;
+    _w = other._w;
+    desc = other.desc;
+    data = other.data;
+  }
+
+  Tensor &Tensor::operator=(const Tensor &other) {
+    if (this != &other) {
+      _n = other._n;
+      _c = other._c;
+      _h = other._h;
+      _w = other._w;
+      desc = other.desc;
+      data = other.data;
+    }
+    return *this;
   }
 
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {

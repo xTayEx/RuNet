@@ -1,5 +1,5 @@
-#ifndef _CUDAMEMORY_H
-#define _CUDAMEMORY_H
+#ifndef RUNET_CUDAMEMORY_H
+#define RUNET_CUDAMEMORY_H
 
 #include <cstddef>
 #include <cuda_runtime.h>
@@ -8,13 +8,15 @@
 namespace RuNet {
   class CudaMemory {
   public:
-    CudaMemory(size_t size);
+    explicit CudaMemory(size_t size);
 
     CudaMemory(const CudaMemory &);
 
+    CudaMemory& operator=(const CudaMemory &) = delete;
+
     CudaMemory(CudaMemory &&) noexcept;
 
-    CudaMemory(const std::vector<float> &);
+    explicit CudaMemory(const std::vector<float> &);
 
     CudaMemory();
 
@@ -37,4 +39,4 @@ namespace RuNet {
 }
 
 
-#endif // _CUDAMEMORY_H
+#endif // RUNET_CUDAMEMORY_H

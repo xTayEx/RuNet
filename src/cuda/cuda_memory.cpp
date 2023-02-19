@@ -56,4 +56,5 @@ namespace RuNet {
   void CudaMemory::memcpy(const void *src, size_t byte_count, cudaMemcpyKind kind) {
     checkCuda(cudaMemcpy(this->memory, src, byte_count, kind));
   }
+
 }

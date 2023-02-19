@@ -33,4 +33,9 @@ namespace RuNet {
     // move ret from left to right
     return std::move(ret);
   }
+
+  Tensor Layer::getDiff() {
+    int diff_n, diff_c, diff_h, diff_w;
+
+  }
 };  // namespace RuNet

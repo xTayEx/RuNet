@@ -28,6 +28,8 @@ namespace RuNet {
     virtual void update() = 0;
 
     Tensor getOutput();
+
+    Tensor getDiff();
     // Layer *next_layer; // TODO: should be set by network builder
 
     float getMLearningRate() const;
@@ -55,7 +57,7 @@ namespace RuNet {
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
-    const Tensor *input_tensor_p;
+    Tensor m_input_tensor;
 
   };
 

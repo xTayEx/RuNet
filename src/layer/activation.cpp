@@ -11,7 +11,7 @@ namespace RuNet {
   }
 
   void Activation::forward(const Tensor &tensor) {
-    input_tensor_p = &tensor;
+    m_input_tensor = tensor;
     // get input size
     cudnnDataType_t data_type;
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
@@ -49,10 +49,10 @@ namespace RuNet {
                                        dev_output.data(),
                                        output_desc->getDescriptor(),
                                        diff.getTensorData(),
-                                       input_tensor_p->getTensorDescriptor(),
-                                       input_tensor_p->getTensorData(),
+                                       m_input_tensor.getTensorDescriptor(),
+                                       m_input_tensor.getTensorData(),
                                        beta,
-                                       input_tensor_p->getTensorDescriptor(),
+                                       m_input_tensor.getTensorDescriptor(),
                                        diff_for_prev.data()));
   }
 
