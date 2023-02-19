@@ -17,6 +17,7 @@ namespace RuNet {
                 int pad_w = 1,
                 int stride = 1,
                 int dilation = 1);
+
     /* RULE OF THREE
       If a class requires a user-defined destructor, a user-defined copy constructor,
       or a user-defined copy assignment operator, it almost certainly requires all three.

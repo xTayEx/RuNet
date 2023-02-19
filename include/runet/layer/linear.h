@@ -9,9 +9,9 @@ namespace RuNet {
   public:
     Linear(int in_features, int out_features);
 
-    Linear(const Linear&) = delete;
+    Linear(const Linear &) = delete;
 
-    Linear& operator=(const Linear&) = delete;
+    Linear &operator=(const Linear &) = delete;
 
     ~Linear() = default;
 
@@ -20,6 +20,7 @@ namespace RuNet {
     void backward(const Tensor &tensor) override;
 
     void update() override;
+
   private:
     int in_features;
     int out_features;

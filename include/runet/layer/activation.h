@@ -4,21 +4,25 @@
 #include <runet/layer/layer.h>
 
 namespace RuNet {
-class Activation : public Layer {
- public:
-  Activation(cudnnActivationMode_t mode,
-             cudnnNanPropagation_t prop,
-             float coef);
-  Activation(const Activation&) = delete;
-  ~Activation() = default;
+  class Activation : public Layer {
+  public:
+    Activation(cudnnActivationMode_t mode,
+               cudnnNanPropagation_t prop,
+               float coef);
 
-  void forward(const Tensor &tensor) override;
-  void backward(const Tensor &tensor) override;
-  void update() override;
+    Activation(const Activation &) = delete;
 
- private:
-  std::unique_ptr<ActivationDescriptor> activation_desc;
-};
+    ~Activation() = default;
+
+    void forward(const Tensor &tensor) override;
+
+    void backward(const Tensor &tensor) override;
+
+    void update() override;
+
+  private:
+    std::unique_ptr<ActivationDescriptor> activation_desc;
+  };
 
 };  // namespace RuNet
 

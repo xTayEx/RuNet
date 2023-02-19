@@ -20,12 +20,11 @@ namespace RuNet {
 
     Tensor(int n, int c, int h, int w, const std::vector<float> &ori_data);
 
-    explicit Tensor(const cv::Mat&);
+    explicit Tensor(const cv::Mat &);
 
     Tensor(const Tensor &) = delete;
 
-    // TODO implement move semantics
-    // Tensor(Tensor&&);
+    Tensor(Tensor&&) noexcept;
 
     Tensor &operator=(const Tensor &) = delete;
 

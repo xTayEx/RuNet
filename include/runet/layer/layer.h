@@ -17,7 +17,7 @@ namespace RuNet {
 
   class Layer {
   public:
-    Layer(float alpha = 0.0f, float momentum = 0.5f, float weight_decay = 0.0f);
+    explicit Layer(float alpha = 0.0f, float momentum = 0.5f, float weight_decay = 0.0f);
 
     virtual ~Layer() = default;
 
@@ -27,7 +27,7 @@ namespace RuNet {
 
     virtual void update() = 0;
 
-    std::vector<float> get_output();
+    virtual Tensor get_output() = 0;
     // Layer *next_layer; // TODO: should be set by network builder
 
     float getMLearningRate() const;

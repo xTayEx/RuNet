@@ -34,7 +34,7 @@ namespace RuNet {
 
   cudnnTensorDescriptor_t Tensor::getTensorDescriptor() const { return desc->getDescriptor(); }
 
-  float * Tensor::getTensorData() const {
+  float *Tensor::getTensorData() const {
     if (!data) {
       std::cerr << "data in this tensor is nullptr!" << std::endl;
       exit(1);
@@ -42,7 +42,7 @@ namespace RuNet {
     return data->data();
   }
 
-  Tensor::Tensor(const cv::Mat& img) {
+  Tensor::Tensor(const cv::Mat &img) {
     _n = 1;
     _c = 3;
     _h = img.rows;
@@ -86,7 +86,8 @@ namespace RuNet {
       for (int cur_row = 0; cur_row < h; ++cur_row) {
         for (int cur_col = 0; cur_col < w; ++cur_col) {
           for (int channel = 0; channel < c; ++channel) {
-            img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = move_from_device[batch * n + channel * h * w + cur_row * w + cur_col];
+            img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = move_from_device[batch * n + channel * h * w +
+                                                                                cur_row * w + cur_col];
 //            std::cout << img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] << std::endl;
           }
         }
@@ -97,6 +98,17 @@ namespace RuNet {
 
     img.convertTo(img, CV_8UC3);
     return img;
+  }
+
+  Tensor::Tensor(Tensor &&other) noexcept {
+    _n = other._n;
+    _c = other._c;
+    _h = other._n;
+    _w = other._w;
+    desc = std::move(other.desc);
+    data = std::move(other.data);
+    other.desc = nullptr;
+    other.data = nullptr;
   }
 
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {

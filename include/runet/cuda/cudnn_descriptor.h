@@ -11,9 +11,13 @@ namespace RuNet {
   public:
     template<typename ...ARGS>
     explicit DescriptorWrapper(ARGS ...args);
+
     DescriptorWrapper() = delete;
-    DescriptorWrapper(const DescriptorWrapper&) = delete;
-    DescriptorWrapper(DescriptorWrapper&&);
+
+    DescriptorWrapper(const DescriptorWrapper &) = delete;
+
+    DescriptorWrapper(DescriptorWrapper &&);
+
     ~DescriptorWrapper();
 
     const T &getDescriptor() {
@@ -36,6 +40,7 @@ namespace RuNet {
     checkCudnn(cudnnCreateTensorDescriptor(&desc));
     checkCudnn(cudnnSetTensor4dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+
   using TensorDescriptor = DescriptorWrapper<cudnnTensorDescriptor_t>;
 
   template<>
@@ -44,6 +49,7 @@ namespace RuNet {
     checkCudnn(cudnnCreateConvolutionDescriptor(&desc));
     checkCudnn(cudnnSetConvolution2dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+
   using ConvolutionDescriptor = DescriptorWrapper<cudnnConvolutionDescriptor_t>;
 
   template<>
@@ -52,6 +58,7 @@ namespace RuNet {
     checkCudnn(cudnnCreateFilterDescriptor(&desc));
     checkCudnn(cudnnSetFilter4dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+
   using KernelDescriptor = DescriptorWrapper<cudnnFilterDescriptor_t>;
 
   template<>
@@ -60,6 +67,7 @@ namespace RuNet {
     checkCudnn(cudnnCreateActivationDescriptor(&desc));
     checkCudnn(cudnnSetActivationDescriptor(desc, std::forward<ARGS>(args)...));
   }
+
   using ActivationDescriptor = DescriptorWrapper<cudnnActivationDescriptor_t>;
 
   template<>
@@ -68,6 +76,7 @@ namespace RuNet {
     checkCudnn(cudnnCreatePoolingDescriptor(&desc));
     checkCudnn(cudnnSetPooling2dDescriptor(desc, std::forward<ARGS>(args)...));
   }
+
   using PoolingDescriptor = DescriptorWrapper<cudnnPoolingDescriptor_t>;
 
 };

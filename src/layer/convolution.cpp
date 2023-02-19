@@ -42,9 +42,9 @@ namespace RuNet {
     Utils::setGpuNormalValue(param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
 
     // bias initialization
-    bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1,out_channels, 1, 1);
+    bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
     int bias_param_size = out_channels;
-    bias_param.alloc(bias_param_size );
+    bias_param.alloc(bias_param_size);
     bias_param.memset(0, bias_param_size * sizeof(float));
     bias_gradient.alloc(bias_param_size);
     bias_gradient.memset(0, bias_param_size * sizeof(float));
@@ -224,7 +224,8 @@ namespace RuNet {
   void Convolution::update() {
     float a = 1.0f - m_weight_decay;
     checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), &a, param_gradient.data(), 1, param.data(), 1));
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param.size(), &a, bias_gradient.data(), 1, bias_param.data(), 1));
+    checkCublas(
+            cublasSaxpy_v2(global_cublas_handle, bias_param.size(), &a, bias_gradient.data(), 1, bias_param.data(), 1));
   }
 
 };  // namespace RuNet

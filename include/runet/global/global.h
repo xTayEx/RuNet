@@ -5,8 +5,8 @@
 #include <cublas_v2.h>
 
 namespace RuNet {
-extern cudnnHandle_t global_cudnn_handle;
-extern cublasHandle_t global_cublas_handle;
+  extern cudnnHandle_t global_cudnn_handle;
+  extern cublasHandle_t global_cublas_handle;
 
 };  // namespace RuNet
 

@@ -10,11 +10,11 @@ namespace RuNet {
   public:
     CudaMemory(size_t size);
 
-    CudaMemory(const CudaMemory&);
+    CudaMemory(const CudaMemory &);
 
-    CudaMemory(CudaMemory&&);
+    CudaMemory(CudaMemory &&) noexcept;
 
-    CudaMemory(const std::vector<float>&);
+    CudaMemory(const std::vector<float> &);
 
     CudaMemory();
 
@@ -28,7 +28,7 @@ namespace RuNet {
 
     void memset(int value, size_t byte_count);
 
-    void memcpy(const void* src, size_t byte_count, cudaMemcpyKind kind);
+    void memcpy(const void *src, size_t byte_count, cudaMemcpyKind kind);
 
   private:
     float *memory;

@@ -17,7 +17,7 @@ namespace RuNet {
     checkCuda(cudaMemcpy(memory, other.memory, this->_size * sizeof(float), cudaMemcpyDeviceToDevice));
   }
 
-  CudaMemory::CudaMemory(CudaMemory &&other) {
+  CudaMemory::CudaMemory(CudaMemory &&other) noexcept {
     this->_size = other._size;
     this->memory = other.memory;
     other._size = 0;

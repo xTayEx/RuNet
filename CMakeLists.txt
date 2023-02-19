@@ -24,7 +24,7 @@ find_package(OpenCV REQUIRED)
 find_package(CUDAToolkit REQUIRED)
 
 #add_executable(runet_test runet_img_conv_test.cpp ${SRC_FILES} ${INCLUDE_FILES})
-add_executable(${EXECUTABLE_NAME} softmax_output_test.cpp ${SRC_FILES} ${INCLUDE_FILES})
+add_executable(${EXECUTABLE_NAME} softmax_output_test.cpp ${SRC_FILES} ${INCLUDE_FILES} src/network/network.cpp include/runet/network/network.h)
 
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC include)

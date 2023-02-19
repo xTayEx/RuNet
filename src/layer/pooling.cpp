@@ -17,11 +17,11 @@ namespace RuNet {
     input_tensor_p = &tensor;
     int output_n, output_c, output_h, output_w;
     checkCudnn(cudnnGetPooling2dForwardOutputDim(pooling_desc->getDescriptor(),
-                                              tensor.getTensorDescriptor(),
-                                                         &output_n,
-                                                         &output_c,
-                                                         &output_h,
-                                                         &output_w));
+                                                 tensor.getTensorDescriptor(),
+                                                 &output_n,
+                                                 &output_c,
+                                                 &output_h,
+                                                 &output_w));
     output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW,
                                                      CUDNN_DATA_FLOAT,
                                                      output_n,
@@ -46,8 +46,8 @@ namespace RuNet {
   }
 
   void Pooling::backward(const Tensor &diff) {
-     float a[1] = {1.0f};
-     float b[1] = {0.0f};
+    float a[1] = {1.0f};
+    float b[1] = {0.0f};
     checkCudnn(cudnnPoolingBackward(global_cudnn_handle,
                                     pooling_desc->getDescriptor(),
                                     a,
