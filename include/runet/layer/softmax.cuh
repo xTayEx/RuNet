@@ -21,6 +21,7 @@ namespace RuNet {
     void backward(const Tensor &tensor) override;
 
     void update() override;
+
   private:
     int _n;
     int _c;

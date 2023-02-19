@@ -6,8 +6,11 @@ namespace RuNet {
     std::copy(layers.begin(), layers.end(), m_layers.begin());
   }
 
-  void Network::forward(const Tensor &init_input) {
-    m_layers[0]->forward(init_input);
-    m_layers[0]->get_output();
+  RuNet::Tensor Network::forward(const Tensor &input_tensor, size_t layer_idx) {
+    if (layer_idx >= m_layers.size()) {
+      return m_layers.back()->getOutput();
+    }
+    m_layers[layer_idx]->forward(input_tensor);
+    Network::forward(m_layers[layer_idx]->getOutput(), layer_idx + 1);
   }
 } // RuNet

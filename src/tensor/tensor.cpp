@@ -21,15 +21,11 @@ namespace RuNet {
     }
   }
 
-  Tensor::Tensor() {}
-
 
   Tensor::~Tensor() {}
 
-  void Tensor::getTensorInfo(
-          cudnnDataType_t *data_type, int *_n, int *_c, int *_h, int *_w) const {
-    int _;
-    cudnnGetTensor4dDescriptor(desc->getDescriptor(), data_type, _n, _c, _h, _w, &_, &_, &_, &_);
+  std::tuple<int, int, int, int> Tensor::getTensorInfo() const {
+    return {_n, _c, _h, _w};
   }
 
   cudnnTensorDescriptor_t Tensor::getTensorDescriptor() const { return desc->getDescriptor(); }
@@ -112,9 +108,8 @@ namespace RuNet {
   }
 
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {
-    int n, c, h, w;
     cudnnDataType_t _;
-    tensor.getTensorInfo(&_, &n, &c, &h, &w);
+    auto [n, c, h, w] = tensor.getTensorInfo();
 
     std::vector<float> tensor_data(n * c * h * w);
     cudaMemcpy(tensor_data.data(), tensor.getTensorData(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost);

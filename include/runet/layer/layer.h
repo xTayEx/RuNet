@@ -27,7 +27,7 @@ namespace RuNet {
 
     virtual void update() = 0;
 
-    virtual Tensor get_output() = 0;
+    Tensor getOutput();
     // Layer *next_layer; // TODO: should be set by network builder
 
     float getMLearningRate() const;

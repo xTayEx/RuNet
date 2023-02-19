@@ -14,8 +14,7 @@ namespace RuNet {
 
   void Softmax::forward(const Tensor &tensor) {
     cudnnDataType_t data_type;
-    int n, c, h, w;
-    tensor.getTensorInfo(&data_type, &n, &c, &h, &w);
+    auto [n, c, h, w] = tensor.getTensorInfo();
     _n = n;
     _c = c;
     _h = h;

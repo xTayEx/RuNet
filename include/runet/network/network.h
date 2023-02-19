@@ -16,7 +16,7 @@ namespace RuNet {
     Network &operator=(const Network &) = delete;
 
     // user can define custom forward behavior by deriving `Network` class
-    virtual void forward(const Tensor &);
+    virtual RuNet::Tensor forward(const Tensor &input_tensor, size_t layer_idx = 0);
 
   private:
     std::vector<Layer *> m_layers;

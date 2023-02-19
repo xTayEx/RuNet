@@ -36,7 +36,6 @@ namespace RuNet {
 
     void update() override;
 
-
   private:
     cudnnConvolutionFwdAlgo_t conv_fwd_algo;
     cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo;

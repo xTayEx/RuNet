@@ -10,8 +10,8 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_MAKE_PROGRAM /usr/bin/ninja)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CUDA_STANDARD 14)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 set(EXECUTABLE_NAME softmax_output_test)
@@ -24,7 +24,7 @@ find_package(OpenCV REQUIRED)
 find_package(CUDAToolkit REQUIRED)
 
 #add_executable(runet_test runet_img_conv_test.cpp ${SRC_FILES} ${INCLUDE_FILES})
-add_executable(${EXECUTABLE_NAME} softmax_output_test.cpp ${SRC_FILES} ${INCLUDE_FILES} src/network/network.cpp include/runet/network/network.h)
+add_executable(${EXECUTABLE_NAME} descriptor_wrapper_test.cpp ${SRC_FILES} ${INCLUDE_FILES})
 
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC include)

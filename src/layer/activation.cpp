@@ -14,8 +14,7 @@ namespace RuNet {
     input_tensor_p = &tensor;
     // get input size
     cudnnDataType_t data_type;
-    int input_n, input_c, input_h, input_w;
-    tensor.getTensorInfo(&data_type, &input_n, &input_c, &input_h, &input_w);
+    auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     size_t input_size = input_n * input_c * input_w * input_h * sizeof(float);
 
     // create output descriptor

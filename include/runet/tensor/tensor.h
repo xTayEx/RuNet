@@ -28,12 +28,11 @@ namespace RuNet {
 
     Tensor &operator=(const Tensor &) = delete;
 
-    Tensor();
+    Tensor() = default;
 
     ~Tensor();
 
-    void getTensorInfo(
-            cudnnDataType_t *data_type, int *_n, int *_c, int *_h, int *_w) const;
+    std::tuple<int, int, int, int> getTensorInfo() const;
 
     cudnnTensorDescriptor_t getTensorDescriptor() const;
 

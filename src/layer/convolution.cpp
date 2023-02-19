@@ -58,8 +58,7 @@ namespace RuNet {
     input_tensor_p = &tensor;
 
     cudnnDataType_t data_type;
-    int input_n, input_c, input_h, input_w;
-    tensor.getTensorInfo(&data_type, &input_n, &input_c, &input_h, &input_w);
+    auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
 
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};
