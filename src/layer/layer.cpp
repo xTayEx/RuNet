@@ -31,11 +31,12 @@ namespace RuNet {
     output_desc->getDescriptorInfo(&output_n, &output_c, &output_h, &output_w);
     Tensor ret(output_n, output_c, output_h, output_w, dev_output);
     // move ret from left to right
-    return std::move(ret);
+    return ret;
   }
 
   Tensor Layer::getDiff() {
-    int diff_n, diff_c, diff_h, diff_w;
-
+    auto [diff_n, diff_c, diff_h, diff_w] = m_input_tensor.getTensorInfo();
+    Tensor ret(diff_n, diff_c, diff_h, diff_w, diff_for_prev);
+    return ret;
   }
 };  // namespace RuNet

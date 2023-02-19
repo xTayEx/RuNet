@@ -11,6 +11,10 @@ namespace RuNet {
   }
 
   void Activation::forward(const Tensor &tensor) {
+    // Use copy constructor to back up the input tensor. `data` in a Tensor object, which may means so
+    // many data in gpu memory, is managed by a std::shared_ptr. Therefore, copying a Tensor object
+    // won't cause performance loss. It's just some assignment of int and shared_ptr. Refer to
+    // Tensor.cpp for more information.
     m_input_tensor = tensor;
     // get input size
     cudnnDataType_t data_type;
