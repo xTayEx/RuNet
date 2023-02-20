@@ -25,6 +25,8 @@ namespace RuNet {
 
     virtual void backward(const Tensor &tensor) = 0;
 
+    virtual void backward_when_last_layer(const Tensor &labels) {}
+
     virtual void update() = 0;
 
     Tensor getOutput();
@@ -32,13 +34,13 @@ namespace RuNet {
     Tensor getDiff();
     // Layer *next_layer; // TODO: should be set by network builder
 
-    float getMLearningRate() const;
+    [[nodiscard]] float getMLearningRate() const;
 
-    float getMMomentum() const;
+    [[nodiscard]] float getMMomentum() const;
 
-    float getMWeightDecay() const;
+    [[nodiscard]] float getMWeightDecay() const;
 
-    int getMBatchSize() const;
+    [[nodiscard]] int getMBatchSize() const;
 
   protected:
     float m_learning_rate;

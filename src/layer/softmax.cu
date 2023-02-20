@@ -31,9 +31,9 @@ namespace RuNet {
 
   void Softmax::update() {}
 
-  void Softmax::init_backward(const Tensor &labels, int batch_size) {
+  void Softmax::backward_when_last_layer(const Tensor &labels) {
     auto [n, c, h, w] = labels.getTensorInfo();
     int num_labels = n * c * h * w;
-    softmaxBackward<<<std::ceil((1.0f * batch_size)) / (1.0f * Constants::CudaBandWidth), Constants::CudaBandWidth>>>(labels.getTensorData(),  num_labels, batch_size, dev_output.data());
+    softmaxBackward<<<std::ceil((1.0f * m_batch_size)) / (1.0f * Constants::CudaBandWidth), Constants::CudaBandWidth>>>(labels.getTensorData(),  num_labels, m_batch_size, dev_output.data());
   }
 }

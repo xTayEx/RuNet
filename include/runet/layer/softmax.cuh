@@ -22,7 +22,7 @@ namespace RuNet {
 
     void update() override;
 
-    void init_backward(const Tensor &labels, int batch_size);
+    void backward_when_last_layer(const Tensor& labels) override;
 
   private:
     int _n;
