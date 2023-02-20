@@ -22,6 +22,8 @@ namespace RuNet {
 
     void update() override;
 
+    void init_backward(const Tensor &labels, int batch_size);
+
   private:
     int _n;
     int _c;
