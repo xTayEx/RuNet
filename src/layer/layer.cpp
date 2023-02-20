@@ -26,7 +26,7 @@ namespace RuNet {
    * return a temporary Tensor instance in a function is to return it by value,
    * using a move constructor.
    */
-  Tensor Layer::getOutput() {
+   Tensor Layer::getOutput() {
     int output_n, output_c, output_h, output_w;
     output_desc->getDescriptorInfo(&output_n, &output_c, &output_h, &output_w);
     Tensor ret(output_n, output_c, output_h, output_w, dev_output);

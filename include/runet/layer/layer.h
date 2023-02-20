@@ -25,13 +25,11 @@ namespace RuNet {
 
     virtual void backward(const Tensor &tensor) = 0;
 
-    virtual void backward_when_last_layer(const Tensor &labels) {}
-
     virtual void update() = 0;
 
-    Tensor getOutput();
+    [[nodiscard]] Tensor getOutput();
 
-    Tensor getDiff();
+    [[nodiscard]] Tensor getDiff();
     // Layer *next_layer; // TODO: should be set by network builder
 
     [[nodiscard]] float getMLearningRate() const;
@@ -60,6 +58,8 @@ namespace RuNet {
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
     Tensor m_input_tensor;
+
+    virtual void backward_when_last_layer(const Tensor &labels) {}
 
   };
 

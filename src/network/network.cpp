@@ -2,13 +2,14 @@
 
 namespace RuNet {
 
-  Network::Network(const std::vector<Layer *> &layers, const Tensor &labels, int batch_size) {
+  Network::Network(const std::vector<Layer *> &layers, const Tensor &labels) {
     m_labels = labels;
-    m_batch_size = batch_size;
     std::copy(layers.begin(), layers.end(), m_layers.begin());
   }
 
   RuNet::Tensor Network::forward(const Tensor &input) {
+    auto [_batch_size, _c, _h, _w] = input.getTensorInfo();
+    m_batch_size = _batch_size;
     Tensor _input = input;
     for (auto iter = m_layers.begin(); iter != m_layers.end(); ++iter) {
       (*iter)->forward(_input);
@@ -24,7 +25,7 @@ namespace RuNet {
       throw std::runtime_error("dynamic_cast error in void Network::backward()");
     }
 
-    last_layer->init_backward(m_labels, m_batch_size);
+    last_layer->backward_when_last_layer(m_labels);
     Tensor _diff = last_layer->getDiff();
 
     for (auto iter = m_layers.rbegin() + 1; iter != m_layers.rend(); ++iter) {
