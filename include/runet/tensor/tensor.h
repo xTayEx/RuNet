@@ -1,8 +1,7 @@
-#ifndef _TENSOR_H
-#define _TENSOR_H
+#ifndef RUNET_TENSOR_H
+#define RUNET_TENSOR_H
 
 #include <cudnn.h>
-#include <runet/utils/utils.h>
 #include <runet/cuda/cudnn_descriptor.h>
 #include <runet/cuda/cuda_memory.h>
 #include <vector>
@@ -53,4 +52,4 @@ namespace RuNet {
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor);
 }  // namespace RuNet
 
-#endif
+#endif // RUNET_TENSOR_H

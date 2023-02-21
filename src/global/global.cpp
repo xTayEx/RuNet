@@ -11,6 +11,6 @@ namespace RuNet {
 
   void destroy_context() {
     cudnnDestroy(global_cudnn_handle);
-    cublasDestroy(global_cublas_handle);
+    cublasDestroy_v2(global_cublas_handle);
   }
-};
+}
