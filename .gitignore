@@ -44,3 +44,4 @@
 .local-history
 src/.local-history
 compile_commands.json
+./data/

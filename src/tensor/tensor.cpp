@@ -67,22 +67,35 @@ namespace RuNet {
     data = std::make_shared<CudaMemory>(ori_data);
   }
 
-  cv::Mat Tensor::convert_to_png_image() {
+  cv::Mat Tensor::convert_to_opencv_image(int image_type) {
     int n, c, h, w;
     h = _h;
     w = _w;
     n = _n;
     c = _c;
-    cv::Mat img(h, w, CV_32FC3);
+    int init_type, num_channel;
+    if (image_type == CV_8UC3) {
+      init_type = CV_32FC3;
+      num_channel = 3;
+    } else if (image_type == CV_8UC1) {
+      init_type = CV_32FC1;
+      num_channel = 1;
+    } else {
+      throw std::runtime_error(fmt::format("Unknown image type: {}", image_type));
+    }
+    cv::Mat img(h, w, init_type);
     std::vector<float> move_from_device(n * c * h * w);
     checkCuda(cudaMemcpy(move_from_device.data(), data->data(), n * c * h * w * sizeof(float), cudaMemcpyDeviceToHost));
     for (int batch = 0; batch < n; ++batch) {
       for (int cur_row = 0; cur_row < h; ++cur_row) {
         for (int cur_col = 0; cur_col < w; ++cur_col) {
           for (int channel = 0; channel < c; ++channel) {
-            img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = move_from_device[batch * n + channel * h * w +
-                                                                                cur_row * w + cur_col];
-//            std::cout << img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] << std::endl;
+            float val = move_from_device[batch * (c * h * w) + channel * h * w + cur_row * w + cur_col];
+            if (num_channel == 3) {
+              img.at<cv::Vec3f>(cur_row, cur_col)[2 - channel] = val;
+            } else {
+              img.at<float>(cur_row, cur_col) = val;
+            }
           }
         }
       }
@@ -90,7 +103,7 @@ namespace RuNet {
     cv::threshold(img, img, 0.0f, 0.0f, cv::THRESH_TOZERO);
     cv::normalize(img, img, 0.0f, 255.0f, cv::NORM_MINMAX);
 
-    img.convertTo(img, CV_8UC3);
+    img.convertTo(img, image_type);
     return img;
   }
 
@@ -137,10 +150,10 @@ namespace RuNet {
       std::cout << "[ ";
       for (int channel = 0; channel < c; ++channel) {
         std::cout << "[ ";
-        for (int x = 0; x < w; ++x) {
+        for (int cur_row = 0; cur_row < h; ++cur_row) {
           std::cout << "[ ";
-          for (int y = 0; y < h; ++y) {
-            std::cout << tensor_data[batch * n + c * channel + x * w + y] << ", ";
+          for (int cur_col = 0; cur_col < w; ++cur_col) {
+            std::cout << tensor_data[batch * (c * h * w) + channel * (h * w) + cur_row * w + cur_col] << ", ";
           }
           std::cout << " ] " << std::endl;
         }

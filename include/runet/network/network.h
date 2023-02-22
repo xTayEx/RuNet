@@ -18,7 +18,7 @@ namespace RuNet {
     Network &operator=(const Network &) = delete;
 
     // user can define custom forward behavior by deriving `Network` class
-    virtual RuNet::Tensor forward(const Tensor &input_tensor);
+    virtual void forward(const Tensor &input);
 
     // default backward assume that the network's hierarchy is layer-structured, and
     // the last layer is a softmax layer.

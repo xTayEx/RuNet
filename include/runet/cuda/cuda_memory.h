@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cuda_runtime.h>
 #include <vector>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 namespace RuNet {
   class CudaMemory {

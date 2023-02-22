@@ -36,7 +36,7 @@ namespace RuNet {
     cudnnTensorDescriptor_t getTensorDescriptor() const;
 
     // convert a single-batch tensor to a png::image
-    cv::Mat convert_to_png_image();
+    cv::Mat convert_to_opencv_image(int image_type);
 
     float *getTensorData() const;
 

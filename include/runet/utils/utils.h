@@ -4,9 +4,11 @@
 #include <runet/tensor/tensor.h>
 #include <vector>
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <exception>
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 
 namespace RuNet {
   enum class IDX_DATA_TYPE: char {
@@ -17,28 +19,17 @@ namespace RuNet {
   };
 
   template<typename T>
-  T msb2lsb(T init_data, int data_length = -1) {
-    static_assert(std::is_integral<T>::value, "Not integral type!");
-    int init_data_length;
-    if (data_length == -1) {
-      init_data_length = sizeof(T);
-    } else {
-      init_data_length = data_length;
-    }
-    if (init_data_length == 1) {
-      return init_data;
-    } else if (init_data_length == 2) {
-      return ((init_data << 8) | (init_data >> 8));
-    } else if (init_data_length == 4) {
-      T tmp = ((init_data << 8) & 0xFF00FF00) | ((init_data >> 8) & 0xFF00FF);
-      return ((tmp << 16) | (tmp >> 16));
-    } else if (init_data_length == 8) {
-      init_data = ((init_data & 0x00000000FFFFFFFFull) << 32) | ((init_data & 0xFFFFFFFF00000000ull) >> 32);
-      init_data = ((init_data & 0x0000FFFF0000FFFFull) << 16) | ((init_data & 0xFFFF0000FFFF0000ull) >> 16);
-      init_data = ((init_data & 0x00FF00FF00FF00FFull) << 8)  | ((init_data & 0xFF00FF00FF00FF00ull) >> 8);
-      return init_data;
-    } else {
-      throw std::runtime_error(fmt::format("Unsupported data length: {}", init_data_length));
+  void hex_convert(char *init_data, IDX_DATA_TYPE data_type, T *result) {
+    if (data_type == IDX_DATA_TYPE::IDX_UNSIGNED_BYTE) {
+      *result = static_cast<uint8_t>(init_data[0]);
+    } else if (data_type == IDX_DATA_TYPE::IDX_SIGNED_BYTE) {
+      *result = static_cast<int8_t>(init_data[0]);
+    } else if (data_type == IDX_DATA_TYPE::IDX_SHORT) {
+      short tmp = (static_cast<uint8_t>(init_data[0]) << 8) + static_cast<uint8_t>(init_data[1]);
+      *result = tmp;
+    } else if (data_type == IDX_DATA_TYPE::IDX_INT) {
+      int tmp = ((static_cast<uint8_t>(init_data[0])) << 24) + ((static_cast<uint8_t >(init_data[1])) << 16) + ((static_cast<uint8_t>(init_data[2])) << 8) + (static_cast<uint8_t>(init_data[3]));
+      *result = tmp;
     }
   }
 
@@ -52,12 +43,16 @@ namespace RuNet {
     [[nodiscard]] IDX_DATA_TYPE getDataType() const;
     [[nodiscard]] uint8_t getIdxDimension() const;
 
-    Tensor read();
+    Tensor read_data(int tensor_n, int tensor_c, int tensor_h, int tensor_w);
 
   private:
     IDX_DATA_TYPE m_data_type;
     int8_t m_idx_dimension;
     std::vector<int> m_dim_size;
+  public:
+    const std::vector<int> &getDimSize() const;
+
+  private:
     int m_tensor_size;
     std::string m_file_path;
 

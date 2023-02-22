@@ -7,7 +7,7 @@ namespace RuNet {
     std::copy(layers.begin(), layers.end(), m_layers.begin());
   }
 
-  RuNet::Tensor Network::forward(const Tensor &input) {
+  void Network::forward(const Tensor &input) {
     auto [_batch_size, _c, _h, _w] = input.getTensorInfo();
     m_batch_size = _batch_size;
     Tensor _input = input;
