@@ -14,8 +14,8 @@ set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
-set(EXECUTABLE_NAME idx_file_test)
-set(EXECUTABLE_SOURCE idx_file_test.cpp)
+set(EXECUTABLE_NAME mnist)
+set(EXECUTABLE_SOURCE mnist.cpp)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp src/*.cu)
 file(GLOB_RECURSE INCLUDE_FILES include/*.h include/*.cuh)

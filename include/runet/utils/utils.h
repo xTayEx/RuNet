@@ -36,21 +36,21 @@ namespace RuNet {
 
   class IdxFile {
   public:
-    IdxFile(std::string file_path);
+    explicit IdxFile(std::string file_path);
     IdxFile(const IdxFile&) = delete;
     IdxFile &operator=(const IdxFile &) = delete;
 
     [[nodiscard]] IDX_DATA_TYPE getDataType() const;
     [[nodiscard]] uint8_t getIdxDimension() const;
 
-    Tensor read_data(int tensor_n, int tensor_c, int tensor_h, int tensor_w);
+    Tensor read_data(int tensor_n, int tensor_c, int tensor_h, int tensor_w, int offset_byte_count = 0);
+
+    [[nodiscard]] const std::vector<int> &getDimSize() const;
 
   private:
     IDX_DATA_TYPE m_data_type;
     int8_t m_idx_dimension;
     std::vector<int> m_dim_size;
-  public:
-    const std::vector<int> &getDimSize() const;
 
   private:
     int m_tensor_size;

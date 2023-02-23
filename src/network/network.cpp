@@ -2,8 +2,7 @@
 
 namespace RuNet {
 
-  Network::Network(const std::vector<Layer *> &layers, const Tensor &labels) {
-    m_labels = labels;
+  Network::Network(const std::vector<Layer *> &layers) {
     std::copy(layers.begin(), layers.end(), m_layers.begin());
   }
 
@@ -40,6 +39,10 @@ namespace RuNet {
     for (auto &layer: m_layers) {
       layer->update();
     }
+  }
+
+  void Network::setLabels(const Tensor &labels) {
+    m_labels = labels;
   }
 
 } // RuNet

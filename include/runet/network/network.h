@@ -11,7 +11,7 @@ namespace RuNet {
 
   class Network {
   public:
-    Network(const std::vector<Layer *> &layers, const Tensor &labels);
+    explicit Network(const std::vector<Layer *> &layers);
 
     Network(const Network &) = delete;
 
@@ -29,6 +29,10 @@ namespace RuNet {
   private:
     std::vector<Layer *> m_layers;
     Tensor m_labels;
+  public:
+    void setLabels(const Tensor &labels);
+
+  private:
     int m_batch_size;
   };
 
