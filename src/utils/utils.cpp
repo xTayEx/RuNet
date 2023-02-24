@@ -14,17 +14,26 @@ namespace RuNet {
     fs.read(&_data_type_c, 1);
     auto _data_type = static_cast<IDX_DATA_TYPE>(_data_type_c);
     m_data_type = _data_type;
+    if (m_data_type == IDX_DATA_TYPE::IDX_UNSIGNED_BYTE
+      || m_data_type == IDX_DATA_TYPE::IDX_SIGNED_BYTE) {
+      m_data_length = 1;
+    } else if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {
+      m_data_length = 2;
+    } else if (m_data_type == IDX_DATA_TYPE::IDX_INT) {
+      m_data_length = 4;
+    } else {
+      throw std::runtime_error("Unknown data type");
+    }
 
     char _idx_dimension_c;
     fs.read(&_idx_dimension_c, 1);
     m_idx_dimension = static_cast<int8_t>(_idx_dimension_c);
 
     for (int i = 0; i < m_idx_dimension; ++i) {
-      char _dim_size_c[4];
-      fs.read(_dim_size_c, 4);
-      int _dim_size;
-      hex_convert(_dim_size_c, IDX_DATA_TYPE::IDX_INT, &_dim_size);
-      m_dim_size.push_back(_dim_size);
+      int *_dim_size;
+      fs.read(reinterpret_cast<char *>(_dim_size), 4);
+      endian_convert(_dim_size);
+      m_dim_size.push_back(*_dim_size);
     }
     m_tensor_size = 1;
     for (auto x : m_dim_size) {
@@ -42,7 +51,7 @@ namespace RuNet {
   }
 
   Tensor IdxFile::read_data(int tensor_n, int tensor_c, int tensor_h, int tensor_w, int offset_byte_count) {
-    int read_size = tensor_n * tensor_c * tensor_h * tensor_w;
+    int read_size = tensor_n * tensor_c * tensor_h * tensor_w * m_data_length;
     std::ifstream fs(m_file_path, std::ifstream::binary);
     if (!fs.is_open()) {
       fs.close();
@@ -52,33 +61,39 @@ namespace RuNet {
 
     std::vector<float> tensor_data(read_size);
     if (m_data_type == IDX_DATA_TYPE::IDX_UNSIGNED_BYTE) {
-      for (int i = 0; i < read_size; ++i) {
-        char _data;
-        fs.read(&_data, 1);
-        auto _u_data = static_cast<uint8_t>(_data);
-        tensor_data[i] = static_cast<float>(_u_data);
+      std::vector<unsigned char> temp_buf(read_size);
+      fs.read(reinterpret_cast<char *>(temp_buf.data()), read_size);
+      std::streamsize bytes_read = fs.gcount();
+      if (bytes_read < read_size) {
+        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
       }
+      std::copy(temp_buf.begin(), temp_buf.end(), tensor_data.begin());
+
     } else if (m_data_type == IDX_DATA_TYPE::IDX_SIGNED_BYTE) {
-      for (int i = 0; i < read_size; ++i) {
-        char _data;
-        fs.read(&_data, 1);
-        tensor_data[i] = static_cast<float>(_data);
+      std::vector<char> temp_buf(read_size);
+      fs.read(temp_buf.data(), read_size);
+      std::streamsize bytes_read = fs.gcount();
+      if (bytes_read < read_size) {
+        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
       }
-    } else if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {
-      for (int i = 0; i < read_size; ++i) {
-        char _data_c[2];
-        fs.read(_data_c, 2);
-        short _data;
-        hex_convert(_data_c, IDX_DATA_TYPE::IDX_SHORT, &_data);
-        tensor_data[i] = static_cast<float>(_data);
+      std::copy(temp_buf.begin(), temp_buf.end(), tensor_data.begin());
+    } else if (m_data_type == IDX_DATA_TYPE::IDX_SHORT || m_data_type == IDX_DATA_TYPE::IDX_INT) {
+      std::vector<char> temp_buf(read_size);
+      fs.read(reinterpret_cast<char *>(tensor_data.data()), read_size);
+      std::streamsize bytes_read = fs.gcount();
+      if (bytes_read != read_size) {
+        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
       }
-    } else if (m_data_type == IDX_DATA_TYPE::IDX_INT) {
-      for (int i = 0; i < read_size; ++i) {
-        char _data_c[4];
-        fs.read(_data_c, 4);
-        int _data;
-        hex_convert(_data_c, IDX_DATA_TYPE::IDX_INT, &_data);
-        tensor_data[i] = static_cast<float>(_data);
+      for (int i = 0; i < bytes_read; i += m_data_length) {
+        if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {
+          short short_val = *reinterpret_cast<short *>(temp_buf[i]);
+          endian_convert(&short_val);
+          tensor_data.push_back(static_cast<float>(short_val));
+        } else {
+          int int_value = *reinterpret_cast<int *>(temp_buf[i]);
+          endian_convert(&int_value);
+          tensor_data.push_back(static_cast<float>(int_value));
+        }
       }
     } else {
       throw std::runtime_error(fmt::format("Unknown data type: {:#x}", static_cast<uint8_t>(m_data_type)));

@@ -24,12 +24,14 @@ int main() {
   auto train_image_idx_file = RuNet::IdxFile(std::filesystem::absolute(train_file_path).string());
 
   auto train_dim_size = train_image_idx_file.getDimSize();
-  int train_data_size = train_dim_size[0];
+  int total_data_size = train_dim_size[0];
+  int val_data_size = 20000;
+  int train_data_size = total_data_size - val_data_size;
   int train_data_c = 1;
   int train_data_h = train_dim_size[1];
   int train_data_w = train_dim_size[2];
 
-  fmt::print("Done reading training data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<int8_t>(train_image_idx_file.getDataType()), train_image_idx_file.getIdxDimension(), train_data_size);
+  fmt::print("Done reading training data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<int8_t>(train_image_idx_file.getDataType()), train_image_idx_file.getIdxDimension(), total_data_size);
   // ##############################################
 
   // ##############################################
@@ -97,7 +99,8 @@ int main() {
   for (int epoch_idx = 0; epoch_idx < epoch; ++epoch) {
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
       RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size, train_data_c, train_data_h, train_data_w, train_single_batch_byte * image_idx);
-      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size, 1, 1, label_count, label_single_batch_byte);
+      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size, 1, 1, label_count, label_single_batch_byte * image_idx);
+      // setLabels will call Tensor's operator=
       mnist_network.setLabels(single_batch_label_tensor);
       mnist_network.forward(single_batch_train_tensor);
       mnist_network.backward();
