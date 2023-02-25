@@ -11,8 +11,6 @@ namespace RuNet {
     int bias_param_size = out_features;
     bias_param.alloc(bias_param_size);
     bias_gradient.alloc(bias_param_size);
-    onevec.alloc(m_batch_size);
-    Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 0);
   }
 
   void Linear::forward(const Tensor &tensor) {
@@ -20,6 +18,8 @@ namespace RuNet {
     // m_batch_size is set after construction.
     output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, m_batch_size, out_features, 1, 1);
     dev_output.alloc(out_features * m_batch_size);
+    onevec.alloc(m_batch_size);
+    Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 0);
     m_input_tensor = tensor;
     float a[1] = {1.0f};
     float b[1] = {0.0f};

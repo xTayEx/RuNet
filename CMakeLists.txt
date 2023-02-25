@@ -31,5 +31,7 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC include)
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${CUDNN_LIB} ${OpenCV_LIBS} fmt CUDA::cudart CUDA::cublas CUDA::curand)
+target_compile_options(${EXECUTABLE_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+                       -G -g>)
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON)

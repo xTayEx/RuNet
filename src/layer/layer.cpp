@@ -30,8 +30,9 @@ namespace RuNet {
     int output_n, output_c, output_h, output_w;
     output_desc->getDescriptorInfo(&output_n, &output_c, &output_h, &output_w);
     Tensor ret(output_n, output_c, output_h, output_w, dev_output);
+//    std::cout << "address of ret: " << ret.getTensorData() << std::endl;
     // move ret from left to right
-    return ret;
+    return std::move(ret);
   }
 
   Tensor Layer::getDiff() {

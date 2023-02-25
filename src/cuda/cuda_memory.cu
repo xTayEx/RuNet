@@ -50,6 +50,7 @@ namespace RuNet {
   }
 
   CudaMemory::~CudaMemory() {
+    std::cout << "memory to be freed: " << memory << std::endl;
     if (memory) {
       checkCuda(cudaFree(memory));
     }
