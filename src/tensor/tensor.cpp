@@ -139,6 +139,11 @@ namespace RuNet {
     return *this;
   }
 
+  Tensor &Tensor::operator/=(float scalar) {
+    *data /= scalar;
+    return *this;
+  }
+
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor) {
     cudnnDataType_t _;
     auto [n, c, h, w] = tensor.getTensorInfo();

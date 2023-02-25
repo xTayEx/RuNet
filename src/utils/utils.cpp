@@ -30,10 +30,10 @@ namespace RuNet {
     m_idx_dimension = static_cast<int8_t>(_idx_dimension_c);
 
     for (int i = 0; i < m_idx_dimension; ++i) {
-      int *_dim_size;
-      fs.read(reinterpret_cast<char *>(_dim_size), 4);
-      endian_convert(_dim_size);
-      m_dim_size.push_back(*_dim_size);
+      uint32_t _dim_size;
+      fs.read(reinterpret_cast<char *>(&_dim_size), 4);
+      endian_convert(&_dim_size);
+      m_dim_size.push_back(static_cast<int>(_dim_size));
     }
     m_tensor_size = 1;
     for (auto x : m_dim_size) {
@@ -86,12 +86,14 @@ namespace RuNet {
       }
       for (int i = 0; i < bytes_read; i += m_data_length) {
         if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {
-          short short_val = *reinterpret_cast<short *>(temp_buf[i]);
-          endian_convert(&short_val);
+          uint16_t uint16_val = *reinterpret_cast<short *>(temp_buf[i]);
+          endian_convert(&uint16_val);
+          short short_val = static_cast<short>(uint16_val);
           tensor_data.push_back(static_cast<float>(short_val));
         } else {
-          int int_value = *reinterpret_cast<int *>(temp_buf[i]);
-          endian_convert(&int_value);
+          uint32_t uint32_value = *reinterpret_cast<uint32_t *>(temp_buf[i]);
+          endian_convert(&uint32_value);
+          int int_value = static_cast<int>(uint32_value);
           tensor_data.push_back(static_cast<float>(int_value));
         }
       }

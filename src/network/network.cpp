@@ -3,18 +3,25 @@
 namespace RuNet {
 
   Network::Network(const std::vector<Layer *> &layers) {
+    m_layers.resize(layers.size());
     std::copy(layers.begin(), layers.end(), m_layers.begin());
   }
 
   void Network::forward(const Tensor &input) {
     auto [_batch_size, _c, _h, _w] = input.getTensorInfo();
     m_batch_size = _batch_size;
+    for (auto &layer_p : m_layers) {
+      layer_p->setBatchSize(m_batch_size);
+    }
     Tensor _input = input;
+    int cur_pos = 0;
     for (auto iter = m_layers.begin(); iter != m_layers.end(); ++iter) {
       (*iter)->forward(_input);
+      fmt::print("cur_pos is {}\n", cur_pos);
       if (iter != m_layers.end() - 1) {
         _input = (*iter)->getOutput();
       }
+      ++cur_pos;
     }
   }
 
@@ -43,6 +50,10 @@ namespace RuNet {
 
   void Network::setLabels(const Tensor &labels) {
     m_labels = labels;
+  }
+
+  int Network::getBatchSize() const {
+    return m_batch_size;
   }
 
 } // RuNet

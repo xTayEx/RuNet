@@ -1,7 +1,7 @@
 #ifndef RUNET_OUTPUT_CUH
 #define RUNET_OUTPUT_CUH
 
-#include <runet/cuda/cuda_memory.h>
+#include <runet/cuda/cuda_memory.cuh>
 #include <runet/tensor/tensor.h>
 #include <runet/layer/softmax.cuh>
 #include <runet/utils/constants.h>

@@ -35,7 +35,9 @@ namespace RuNet {
                                                         CUDNN_DATA_FLOAT);
 
     int param_size = in_channels * out_channels * kernel_size * kernel_size;
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param.alloc(param_size);
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param_gradient.alloc(param_size);
 
     // set kernel value
@@ -44,8 +46,10 @@ namespace RuNet {
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
     int bias_param_size = out_channels;
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_param.alloc(bias_param_size);
     bias_param.memset(0, bias_param_size * sizeof(float));
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_gradient.alloc(bias_param_size);
     bias_gradient.memset(0, bias_param_size * sizeof(float));
     Utils::setGpuNormalValue(bias_param.data(),
@@ -80,6 +84,7 @@ namespace RuNet {
     // allocate dev_output and initiate
     // element count
     size_t output_size = output_n * output_c * output_h * output_w;
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, output_size * sizeof(float));
     dev_output.alloc(output_size);
     dev_output.memset(0, output_size * sizeof(float));
 
@@ -108,6 +113,7 @@ namespace RuNet {
 
 
     // allocate workspace
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_fwd_workspace_size * sizeof(float));
     conv_fwd_workspace.alloc(conv_fwd_workspace_size);
 
     // do convolution
@@ -170,6 +176,7 @@ namespace RuNet {
             kernel_desc->getDescriptor(),
             conv_bwd_filter_algo,
             &conv_bwd_filter_workspace_size));
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_filter_workspace_size * sizeof(float));
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
     checkCudnn(
             cudnnConvolutionBackwardFilter(global_cudnn_handle,
@@ -204,6 +211,7 @@ namespace RuNet {
                                                             output_desc->getDescriptor(),
                                                             conv_bwd_data_algo,
                                                             &conv_bwd_data_workspace_size));
+    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_data_workspace_size * sizeof(float));
     conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,

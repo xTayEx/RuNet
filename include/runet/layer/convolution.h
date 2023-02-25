@@ -3,7 +3,7 @@
 
 #include <runet/layer/layer.h>
 #include <runet/tensor/tensor.h>
-#include <runet/cuda/cuda_memory.h>
+#include <runet/cuda/cuda_memory.cuh>
 
 namespace RuNet {
   class Convolution : public Layer {

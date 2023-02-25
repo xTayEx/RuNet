@@ -5,19 +5,19 @@ namespace RuNet {
   Layer::Layer(float alpha, float momentum, float weight_decay) : m_learning_rate(alpha), m_momentum(momentum),
                                                                   m_weight_decay(weight_decay) {}
 
-  float Layer::getMLearningRate() const {
+  float Layer::getLearningRate() const {
     return m_learning_rate;
   }
 
-  float Layer::getMMomentum() const {
+  float Layer::getMomentum() const {
     return m_momentum;
   }
 
-  float Layer::getMWeightDecay() const {
+  float Layer::getWeightDecay() const {
     return m_weight_decay;
   }
 
-  int Layer::getMBatchSize() const {
+  int Layer::getBatchSize() const {
     return m_batch_size;
   }
 
@@ -38,5 +38,9 @@ namespace RuNet {
     auto [diff_n, diff_c, diff_h, diff_w] = m_input_tensor.getTensorInfo();
     Tensor ret(diff_n, diff_c, diff_h, diff_w, diff_for_prev);
     return ret;
+  }
+
+  void Layer::setBatchSize(int bs) {
+    m_batch_size = bs;
   }
 };  // namespace RuNet

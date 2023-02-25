@@ -10,7 +10,7 @@
 
 #include <runet/global/global.h>
 #include <runet/tensor/tensor.h>
-#include <runet/cuda/cuda_memory.h>
+#include <runet/cuda/cuda_memory.cuh>
 #include <runet/cuda/cudnn_descriptor.h>
 
 namespace RuNet {
@@ -32,19 +32,23 @@ namespace RuNet {
     [[nodiscard]] Tensor getDiff();
     // Layer *next_layer; // TODO: should be set by network builder
 
-    [[nodiscard]] float getMLearningRate() const;
+    [[nodiscard]] float getLearningRate() const;
 
-    [[nodiscard]] float getMMomentum() const;
+    [[nodiscard]] float getMomentum() const;
 
-    [[nodiscard]] float getMWeightDecay() const;
+    [[nodiscard]] float getWeightDecay() const;
 
-    [[nodiscard]] int getMBatchSize() const;
+    [[nodiscard]] int getBatchSize() const;
 
   protected:
     float m_learning_rate;
     float m_momentum;
     float m_weight_decay;
     int m_batch_size;
+  public:
+    void setBatchSize(int mBatchSize);
+
+  protected:
 
     CudaMemory param;
     CudaMemory bias_param;

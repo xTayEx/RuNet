@@ -23,7 +23,7 @@ int main() {
   fmt::print("data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<int8_t>(t10k_images.getDataType()), t10k_images.getIdxDimension(), data_size);
 
   int image_size = c * h * w;
-  for (int image_idx = 0; image_idx < data_size; ++image_idx) {
+  for (int image_idx = 0; image_idx < 50; ++image_idx) {
     RuNet::Tensor t10k_images_tensor = t10k_images.read_data(n, c, h, w, image_idx * image_size);
     cv::Mat t10k_first_image = t10k_images_tensor.convert_to_opencv_image(CV_8UC1);
     std::cout << t10k_first_image << std::endl;

@@ -3,7 +3,7 @@
 
 #include <cudnn.h>
 #include <runet/cuda/cudnn_descriptor.h>
-#include <runet/cuda/cuda_memory.h>
+#include <runet/cuda/cuda_memory.cuh>
 #include <vector>
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/dnn/dnn.hpp>
@@ -25,20 +25,22 @@ namespace RuNet {
 
     Tensor &operator=(const Tensor &);
 
+    Tensor &operator/=(float scalar);
+
     Tensor(Tensor&&) noexcept;
 
     Tensor() = default;
 
     ~Tensor() = default;
 
-    std::tuple<int, int, int, int> getTensorInfo() const;
+    [[nodiscard]] std::tuple<int, int, int, int> getTensorInfo() const;
 
-    cudnnTensorDescriptor_t getTensorDescriptor() const;
+    [[nodiscard]] cudnnTensorDescriptor_t getTensorDescriptor() const;
 
     // convert a single-batch tensor to a png::image
     cv::Mat convert_to_opencv_image(int image_type);
 
-    float *getTensorData() const;
+    [[nodiscard]] float *getTensorData() const;
 
   private:
     std::shared_ptr<TensorDescriptor> desc;

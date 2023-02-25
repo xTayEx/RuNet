@@ -9,6 +9,7 @@ namespace RuNet {
 
   template<>
   void Output<Softmax>::backward(Tensor &) {
-    softmaxBackward<<<std::ceil((1.0f * output_layer.getMBatchSize()) / (1.0f * Constants::CudaBandWidth)), Constants::CudaBandWidth>>>(label_p->data(), label_p->size(), output_layer.getMBatchSize(), diff_for_prev.data());
+    softmaxBackward<<<std::ceil((1.0f * output_layer.getBatchSize()) / (1.0f * Constants::CudaBandWidth)), Constants::CudaBandWidth>>>(label_p->data(), label_p->size(),
+                                                                                                                                       output_layer.getBatchSize(), diff_for_prev.data());
   }
 }

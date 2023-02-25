@@ -18,12 +18,12 @@ namespace RuNet {
     IDX_INT           = 0x0c,
   };
 
-  inline void endian_convert(short *value) {
+  inline void endian_convert(uint16_t *value) {
     *value = (*value >> 8) | (*value << 8);
   }
 
-  inline void endian_convert(int *value) {
-    int tmp = ((*value << 8) & 0xFF00FF00) | ((*value >> 8) & 0xFF00FF);
+  inline void endian_convert(uint32_t *value) {
+    uint32_t tmp = ((*value << 8) & 0xFF00FF00) | ((*value >> 8) & 0xFF00FF);
     *value = (tmp << 16) | (tmp >> 16);
   }
 
