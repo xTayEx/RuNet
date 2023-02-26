@@ -26,10 +26,7 @@ namespace RuNet {
   }
 
   void Network::backward() {
-    RuNet::Softmax* last_layer = dynamic_cast<RuNet::Softmax*>(*(m_layers.rbegin()));
-    if (last_layer == nullptr) {
-      throw std::runtime_error("dynamic_cast error in void Network::backward()");
-    }
+    auto last_layer = *(m_layers.rbegin());
 
     last_layer->backward_when_last_layer(m_labels);
     Tensor _diff = last_layer->getDiff();

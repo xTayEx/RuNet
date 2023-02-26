@@ -14,13 +14,15 @@ namespace RuNet {
   }
 
   void Linear::forward(const Tensor &tensor) {
+    m_input_tensor = tensor;
+    auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     // we have to allocate dev_output here instead of doing it in ctor because
     // m_batch_size is set after construction.
     output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, m_batch_size, out_features, 1, 1);
     dev_output.alloc(out_features * m_batch_size);
     onevec.alloc(m_batch_size);
+    diff_for_prev.alloc(input_n * input_c * input_h * input_w);
     Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 0);
-    m_input_tensor = tensor;
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
@@ -58,4 +60,5 @@ namespace RuNet {
             cublasSaxpy_v2(global_cublas_handle, bias_param.size(), alpha, bias_gradient.data(), 1, bias_param.data(),
                            1));
   }
+
 }

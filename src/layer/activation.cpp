@@ -17,13 +17,16 @@ namespace RuNet {
     // Tensor.cpp for more information.
     m_input_tensor = tensor;
     // get input size
-    cudnnDataType_t data_type;
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
-    size_t input_size = input_n * input_c * input_w * input_h * sizeof(float);
+    size_t input_size = input_n * input_c * input_w * input_h;
+    int _n, _c, _h, _w, _;
+    cudnnDataType_t data_type;
+    cudnnGetTensor4dDescriptor(tensor.getTensorDescriptor(), &data_type, &_n, &_c, &_h, &_w, &_, &_, &_, &_);
 
     // create output descriptor
     output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h,
                                                      input_w);
+
     dev_output.alloc(input_size);
     dev_output.memset(0, input_size);
 

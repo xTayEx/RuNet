@@ -46,10 +46,10 @@ namespace RuNet {
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
     int bias_param_size = out_channels;
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_param.alloc(bias_param_size);
     bias_param.memset(0, bias_param_size * sizeof(float));
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_gradient.alloc(bias_param_size);
     bias_gradient.memset(0, bias_param_size * sizeof(float));
     Utils::setGpuNormalValue(bias_param.data(),
@@ -63,6 +63,7 @@ namespace RuNet {
 
     cudnnDataType_t data_type;
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
+    diff_for_prev.alloc(input_n * input_c * input_h * input_w);
 
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};

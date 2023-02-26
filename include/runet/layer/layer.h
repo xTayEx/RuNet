@@ -40,6 +40,8 @@ namespace RuNet {
 
     [[nodiscard]] int getBatchSize() const;
 
+    virtual void backward_when_last_layer(const Tensor &labels) {}
+
   protected:
     float m_learning_rate;
     float m_momentum;
@@ -63,7 +65,6 @@ namespace RuNet {
 
     Tensor m_input_tensor;
 
-    virtual void backward_when_last_layer(const Tensor &labels) {}
 
   };
 

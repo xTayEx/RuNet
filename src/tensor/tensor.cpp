@@ -11,13 +11,13 @@ namespace RuNet {
     _w = w;
     desc = std::make_shared<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w);
 
-    int data_size = n * c * h * w * sizeof(float);
+    int data_size = n * c * h * w;
     data = std::make_shared<CudaMemory>(data_size);
 
     if (ori_data != nullptr) {
-      data->memcpy(ori_data, data_size, cudaMemcpyHostToDevice);
+      data->memcpy(ori_data, data_size * sizeof(float), cudaMemcpyHostToDevice);
     } else {
-      data->memset(0, data_size);
+      data->memset(0, data_size * sizeof(float));
     }
   }
 
@@ -69,10 +69,10 @@ namespace RuNet {
 
   cv::Mat Tensor::convert_to_opencv_image(int image_type) {
     int n, c, h, w;
-    h = _h;
-    w = _w;
     n = _n;
     c = _c;
+    h = _h;
+    w = _w;
     int init_type, num_channel;
     if (image_type == CV_8UC3) {
       init_type = CV_32FC3;
@@ -110,7 +110,7 @@ namespace RuNet {
   Tensor::Tensor(Tensor &&other) noexcept {
     _n = other._n;
     _c = other._c;
-    _h = other._n;
+    _h = other._h;
     _w = other._w;
     desc = std::move(other.desc);
     data = std::move(other.data);
