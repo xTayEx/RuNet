@@ -13,7 +13,7 @@ namespace RuNet {
     for (auto &layer_p : m_layers) {
       layer_p->setBatchSize(m_batch_size);
     }
-    // TODO: _input is destructed improperly
+
     Tensor _input = input;
     std::cout << "address of _input: " << _input.getTensorData() << std::endl;
     for (auto iter = m_layers.begin(); iter != m_layers.end(); ++iter) {

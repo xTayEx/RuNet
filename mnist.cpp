@@ -144,7 +144,7 @@ int main() {
   int test_label_byte = test_label_count * sizeof(uint8_t);
   for (int image_idx; image_idx < total_test_size; ++image_idx) {
     RuNet::Tensor single_test_image = test_image_idx_file.read_data(1, test_data_c, test_data_h, test_data_w, image_idx * test_image_byte);
-    // TODO: normalize
+    // normalize
     single_test_image /= 255.0f;
     RuNet::Tensor single_test_label = test_label_idx_file.read_data(1, 1, 1, test_label_count, image_idx * test_label_byte);
     mnist_network.forward(single_test_image);

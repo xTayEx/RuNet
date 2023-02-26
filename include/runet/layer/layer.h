@@ -30,7 +30,6 @@ namespace RuNet {
     [[nodiscard]] Tensor getOutput();
 
     [[nodiscard]] Tensor getDiff();
-    // Layer *next_layer; // TODO: should be set by network builder
 
     [[nodiscard]] float getLearningRate() const;
 
@@ -57,7 +56,7 @@ namespace RuNet {
 
     CudaMemory param_gradient;
     CudaMemory bias_gradient;
-    CudaMemory diff_for_prev; // diff_for_prev for previous layer;
+    CudaMemory diff_for_prev;
     CudaMemory dev_output;
 
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;

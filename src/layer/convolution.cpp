@@ -195,6 +195,14 @@ namespace RuNet {
                                            param_gradient.data()));
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
+    int d_n, d_c, d_h, d_w, _;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+    int f_k, f_c, f_h, f_w;
+    cudnnGetTensor4dDescriptor(diff.getTensorDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
+    fmt::print("d_n: {}, d_c: {}, d_h: {}, d_w: {}\n", d_n, d_c, d_h, d_w);
+    cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
+    fmt::print("f_k: {}, f_c: {}, f_h: {}, f_w: {}\n", f_k, f_c, f_h, f_w);
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
@@ -230,6 +238,8 @@ namespace RuNet {
   }
 
   void Convolution::update() {
+    // TODO: use learning rate instead of weight_decay. check cudnn-training for details of learning
+    //  rate calculation.
     float a = 1.0f - m_weight_decay;
     checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), &a, param_gradient.data(), 1, param.data(), 1));
     checkCublas(
