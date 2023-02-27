@@ -6,16 +6,11 @@ namespace RuNet {
 
   Activation::Activation(cudnnActivationMode_t mode,
                          cudnnNanPropagation_t prop,
-                         float coef) : Layer() {
+                         float coef) {
     activation_desc = std::make_unique<ActivationDescriptor>(mode, prop, coef);
   }
 
-  void Activation::forward(const Tensor &tensor) {
-    // Use copy constructor to back up the input tensor. `data` in a Tensor object, which may means so
-    // many data in gpu memory, is managed by a std::shared_ptr. Therefore, copying a Tensor object
-    // won't cause performance loss. It's just some assignment of int and shared_ptr. Refer to
-    // Tensor.cpp for more information.
-    m_input_tensor = tensor;
+  void Activation::first_run_forward_init(const Tensor &tensor) {
     // get input size
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     size_t input_size = input_n * input_c * input_w * input_h;
@@ -33,6 +28,19 @@ namespace RuNet {
     diff_for_prev.alloc(input_size);
     diff_for_prev.memset(0, input_size);
 
+    is_fwd_first_run = false;
+  }
+
+  void Activation::forward(const Tensor &tensor) {
+    if (is_fwd_first_run) {
+      first_run_forward_init(tensor);
+    }
+    // Use copy constructor to back up the input tensor. `data` in a Tensor object, which may means so
+    // many data in gpu memory, is managed by a std::shared_ptr. Therefore, copying a Tensor object
+    // won't cause performance loss. It's just some assignment of int and shared_ptr. Refer to
+    // Tensor.cpp for more information.
+    m_input_tensor = tensor;
+
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
     checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle,
@@ -44,6 +52,8 @@ namespace RuNet {
                                       output_desc->getDescriptor(),
                                       dev_output.data()));
   }
+
+  void Activation::first_run_backward_init(const Tensor &) {}
 
   void Activation::backward(const Tensor &diff) {
     float alpha[1] = {1.0f};

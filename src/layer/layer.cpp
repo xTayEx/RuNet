@@ -2,8 +2,9 @@
 
 namespace RuNet {
 
-  Layer::Layer(float alpha, float momentum, float weight_decay) : m_learning_rate(alpha), m_momentum(momentum),
-                                                                  m_weight_decay(weight_decay) {}
+  Layer::Layer(float alpha, float momentum, float weight_decay, bool is_static)
+          : m_learning_rate(alpha), m_momentum(momentum),
+            m_weight_decay(weight_decay), is_static(is_static) {}
 
   float Layer::getLearningRate() const {
     return m_learning_rate;
@@ -26,7 +27,7 @@ namespace RuNet {
    * return a temporary Tensor instance in a function is to return it by value,
    * using a move constructor.
    */
-   Tensor Layer::getOutput() {
+  Tensor Layer::getOutput() {
     int output_n, output_c, output_h, output_w;
     output_desc->getDescriptorInfo(&output_n, &output_c, &output_h, &output_w);
     Tensor ret(output_n, output_c, output_h, output_w, dev_output);

@@ -13,8 +13,7 @@ namespace RuNet {
                                                        stride);
   }
 
-  void Pooling::forward(const Tensor &tensor) {
-    m_input_tensor = tensor;
+  void Pooling::first_run_forward_init(const Tensor &tensor) {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
     int output_n, output_c, output_h, output_w;
@@ -35,6 +34,16 @@ namespace RuNet {
     dev_output.alloc(output_size);
     dev_output.memset(0, output_size * sizeof(float));
 
+    is_fwd_first_run = false;
+  }
+
+  void Pooling::forward(const Tensor &tensor) {
+    m_input_tensor = tensor;
+
+    if (is_fwd_first_run) {
+      first_run_forward_init(tensor);
+    }
+
     float a[1] = {1.0f};
     float b[1] = {0.0f};
     checkCudnn(cudnnPoolingForward(global_cudnn_handle,
@@ -46,6 +55,8 @@ namespace RuNet {
                                    output_desc->getDescriptor(),
                                    dev_output.data()));
   }
+
+  void Pooling::first_run_backward_init(const Tensor &diff) {}
 
   void Pooling::backward(const Tensor &diff) {
     float a[1] = {1.0f};

@@ -13,20 +13,28 @@ namespace RuNet {
     diff[idx * num_labels + true_label_value] -= 1.0f;
   }
 
-  void Softmax::forward(const Tensor &tensor) {
-    m_input_tensor = tensor;
+  void Softmax::first_run_forward_init(const Tensor &tensor) {
     auto [n, c, h, w] = tensor.getTensorInfo();
     diff_for_prev.alloc(n * c * h * w);
-    _n = n;
-    _c = c;
-    _h = h;
-    _w = w;
-    dev_output.alloc(_n * _c * _h * _w);
-    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, _n, _c, _h, _w);
+    dev_output.alloc(n * c * h * w);
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w);
+
+    is_fwd_first_run = false;
+  }
+
+  void Softmax::forward(const Tensor &tensor) {
+    m_input_tensor = tensor;
+
+    if (is_fwd_first_run) {
+      first_run_forward_init(tensor);
+    }
+
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
     cudnnSoftmaxForward(global_cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL, alpha, tensor.getTensorDescriptor(), tensor.getTensorData(), beta, output_desc->getDescriptor(), dev_output.data());
   }
+
+  void Softmax::first_run_backward_init(const Tensor &diff) {}
 
   void Softmax::backward(const Tensor &diff) {}
 

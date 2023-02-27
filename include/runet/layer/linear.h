@@ -1,5 +1,5 @@
-#ifndef _LINEAR_H
-#define _LINEAR_H
+#ifndef RUNET_LINEAR_H
+#define RUNET_LINEAR_H
 
 #include <runet/layer/layer.h>
 #include <runet/utils/gpu_operations.cuh>
@@ -13,7 +13,7 @@ namespace RuNet {
 
     Linear &operator=(const Linear &) = delete;
 
-    ~Linear() = default;
+    ~Linear() override = default;
 
     void forward(const Tensor &tensor) override;
 
@@ -25,6 +25,8 @@ namespace RuNet {
     int in_features;
     int out_features;
     CudaMemory onevec;
+    void first_run_forward_init(const Tensor &tensor) override;
+    void first_run_backward_init(const Tensor &diff) override;
   };
 }
 

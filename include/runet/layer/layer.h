@@ -17,7 +17,7 @@ namespace RuNet {
 
   class Layer {
   public:
-    explicit Layer(float alpha = 0.0f, float momentum = 0.5f, float weight_decay = 0.0f);
+    explicit Layer(float alpha = 0.0f, float momentum = 0.5f, float weight_decay = 0.0f, bool is_static = true);
 
     virtual ~Layer() = default;
 
@@ -41,15 +41,16 @@ namespace RuNet {
 
     virtual void backward_when_last_layer(const Tensor &labels) {}
 
+    void setBatchSize(int mBatchSize);
+
   protected:
     float m_learning_rate;
     float m_momentum;
     float m_weight_decay;
     int m_batch_size;
-  public:
-    void setBatchSize(int mBatchSize);
-
-  protected:
+    bool is_fwd_first_run = true;
+    bool is_bwd_first_run = true;
+    bool is_static;
 
     CudaMemory param;
     CudaMemory bias_param;
@@ -62,9 +63,10 @@ namespace RuNet {
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
+    virtual void first_run_forward_init(const Tensor& tensor) = 0;
+    virtual void first_run_backward_init(const Tensor& diff) = 0;
+
     Tensor m_input_tensor;
-
-
   };
 
 };  // namespace RuNet

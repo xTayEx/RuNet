@@ -25,10 +25,8 @@ namespace RuNet {
     void backward_when_last_layer(const Tensor& labels) override;
 
   private:
-    int _n;
-    int _c;
-    int _w;
-    int _h;
+    void first_run_forward_init(const Tensor &tensor) override;
+    void first_run_backward_init(const Tensor &diff) override;
   };
 }
 

@@ -1,5 +1,5 @@
-#ifndef _ACTIVATION_H
-#define _ACTIVATION_H
+#ifndef RUNET_ACTIVATION_H
+#define RUNET_ACTIVATION_H
 
 #include <runet/layer/layer.h>
 
@@ -12,7 +12,7 @@ namespace RuNet {
 
     Activation(const Activation &) = delete;
 
-    ~Activation() = default;
+    ~Activation() override = default;
 
     void forward(const Tensor &tensor) override;
 
@@ -20,8 +20,11 @@ namespace RuNet {
 
     void update() override;
 
+
   private:
     std::unique_ptr<ActivationDescriptor> activation_desc;
+    void first_run_forward_init(const Tensor &tensor) override;
+    void first_run_backward_init(const Tensor &diff) override;
   };
 
 };  // namespace RuNet

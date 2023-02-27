@@ -3,7 +3,7 @@
 namespace RuNet {
 
   Linear::Linear(int in_features, int out_features) :
-          Layer(), in_features(in_features), out_features(out_features) {
+          in_features(in_features), out_features(out_features) {
     int param_size = in_features * out_features;
     param.alloc(param_size);
     param_gradient.alloc(param_size);
@@ -11,10 +11,11 @@ namespace RuNet {
     int bias_param_size = out_features;
     bias_param.alloc(bias_param_size);
     bias_gradient.alloc(bias_param_size);
+
   }
 
-  void Linear::forward(const Tensor &tensor) {
-    m_input_tensor = tensor;
+  void Linear::first_run_forward_init(const Tensor &tensor) {
+
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     // we have to allocate dev_output here instead of doing it in ctor because
     // m_batch_size is set after construction.
@@ -23,6 +24,17 @@ namespace RuNet {
     onevec.alloc(m_batch_size);
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
     Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 0);
+    is_fwd_first_run = false;
+  }
+
+  void Linear::forward(const Tensor &tensor) {
+    m_input_tensor = tensor;
+
+    if (is_fwd_first_run) {
+      std::cout << "in linear: is first fwd run" << std::endl;
+      first_run_forward_init(tensor);
+    }
+
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
@@ -34,6 +46,8 @@ namespace RuNet {
     checkCublas(cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, out_features, m_batch_size, 1, a,
                                bias_param.data(), out_features, onevec.data(), 1, a, dev_output.data(), out_features));
   }
+
+  void Linear::first_run_backward_init(const Tensor &diff) {}
 
   void Linear::backward(const Tensor &diff) {
     float a[1] = {1.0f};

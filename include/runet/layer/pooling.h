@@ -9,7 +9,7 @@ namespace RuNet {
   public:
     Pooling(int window_size, cudnnPoolingMode_t pool, int pad, int stride);
 
-    ~Pooling() = default;
+    ~Pooling() override = default;
 
     Pooling(const Pooling &pool) = delete;
 
@@ -23,6 +23,8 @@ namespace RuNet {
 
   private:
     std::unique_ptr<PoolingDescriptor> pooling_desc;
+    void first_run_backward_init(const Tensor &diff) override;
+    void first_run_forward_init(const Tensor &tensor) override;
 
   };
 }

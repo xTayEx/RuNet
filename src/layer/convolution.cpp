@@ -58,13 +58,9 @@ namespace RuNet {
                              Constants::NormalSigma);
   }
 
-  void Convolution::forward(const Tensor &tensor) {
-    m_input_tensor = tensor;
-
-    cudnnDataType_t data_type;
+  void Convolution::first_run_forward_init(const Tensor &tensor) {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
-
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};
     checkCudnn(cudnnGetConvolution2dForwardOutputDim(conv_desc->getDescriptor(),
@@ -81,7 +77,6 @@ namespace RuNet {
                                                      output_c,
                                                      output_h,
                                                      output_w);
-
     // allocate dev_output and initiate
     // element count
     size_t output_size = output_n * output_c * output_h * output_w;
@@ -101,7 +96,6 @@ namespace RuNet {
                                            &returned_algo_count,
                                            &fwd_algo_perf);
     conv_fwd_algo = fwd_algo_perf.algo;
-
     // get workspace size
     checkCudnn(
             cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
@@ -116,6 +110,16 @@ namespace RuNet {
     // allocate workspace
     fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_fwd_workspace_size * sizeof(float));
     conv_fwd_workspace.alloc(conv_fwd_workspace_size);
+
+    is_fwd_first_run = false;
+  }
+
+  void Convolution::forward(const Tensor &tensor) {
+    m_input_tensor = tensor;
+
+    if (is_fwd_first_run) {
+      first_run_forward_init(tensor);
+    }
 
     // do convolution
     float a[1] = {1.0f};
@@ -143,19 +147,10 @@ namespace RuNet {
                               a,
                               output_desc->getDescriptor(),
                               dev_output.data()));
+
   }
 
-  void Convolution::backward(const Tensor &diff) {
-    float a[1] = {this->m_learning_rate};
-    float b[1] = {this->m_momentum};
-    checkCudnn(cudnnConvolutionBackwardBias(global_cudnn_handle,
-                                            a,
-                                            diff.getTensorDescriptor(),
-                                            diff.getTensorData(),
-                                            b,
-                                            bias_desc->getDescriptor(),
-                                            bias_gradient.data()));
-
+  void Convolution::first_run_backward_init(const Tensor &diff) {
     cudnnConvolutionBwdFilterAlgoPerf_t conv_bwd_filter_perf;
     int returned_algo_count{0};
     checkCudnn(cudnnGetConvolutionBackwardFilterAlgorithm_v7(
@@ -179,27 +174,13 @@ namespace RuNet {
             &conv_bwd_filter_workspace_size));
     fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_filter_workspace_size * sizeof(float));
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
-    checkCudnn(
-            cudnnConvolutionBackwardFilter(global_cudnn_handle,
-                                           a,
-                                           m_input_tensor.getTensorDescriptor(),
-                                           m_input_tensor.getTensorData(),
-                                           diff.getTensorDescriptor(),
-                                           diff.getTensorData(),
-                                           conv_desc->getDescriptor(),
-                                           conv_bwd_filter_algo,
-                                           conv_bwd_filter_workspace.data(),
-                                           conv_bwd_filter_workspace_size,
-                                           b,
-                                           kernel_desc->getDescriptor(),
-                                           param_gradient.data()));
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
     int d_n, d_c, d_h, d_w, _;
     cudnnDataType_t data_type;
     cudnnTensorFormat_t tensor_format;
     int f_k, f_c, f_h, f_w;
-    cudnnGetTensor4dDescriptor(diff.getTensorDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
+    cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
     fmt::print("d_n: {}, d_c: {}, d_h: {}, d_w: {}\n", d_n, d_c, d_h, d_w);
     cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
     fmt::print("f_k: {}, f_c: {}, f_h: {}, f_w: {}\n", f_k, f_c, f_h, f_w);
@@ -222,6 +203,42 @@ namespace RuNet {
                                                             &conv_bwd_data_workspace_size));
     fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_data_workspace_size * sizeof(float));
     conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
+
+    is_bwd_first_run = false;
+  }
+
+
+  void Convolution::backward(const Tensor &diff) {
+
+    if (is_bwd_first_run) {
+      first_run_backward_init(diff);
+    }
+
+    float a[1] = {this->m_learning_rate};
+    float b[1] = {this->m_momentum};
+    checkCudnn(cudnnConvolutionBackwardBias(global_cudnn_handle,
+                                            a,
+                                            diff.getTensorDescriptor(),
+                                            diff.getTensorData(),
+                                            b,
+                                            bias_desc->getDescriptor(),
+                                            bias_gradient.data()));
+
+    checkCudnn(cudnnConvolutionBackwardFilter(global_cudnn_handle,
+                                               a,
+                                               m_input_tensor.getTensorDescriptor(),
+                                               m_input_tensor.getTensorData(),
+                                               diff.getTensorDescriptor(),
+                                               diff.getTensorData(),
+                                               conv_desc->getDescriptor(),
+                                               conv_bwd_filter_algo,
+                                               conv_bwd_filter_workspace.data(),
+                                              conv_bwd_filter_workspace_size,
+                                               b,
+                                               kernel_desc->getDescriptor(),
+                                               param_gradient.data()));
+
+
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
                                             kernel_desc->getDescriptor(),
