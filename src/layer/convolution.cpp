@@ -117,6 +117,9 @@ namespace RuNet {
   void Convolution::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
+    std::cout << "in conv fwd, tensor is" << std::endl;
+    std::cout << tensor << std::endl;
+
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }
@@ -151,6 +154,7 @@ namespace RuNet {
   }
 
   void Convolution::first_run_backward_init(const Tensor &diff) {
+
     cudnnConvolutionBwdFilterAlgoPerf_t conv_bwd_filter_perf;
     int returned_algo_count{0};
     checkCudnn(cudnnGetConvolutionBackwardFilterAlgorithm_v7(

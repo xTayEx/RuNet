@@ -40,6 +40,9 @@ namespace RuNet {
   void Pooling::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
+    std::cout << "in pooling fwd, tensor is" << std::endl;
+    std::cout << tensor << std::endl;
+
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }

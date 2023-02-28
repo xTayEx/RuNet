@@ -30,6 +30,10 @@ namespace RuNet {
   void Linear::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
+    // FIXME: Something is wrong with Linear::forward. Many NaN in Linear::forward's output
+    std::cout << "in linear fwd, tensor is" << std::endl;
+    std::cout << tensor << std::endl;
+
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }

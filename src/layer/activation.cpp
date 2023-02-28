@@ -41,6 +41,9 @@ namespace RuNet {
     // Tensor.cpp for more information.
     m_input_tensor = tensor;
 
+    std::cout << "in activation fwd, tensor is" << std::endl;
+    std::cout << tensor << std::endl;
+
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
     checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle,
