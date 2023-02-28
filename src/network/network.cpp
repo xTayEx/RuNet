@@ -15,12 +15,10 @@ namespace RuNet {
     }
 
     Tensor _input = input;
-    std::cout << "address of _input: " << _input.getTensorData() << std::endl;
     for (auto iter = m_layers.begin(); iter != m_layers.end(); ++iter) {
       (*iter)->forward(_input);
       if (iter != m_layers.end() - 1) {
         _input = (*iter)->getOutput();
-        std::cout << "address of _input: " << _input.getTensorData() << std::endl;
       }
     }
   }

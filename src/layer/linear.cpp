@@ -31,7 +31,6 @@ namespace RuNet {
     m_input_tensor = tensor;
 
     if (is_fwd_first_run) {
-      std::cout << "in linear: is first fwd run" << std::endl;
       first_run_forward_init(tensor);
     }
 

@@ -35,9 +35,9 @@ namespace RuNet {
                                                         CUDNN_DATA_FLOAT);
 
     int param_size = in_channels * out_channels * kernel_size * kernel_size;
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param.alloc(param_size);
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param_gradient.alloc(param_size);
 
     // set kernel value
@@ -80,7 +80,7 @@ namespace RuNet {
     // allocate dev_output and initiate
     // element count
     size_t output_size = output_n * output_c * output_h * output_w;
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, output_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, output_size * sizeof(float));
     dev_output.alloc(output_size);
     dev_output.memset(0, output_size * sizeof(float));
 
@@ -108,7 +108,7 @@ namespace RuNet {
 
 
     // allocate workspace
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_fwd_workspace_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_fwd_workspace_size * sizeof(float));
     conv_fwd_workspace.alloc(conv_fwd_workspace_size);
 
     is_fwd_first_run = false;
@@ -172,7 +172,7 @@ namespace RuNet {
             kernel_desc->getDescriptor(),
             conv_bwd_filter_algo,
             &conv_bwd_filter_workspace_size));
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_filter_workspace_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_filter_workspace_size * sizeof(float));
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
@@ -188,7 +188,7 @@ namespace RuNet {
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
                                                            conv_desc->getDescriptor(),
-                                                           output_desc->getDescriptor(),
+                                                           m_input_tensor.getTensorDescriptor(),
                                                            1,
                                                            &returned_algo_count,
                                                            &conv_bwd_data_perf));
@@ -198,10 +198,10 @@ namespace RuNet {
                                                             kernel_desc->getDescriptor(),
                                                             diff.getTensorDescriptor(),
                                                             conv_desc->getDescriptor(),
-                                                            output_desc->getDescriptor(),
+                                                            m_input_tensor.getTensorDescriptor(),
                                                             conv_bwd_data_algo,
                                                             &conv_bwd_data_workspace_size));
-    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_data_workspace_size * sizeof(float));
+//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_data_workspace_size * sizeof(float));
     conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
 
     is_bwd_first_run = false;
