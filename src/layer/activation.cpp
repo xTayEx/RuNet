@@ -14,19 +14,16 @@ namespace RuNet {
     // get input size
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     size_t input_size = input_n * input_c * input_w * input_h;
-    int _n, _c, _h, _w, _;
-    cudnnDataType_t data_type;
-    cudnnGetTensor4dDescriptor(tensor.getTensorDescriptor(), &data_type, &_n, &_c, &_h, &_w, &_, &_, &_, &_);
 
     // create output descriptor
     output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h,
                                                      input_w);
 
     dev_output.alloc(input_size);
-    dev_output.memset(0, input_size);
+    dev_output.memset(0, input_size * sizeof(float));
 
     diff_for_prev.alloc(input_size);
-    diff_for_prev.memset(0, input_size);
+    diff_for_prev.memset(0, input_size * sizeof(float));
 
     is_fwd_first_run = false;
   }
@@ -41,8 +38,8 @@ namespace RuNet {
     // Tensor.cpp for more information.
     m_input_tensor = tensor;
 
-    std::cout << "in activation fwd, tensor is" << std::endl;
-    std::cout << tensor << std::endl;
+//    std::cout << "in activation fwd, tensor is" << std::endl;
+//    std::cout << tensor << std::endl;
 
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};

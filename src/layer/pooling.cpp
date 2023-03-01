@@ -15,7 +15,10 @@ namespace RuNet {
 
   void Pooling::first_run_forward_init(const Tensor &tensor) {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
-    diff_for_prev.alloc(input_n * input_c * input_h * input_w);
+    size_t input_size = input_n * input_c * input_h * input_w;
+    diff_for_prev.alloc(input_size);
+    diff_for_prev.memset(0, input_size * sizeof(float));
+
     int output_n, output_c, output_h, output_w;
     checkCudnn(cudnnGetPooling2dForwardOutputDim(pooling_desc->getDescriptor(),
                                                  tensor.getTensorDescriptor(),
@@ -40,8 +43,8 @@ namespace RuNet {
   void Pooling::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-    std::cout << "in pooling fwd, tensor is" << std::endl;
-    std::cout << tensor << std::endl;
+//    std::cout << "in pooling fwd, tensor is" << std::endl;
+//    std::cout << tensor << std::endl;
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);

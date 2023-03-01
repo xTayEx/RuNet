@@ -35,21 +35,20 @@ namespace RuNet {
                                                         CUDNN_DATA_FLOAT);
 
     int param_size = in_channels * out_channels * kernel_size * kernel_size;
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param.alloc(param_size);
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, param_size * sizeof(float));
     param_gradient.alloc(param_size);
+    param_gradient.memset(0, param_size * sizeof(float));
 
     // set kernel value
-    Utils::setGpuNormalValue(param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
+    Utils::setGpuNormalValue(param.data(),
+                             param_size,
+                             Constants::NormalMean,
+                             Constants::NormalSigma);
 
     // bias initialization
     bias_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, 1, out_channels, 1, 1);
     int bias_param_size = out_channels;
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_param.alloc(bias_param_size);
-    bias_param.memset(0, bias_param_size * sizeof(float));
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, bias_param_size * sizeof(float));
     bias_gradient.alloc(bias_param_size);
     bias_gradient.memset(0, bias_param_size * sizeof(float));
     Utils::setGpuNormalValue(bias_param.data(),
@@ -60,7 +59,10 @@ namespace RuNet {
 
   void Convolution::first_run_forward_init(const Tensor &tensor) {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
-    diff_for_prev.alloc(input_n * input_c * input_h * input_w);
+    size_t input_size = input_n * input_c * input_h * input_w;
+    diff_for_prev.alloc(input_size);
+    diff_for_prev.memset(0, input_size * sizeof(float));
+
     // create output descriptor
     int output_n{0}, output_c{0}, output_h{0}, output_w{0};
     checkCudnn(cudnnGetConvolution2dForwardOutputDim(conv_desc->getDescriptor(),
@@ -80,7 +82,6 @@ namespace RuNet {
     // allocate dev_output and initiate
     // element count
     size_t output_size = output_n * output_c * output_h * output_w;
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, output_size * sizeof(float));
     dev_output.alloc(output_size);
     dev_output.memset(0, output_size * sizeof(float));
 
@@ -108,7 +109,6 @@ namespace RuNet {
 
 
     // allocate workspace
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_fwd_workspace_size * sizeof(float));
     conv_fwd_workspace.alloc(conv_fwd_workspace_size);
 
     is_fwd_first_run = false;
@@ -117,8 +117,8 @@ namespace RuNet {
   void Convolution::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-    std::cout << "in conv fwd, tensor is" << std::endl;
-    std::cout << tensor << std::endl;
+//    std::cout << "in conv fwd, tensor is" << std::endl;
+//    std::cout << tensor << std::endl;
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -176,7 +176,6 @@ namespace RuNet {
             kernel_desc->getDescriptor(),
             conv_bwd_filter_algo,
             &conv_bwd_filter_workspace_size));
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_filter_workspace_size * sizeof(float));
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
@@ -185,9 +184,7 @@ namespace RuNet {
     cudnnTensorFormat_t tensor_format;
     int f_k, f_c, f_h, f_w;
     cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
-    fmt::print("d_n: {}, d_c: {}, d_h: {}, d_w: {}\n", d_n, d_c, d_h, d_w);
     cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
-    fmt::print("f_k: {}, f_c: {}, f_h: {}, f_w: {}\n", f_k, f_c, f_h, f_w);
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
@@ -205,7 +202,6 @@ namespace RuNet {
                                                             m_input_tensor.getTensorDescriptor(),
                                                             conv_bwd_data_algo,
                                                             &conv_bwd_data_workspace_size));
-//    fmt::print("line {}, {} bytes will be allocated\n", __LINE__, conv_bwd_data_workspace_size * sizeof(float));
     conv_bwd_data_workspace.alloc(conv_bwd_data_workspace_size);
 
     is_bwd_first_run = false;

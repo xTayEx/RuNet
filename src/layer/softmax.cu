@@ -14,10 +14,14 @@ namespace RuNet {
   }
 
   void Softmax::first_run_forward_init(const Tensor &tensor) {
-    auto [n, c, h, w] = tensor.getTensorInfo();
-    diff_for_prev.alloc(n * c * h * w);
-    dev_output.alloc(n * c * h * w);
-    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w);
+    auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
+    size_t input_size = input_n * input_c * input_h * input_w;
+    diff_for_prev.alloc(input_size);
+    diff_for_prev.memset(0, input_size * sizeof(float));
+    dev_output.alloc(input_size);
+    dev_output.memset(0, input_size * sizeof(float));
+
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h, input_w);
 
     is_fwd_first_run = false;
   }
@@ -25,8 +29,8 @@ namespace RuNet {
   void Softmax::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-    std::cout << "in softmax fwd, tensor is" << std::endl;
-    std::cout << tensor << std::endl;
+//    std::cout << "in softmax fwd, tensor is" << std::endl;
+//    std::cout << tensor << std::endl;
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);

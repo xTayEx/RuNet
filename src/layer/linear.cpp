@@ -6,11 +6,15 @@ namespace RuNet {
           in_features(in_features), out_features(out_features) {
     int param_size = in_features * out_features;
     param.alloc(param_size);
+    Utils::setGpuNormalValue(param.data(), param_size, Constants::NormalMean, Constants::NormalSigma);
     param_gradient.alloc(param_size);
+    param_gradient.memset(0, param_size * sizeof(float));
 
     int bias_param_size = out_features;
     bias_param.alloc(bias_param_size);
+    Utils::setGpuNormalValue(bias_param.data(), bias_param_size, Constants::NormalMean, Constants::NormalSigma);
     bias_gradient.alloc(bias_param_size);
+    bias_gradient.memset(0, bias_param_size * sizeof(float));
 
   }
 
@@ -23,7 +27,7 @@ namespace RuNet {
     dev_output.alloc(out_features * m_batch_size);
     onevec.alloc(m_batch_size);
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
-    Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 0);
+    Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 1.0f);
     is_fwd_first_run = false;
   }
 
@@ -31,8 +35,8 @@ namespace RuNet {
     m_input_tensor = tensor;
 
     // FIXME: Something is wrong with Linear::forward. Many NaN in Linear::forward's output
-    std::cout << "in linear fwd, tensor is" << std::endl;
-    std::cout << tensor << std::endl;
+//    std::cout << "in linear fwd, tensor is" << std::endl;
+//    std::cout << tensor << std::endl;
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -46,8 +50,17 @@ namespace RuNet {
                            param.data(), in_features, tensor.getTensorData(), in_features, b, dev_output.data(),
                            out_features));
 
+    auto *dev_output_cpy = new float[dev_output.size()];
+    cudaMemcpy(dev_output_cpy, dev_output.data(), dev_output.size() * sizeof(float), cudaMemcpyDeviceToHost);
+
     checkCublas(cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, out_features, m_batch_size, 1, a,
                                bias_param.data(), out_features, onevec.data(), 1, a, dev_output.data(), out_features));
+
+    std::cout << "after linear operation, the result is" << std::endl;
+    for (int i = 0; i < 50; ++i) {
+      std::cout << dev_output_cpy[i] << " ";
+    }
+    std::cout << std::endl;
   }
 
   void Linear::first_run_backward_init(const Tensor &diff) {}
