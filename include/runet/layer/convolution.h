@@ -11,8 +11,6 @@ namespace RuNet {
     Convolution(int in_channels,
                 int out_channels,
                 int kernel_size,
-                float alpha = 0.1f,
-                float momentum = 0.9f,
                 int pad_h = 1,
                 int pad_w = 1,
                 int stride = 1,

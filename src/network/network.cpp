@@ -8,10 +8,13 @@ namespace RuNet {
   }
 
   void Network::forward(const Tensor &input) {
-    auto [_batch_size, _c, _h, _w] = input.getTensorInfo();
-    m_batch_size = _batch_size;
-    for (auto &layer_p : m_layers) {
-      layer_p->setBatchSize(m_batch_size);
+    if (first_run) {
+      auto [_batch_size, _c, _h, _w] = input.getTensorInfo();
+      m_batch_size = _batch_size;
+      for (auto &layer_p : m_layers) {
+        layer_p->setBatchSize(m_batch_size);
+      }
+      first_run = false;
     }
 
     Tensor _input = input;
@@ -47,8 +50,11 @@ namespace RuNet {
     m_labels = labels;
   }
 
-  int Network::getBatchSize() const {
-    return m_batch_size;
+  void Network::adjust_learning_rate(float gamma, float power, int epoch_idx) {
+    for (auto & layer : m_layers) {
+      float old_lr = layer->getLearningRate();
+      layer->setLearningRate(old_lr * std::pow(1.0f + gamma * epoch_idx, -power));
+    }
   }
 
 } // RuNet

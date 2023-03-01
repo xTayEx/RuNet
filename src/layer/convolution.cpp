@@ -9,13 +9,10 @@ namespace RuNet {
   Convolution::Convolution(int in_channels,
                            int out_channels,
                            int kernel_size,
-                           float alpha,
-                           float momentum,
                            int pad_h,
                            int pad_w,
                            int stride,
-                           int dilation)
-          : Layer(alpha, momentum) {
+                           int dilation) {
     // create kernel descriptor
     kernel_desc = std::make_unique<KernelDescriptor>(CUDNN_DATA_FLOAT,
                                                      CUDNN_TENSOR_NCHW,
@@ -214,8 +211,8 @@ namespace RuNet {
       first_run_backward_init(diff);
     }
 
-    float a[1] = {this->m_learning_rate};
-    float b[1] = {this->m_momentum};
+    float a[1] = {1.0f};
+    float b[1] = {0.0f};
     checkCudnn(cudnnConvolutionBackwardBias(global_cudnn_handle,
                                             a,
                                             diff.getTensorDescriptor(),
@@ -257,10 +254,9 @@ namespace RuNet {
   void Convolution::update() {
     // TODO: use learning rate instead of weight_decay. check cudnn-training for details of learning
     //  rate calculation.
-    float a = 1.0f - m_weight_decay;
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), &a, param_gradient.data(), 1, param.data(), 1));
-    checkCublas(
-            cublasSaxpy_v2(global_cublas_handle, bias_param.size(), &a, bias_gradient.data(), 1, bias_param.data(), 1));
+    float a[1] = {-m_learning_rate};
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), a, param_gradient.data(), 1, param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param.size(), a, bias_gradient.data(), 1, bias_param.data(), 1));
   }
 
 };  // namespace RuNet

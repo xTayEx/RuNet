@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <exception>
+#include <cmath>
 #include <runet/layer/layer.h>
 #include <runet/layer/softmax.cuh>
 
@@ -26,14 +27,15 @@ namespace RuNet {
 
     virtual void update();
 
-    [[nodiscard]] int getBatchSize() const;
-
     void setLabels(const Tensor &labels);
+
+    void adjust_learning_rate(float gamma, float power, int epoch_idx);
 
   private:
     std::vector<Layer *> m_layers;
     Tensor m_labels;
     int m_batch_size;
+    bool first_run = true;
   };
 
 } // RuNet

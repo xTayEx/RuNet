@@ -69,6 +69,10 @@ int main() {
   int conv2_out_channel = 50;
   int conv2_out_w = conv2_in_w - conv_kernel_size + 1;
   int conv2_out_h = conv2_in_h - conv_kernel_size + 1;
+
+  float lr_decay_gamma = 0.0001;
+  float lr_decay_power = 0.75;
+  float original_lr = 0.01;
   // ##############################################
 
   // ##############################################
@@ -103,6 +107,9 @@ int main() {
   int epoch = 10;
   for (int epoch_idx = 0; epoch_idx < epoch; ++epoch_idx) {
     fmt::print("epoch {}\n", epoch_idx);
+    if (epoch_idx != 0) {
+      mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
+    }
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
       RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size, train_data_c, train_data_h, train_data_w, train_single_image_byte * image_idx);
       single_batch_train_tensor /= 255.0f;

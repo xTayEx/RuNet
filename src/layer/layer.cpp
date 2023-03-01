@@ -2,20 +2,10 @@
 
 namespace RuNet {
 
-  Layer::Layer(float alpha, float momentum, float weight_decay, bool is_static)
-          : m_learning_rate(alpha), m_momentum(momentum),
-            m_weight_decay(weight_decay), is_static(is_static) {}
+  Layer::Layer(float learning_rate) : m_learning_rate(learning_rate) {}
 
   float Layer::getLearningRate() const {
     return m_learning_rate;
-  }
-
-  float Layer::getMomentum() const {
-    return m_momentum;
-  }
-
-  float Layer::getWeightDecay() const {
-    return m_weight_decay;
   }
 
   int Layer::getBatchSize() const {
@@ -44,5 +34,9 @@ namespace RuNet {
 
   void Layer::setBatchSize(int bs) {
     m_batch_size = bs;
+  }
+
+  void Layer::setLearningRate(float learning_rate) {
+    m_learning_rate = learning_rate;
   }
 };  // namespace RuNet

@@ -34,7 +34,6 @@ namespace RuNet {
   void Linear::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-    // FIXME: Something is wrong with Linear::forward. Many NaN in Linear::forward's output
 //    std::cout << "in linear fwd, tensor is" << std::endl;
 //    std::cout << tensor << std::endl;
 
@@ -84,11 +83,10 @@ namespace RuNet {
   }
 
   void Linear::update() {
-    float alpha[1] = {-m_learning_rate};
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), alpha, param_gradient.data(), 1, param.data(), 1));
-    checkCublas(
-            cublasSaxpy_v2(global_cublas_handle, bias_param.size(), alpha, bias_gradient.data(), 1, bias_param.data(),
-                           1));
+    float a[1] = {-m_learning_rate};
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), a, param_gradient.data(), 1, param.data(), 1));
+    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param.size(), a, bias_gradient.data(), 1, bias_param.data(),
+                               1));
   }
 
 }
