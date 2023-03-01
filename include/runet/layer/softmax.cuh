@@ -8,6 +8,7 @@
 
 namespace RuNet {
   __global__ void softmaxBackward(const float *label, int num_labels, int batch_size, float *diff);
+
   class Softmax : public Layer {
   public:
     Softmax() = default;
@@ -22,10 +23,11 @@ namespace RuNet {
 
     void update() override;
 
-    void backward_when_last_layer(const Tensor& labels) override;
+    void backward_when_last_layer(const Tensor &labels) override;
 
   private:
     void first_run_forward_init(const Tensor &tensor) override;
+
     void first_run_backward_init(const Tensor &diff) override;
   };
 }

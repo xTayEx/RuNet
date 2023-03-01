@@ -58,8 +58,9 @@ namespace RuNet {
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> bias_desc;
     std::unique_ptr<DescriptorWrapper<cudnnTensorDescriptor_t>> output_desc;
 
-    virtual void first_run_forward_init(const Tensor& tensor) = 0;
-    virtual void first_run_backward_init(const Tensor& diff) = 0;
+    virtual void first_run_forward_init(const Tensor &tensor) = 0;
+
+    virtual void first_run_backward_init(const Tensor &diff) = 0;
 
     Tensor m_input_tensor;
   };

@@ -12,12 +12,12 @@ namespace RuNet {
   template<typename T>
   class DescriptorWrapper {
     static_assert(std::is_same<T, cudnnTensorDescriptor_t>::value
-            || std::is_same<T, cudnnActivationDescriptor_t>::value
-            || std::is_same<T, cudnnConvolutionDescriptor_t>::value
-            || std::is_same<T, cudnnFilterDescriptor_t>::value
-            || std::is_same<T, cudnnPoolingDescriptor_t>::value,
-            "T must be cudnnTensorDescriptor_t, cudnnActivationDescriptor_t, "
-            "cudnnConvolutionDescriptor_t, cudnnFilterDescriptor_t or cudnnPoolingDescriptor_t!");
+                  || std::is_same<T, cudnnActivationDescriptor_t>::value
+                  || std::is_same<T, cudnnConvolutionDescriptor_t>::value
+                  || std::is_same<T, cudnnFilterDescriptor_t>::value
+                  || std::is_same<T, cudnnPoolingDescriptor_t>::value,
+                  "T must be cudnnTensorDescriptor_t, cudnnActivationDescriptor_t, "
+                  "cudnnConvolutionDescriptor_t, cudnnFilterDescriptor_t or cudnnPoolingDescriptor_t!");
   public:
     template<typename ...ARGS>
     explicit DescriptorWrapper(ARGS ...args);

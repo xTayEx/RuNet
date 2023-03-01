@@ -21,7 +21,8 @@ namespace RuNet {
     dev_output.alloc(input_size);
     dev_output.memset(0, input_size * sizeof(float));
 
-    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h, input_w);
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, input_n, input_c, input_h,
+                                                     input_w);
 
     is_fwd_first_run = false;
   }
@@ -38,7 +39,9 @@ namespace RuNet {
 
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
-    cudnnSoftmaxForward(global_cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL, alpha, tensor.getTensorDescriptor(), tensor.getTensorData(), beta, output_desc->getDescriptor(), dev_output.data());
+    cudnnSoftmaxForward(global_cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL, alpha,
+                        tensor.getTensorDescriptor(), tensor.getTensorData(), beta, output_desc->getDescriptor(),
+                        dev_output.data());
   }
 
   void Softmax::first_run_backward_init(const Tensor &diff) {}
@@ -50,6 +53,7 @@ namespace RuNet {
   void Softmax::backward_when_last_layer(const Tensor &labels) {
     auto [n, c, h, w] = labels.getTensorInfo();
     int num_labels = n * c * h * w;
-    softmaxBackward<<<std::ceil((1.0f * m_batch_size)) / (1.0f * Constants::CudaBandWidth), Constants::CudaBandWidth>>>(labels.getTensorData(),  num_labels, m_batch_size, diff_for_prev.data());
+    softmaxBackward<<<std::ceil((1.0f * m_batch_size)) / (1.0f * Constants::CudaBandWidth), Constants::CudaBandWidth>>>(
+            labels.getTensorData(), num_labels, m_batch_size, diff_for_prev.data());
   }
 }

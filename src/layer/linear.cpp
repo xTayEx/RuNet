@@ -23,7 +23,8 @@ namespace RuNet {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     // we have to allocate dev_output here instead of doing it in ctor because
     // m_batch_size is set after construction.
-    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, m_batch_size, out_features, 1, 1);
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, m_batch_size, out_features, 1,
+                                                     1);
     dev_output.alloc(out_features * m_batch_size);
     onevec.alloc(m_batch_size);
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);

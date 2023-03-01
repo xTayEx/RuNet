@@ -7,7 +7,9 @@
 namespace RuNet {
   extern cudnnHandle_t global_cudnn_handle;
   extern cublasHandle_t global_cublas_handle;
+
   void init_context();
+
   void destroy_context();
 };  // namespace RuNet
 

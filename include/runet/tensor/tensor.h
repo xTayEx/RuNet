@@ -27,7 +27,7 @@ namespace RuNet {
 
     Tensor &operator/=(float scalar);
 
-    Tensor(Tensor&&) noexcept;
+    Tensor(Tensor &&) noexcept;
 
     Tensor() = default;
 

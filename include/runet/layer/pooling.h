@@ -23,7 +23,9 @@ namespace RuNet {
 
   private:
     std::unique_ptr<PoolingDescriptor> pooling_desc;
+
     void first_run_backward_init(const Tensor &diff) override;
+
     void first_run_forward_init(const Tensor &tensor) override;
 
   };

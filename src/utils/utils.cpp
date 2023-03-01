@@ -15,7 +15,7 @@ namespace RuNet {
     auto _data_type = static_cast<IDX_DATA_TYPE>(_data_type_c);
     m_data_type = _data_type;
     if (m_data_type == IDX_DATA_TYPE::IDX_UNSIGNED_BYTE
-      || m_data_type == IDX_DATA_TYPE::IDX_SIGNED_BYTE) {
+        || m_data_type == IDX_DATA_TYPE::IDX_SIGNED_BYTE) {
       m_data_length = 1;
     } else if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {
       m_data_length = 2;
@@ -36,7 +36,7 @@ namespace RuNet {
       m_dim_size.push_back(static_cast<int>(_dim_size));
     }
     m_tensor_size = 1;
-    for (auto x : m_dim_size) {
+    for (auto x: m_dim_size) {
       m_tensor_size *= x;
     }
 
@@ -65,7 +65,9 @@ namespace RuNet {
       fs.read(reinterpret_cast<char *>(temp_buf.data()), read_size);
       std::streamsize bytes_read = fs.gcount();
       if (bytes_read < read_size) {
-        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
+        throw std::runtime_error(
+                fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed",
+                            bytes_read, read_size));
       }
       std::copy(temp_buf.begin(), temp_buf.end(), tensor_data.begin());
 
@@ -74,7 +76,9 @@ namespace RuNet {
       fs.read(temp_buf.data(), read_size);
       std::streamsize bytes_read = fs.gcount();
       if (bytes_read < read_size) {
-        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
+        throw std::runtime_error(
+                fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed",
+                            bytes_read, read_size));
       }
       std::copy(temp_buf.begin(), temp_buf.end(), tensor_data.begin());
     } else if (m_data_type == IDX_DATA_TYPE::IDX_SHORT || m_data_type == IDX_DATA_TYPE::IDX_INT) {
@@ -82,7 +86,9 @@ namespace RuNet {
       fs.read(reinterpret_cast<char *>(tensor_data.data()), read_size);
       std::streamsize bytes_read = fs.gcount();
       if (bytes_read != read_size) {
-        throw std::runtime_error(fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed", bytes_read, read_size));
+        throw std::runtime_error(
+                fmt::format("bytes_read not equal to read_size. {} bytes are read. However, {} bytes are needed",
+                            bytes_read, read_size));
       }
       for (int i = 0; i < bytes_read; i += m_data_length) {
         if (m_data_type == IDX_DATA_TYPE::IDX_SHORT) {

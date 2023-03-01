@@ -11,11 +11,11 @@
 #include <fmt/ranges.h>
 
 namespace RuNet {
-  enum class IDX_DATA_TYPE: char {
+  enum class IDX_DATA_TYPE : char {
     IDX_UNSIGNED_BYTE = 0x08,
-    IDX_SIGNED_BYTE   = 0x09,
-    IDX_SHORT         = 0x0b,
-    IDX_INT           = 0x0c,
+    IDX_SIGNED_BYTE = 0x09,
+    IDX_SHORT = 0x0b,
+    IDX_INT = 0x0c,
   };
 
   inline void endian_convert(uint16_t *value) {
@@ -30,10 +30,13 @@ namespace RuNet {
   class IdxFile {
   public:
     explicit IdxFile(std::string file_path);
-    IdxFile(const IdxFile&) = delete;
+
+    IdxFile(const IdxFile &) = delete;
+
     IdxFile &operator=(const IdxFile &) = delete;
 
     [[nodiscard]] IDX_DATA_TYPE getDataType() const;
+
     [[nodiscard]] uint8_t getIdxDimension() const;
 
     Tensor read_data(int tensor_n, int tensor_c, int tensor_h, int tensor_w, int offset_byte_count = 0);

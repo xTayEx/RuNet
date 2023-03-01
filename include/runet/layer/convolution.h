@@ -36,7 +36,9 @@ namespace RuNet {
 
   private:
     void first_run_forward_init(const Tensor &tensor) override;
+
     void first_run_backward_init(const Tensor &diff) override;
+
     cudnnConvolutionFwdAlgo_t conv_fwd_algo;
     cudnnConvolutionBwdFilterAlgo_t conv_bwd_filter_algo;
     cudnnConvolutionBwdDataAlgo_t conv_bwd_data_algo;

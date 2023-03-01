@@ -222,18 +222,18 @@ namespace RuNet {
                                             bias_gradient.data()));
 
     checkCudnn(cudnnConvolutionBackwardFilter(global_cudnn_handle,
-                                               a,
-                                               m_input_tensor.getTensorDescriptor(),
-                                               m_input_tensor.getTensorData(),
-                                               diff.getTensorDescriptor(),
-                                               diff.getTensorData(),
-                                               conv_desc->getDescriptor(),
-                                               conv_bwd_filter_algo,
-                                               conv_bwd_filter_workspace.data(),
+                                              a,
+                                              m_input_tensor.getTensorDescriptor(),
+                                              m_input_tensor.getTensorData(),
+                                              diff.getTensorDescriptor(),
+                                              diff.getTensorData(),
+                                              conv_desc->getDescriptor(),
+                                              conv_bwd_filter_algo,
+                                              conv_bwd_filter_workspace.data(),
                                               conv_bwd_filter_workspace_size,
-                                               b,
-                                               kernel_desc->getDescriptor(),
-                                               param_gradient.data()));
+                                              b,
+                                              kernel_desc->getDescriptor(),
+                                              param_gradient.data()));
 
 
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
@@ -252,11 +252,10 @@ namespace RuNet {
   }
 
   void Convolution::update() {
-    // TODO: use learning rate instead of weight_decay. check cudnn-training for details of learning
-    //  rate calculation.
     float a[1] = {-m_learning_rate};
     checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), a, param_gradient.data(), 1, param.data(), 1));
-    checkCublas(cublasSaxpy_v2(global_cublas_handle, bias_param.size(), a, bias_gradient.data(), 1, bias_param.data(), 1));
+    checkCublas(
+            cublasSaxpy_v2(global_cublas_handle, bias_param.size(), a, bias_gradient.data(), 1, bias_param.data(), 1));
   }
 
 };  // namespace RuNet

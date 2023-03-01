@@ -31,7 +31,9 @@ int main() {
   int train_data_h = train_dim_size[1];
   int train_data_w = train_dim_size[2];
 
-  fmt::print("Done reading training data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<int8_t>(train_image_idx_file.getDataType()), train_image_idx_file.getIdxDimension(), total_data_size);
+  fmt::print("Done reading training data. data type: {:#x}, dimensions: {}, data size: {}\n",
+             static_cast<int8_t>(train_image_idx_file.getDataType()), train_image_idx_file.getIdxDimension(),
+             total_data_size);
   // ##############################################
 
   // ##############################################
@@ -42,13 +44,15 @@ int main() {
 
   int label_count = label_idx_file.getDimSize()[0];
 
-  fmt::print("Done reading label data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<uint8_t>(label_idx_file.getDataType()), label_idx_file.getIdxDimension(), label_count);
+  fmt::print("Done reading label data. data type: {:#x}, dimensions: {}, data size: {}\n",
+             static_cast<uint8_t>(label_idx_file.getDataType()), label_idx_file.getIdxDimension(), label_count);
   // ##############################################
 
   // ##############################################
   // network parameter
   int network_batch_size = 100; // how many samples(images in mnist example) are there in a single batch
-  int train_single_image_byte = train_data_c * train_data_h * train_data_w * sizeof(uint8_t); // how many bytes of training data are there in a single batch
+  int train_single_image_byte = train_data_c * train_data_h * train_data_w *
+                                sizeof(uint8_t); // how many bytes of training data are there in a single batch
   int train_single_label_byte = sizeof(uint8_t);
 
   int conv_kernel_size = 5;
@@ -82,20 +86,21 @@ int main() {
   auto conv2 = std::make_unique<RuNet::Convolution>(conv2_in_channel, conv2_out_channel, conv_kernel_size);
   auto pool1 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
   auto pool2 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
-  auto fc1 = std::make_unique<RuNet::Linear>((conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
+  auto fc1 = std::make_unique<RuNet::Linear>(
+          (conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
   auto relu = std::make_unique<RuNet::Activation>(CUDNN_ACTIVATION_RELU, CUDNN_NOT_PROPAGATE_NAN, 0.0);
   auto fc2 = std::make_unique<RuNet::Linear>(500, 10);
   auto softmax = std::make_unique<RuNet::Softmax>();
 
   std::vector<RuNet::Layer *> layers = {
-    conv1.get(),
-    pool1.get(),
-    conv2.get(),
-    pool2.get(),
-    fc1.get(),
-    relu.get(),
-    fc2.get(),
-    softmax.get()
+          conv1.get(),
+          pool1.get(),
+          conv2.get(),
+          pool2.get(),
+          fc1.get(),
+          relu.get(),
+          fc2.get(),
+          softmax.get()
   };
 
   RuNet::Network mnist_network(layers);
@@ -111,9 +116,12 @@ int main() {
       mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
     }
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
-      RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size, train_data_c, train_data_h, train_data_w, train_single_image_byte * image_idx);
+      RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size, train_data_c,
+                                                                               train_data_h, train_data_w,
+                                                                               train_single_image_byte * image_idx);
       single_batch_train_tensor /= 255.0f;
-      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size, 1, 1, 1, train_single_label_byte * image_idx);
+      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size, 1, 1, 1,
+                                                                         train_single_label_byte * image_idx);
       // setLabels will call Tensor's operator=
       mnist_network.setLabels(single_batch_label_tensor);
       mnist_network.forward(single_batch_train_tensor);
@@ -135,7 +143,9 @@ int main() {
   int test_data_h = test_dim_size[1];
   int test_data_w = test_dim_size[2];
 
-  fmt::print("Done reading test image data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<uint8_t>(test_image_idx_file.getDataType()), test_image_idx_file.getIdxDimension(), total_test_size);
+  fmt::print("Done reading test image data. data type: {:#x}, dimensions: {}, data size: {}\n",
+             static_cast<uint8_t>(test_image_idx_file.getDataType()), test_image_idx_file.getIdxDimension(),
+             total_test_size);
   // ##############################################
 
   // ##############################################
@@ -144,17 +154,22 @@ int main() {
   auto test_label_path = std::filesystem::path(test_label_path_s);
   auto test_label_idx_file = RuNet::IdxFile(std::filesystem::absolute(test_label_path).string());
   int test_label_count = test_label_idx_file.getDimSize()[0];
-  fmt::print("Done reading test image data. data type: {:#x}, dimensions: {}, data size: {}\n", static_cast<uint8_t>(test_label_idx_file.getDataType()), test_label_idx_file.getIdxDimension(), test_label_count);
+  fmt::print("Done reading test image data. data type: {:#x}, dimensions: {}, data size: {}\n",
+             static_cast<uint8_t>(test_label_idx_file.getDataType()), test_label_idx_file.getIdxDimension(),
+             test_label_count);
 
   // ##############################################
   // calculate error rate
   int test_single_image_byte = test_data_c * test_data_h * test_data_w * sizeof(uint8_t);
   int test_single_label_byte = sizeof(uint8_t);
   for (int image_idx = 0; image_idx < total_test_size; image_idx += network_batch_size) {
-    RuNet::Tensor single_batch_test_image = test_image_idx_file.read_data(network_batch_size, test_data_c, test_data_h, test_data_w, image_idx * test_single_image_byte);
+    RuNet::Tensor single_batch_test_image = test_image_idx_file.read_data(network_batch_size, test_data_c, test_data_h,
+                                                                          test_data_w,
+                                                                          image_idx * test_single_image_byte);
     // normalize
     single_batch_test_image /= 255.0f;
-    RuNet::Tensor single_batch_test_label = test_label_idx_file.read_data(network_batch_size, 1, 1, 1, image_idx * test_single_label_byte);
+    RuNet::Tensor single_batch_test_label = test_label_idx_file.read_data(network_batch_size, 1, 1, 1,
+                                                                          image_idx * test_single_label_byte);
     mnist_network.forward(single_batch_test_image);
     RuNet::Tensor predict = fc2->getOutput();
 //    std::cout << "predict: \n" << std::endl;

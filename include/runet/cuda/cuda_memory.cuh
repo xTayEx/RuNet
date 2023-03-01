@@ -17,11 +17,11 @@ namespace RuNet {
 
     CudaMemory(const CudaMemory &);
 
-    CudaMemory& operator=(const CudaMemory &) = delete;
+    CudaMemory &operator=(const CudaMemory &) = delete;
 
     CudaMemory(CudaMemory &&) noexcept;
 
-    CudaMemory& operator/=(float scalar);
+    CudaMemory &operator/=(float scalar);
 
     explicit CudaMemory(const std::vector<float> &);
 

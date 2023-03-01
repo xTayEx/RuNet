@@ -25,7 +25,9 @@ namespace RuNet {
     int in_features;
     int out_features;
     CudaMemory onevec;
+
     void first_run_forward_init(const Tensor &tensor) override;
+
     void first_run_backward_init(const Tensor &diff) override;
   };
 }
