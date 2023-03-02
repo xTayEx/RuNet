@@ -67,6 +67,10 @@ namespace RuNet {
 
   void Linear::backward(const Tensor &diff) {
 
+    std::cout << diff << std::endl;
+    std::cout << "in linear bwd, diff is " << std::endl;
+    std::cin.get();
+
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 

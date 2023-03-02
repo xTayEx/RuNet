@@ -65,9 +65,14 @@ namespace RuNet {
   void Pooling::first_run_backward_init(const Tensor &diff) {}
 
   void Pooling::backward(const Tensor &diff) {
-//    std::cout << "in pooling backward, diff is " << std::endl;
-//    std::cout << diff << std::endl;
-//    std::cin.get();
+
+    std::cout << diff << std::endl;
+    // FIXME: the diff input from fc1's backward is so weird.
+    //  the front part of diff is some non-zero float number.
+    // While the remaining part arr all zero!
+    std::cout << "in pooling bwd, diff is " << std::endl;
+    std::cin.get();
+
     float a[1] = {1.0f};
     float b[1] = {0.0f};
     checkCudnn(cudnnPoolingBackward(global_cudnn_handle,

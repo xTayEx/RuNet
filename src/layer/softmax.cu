@@ -52,7 +52,6 @@ namespace RuNet {
     std::cout << labels << std::endl;
     std::cin.get();
     auto [n, c, h, w] = labels.getTensorInfo();
-    int num_labels = n * c * h * w;
     fmt::print("gridDim is {}\n", std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth)));
     int grid_dim = std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth));
     softmaxBackward<<<grid_dim, Constants::CudaBandWidth>>>(

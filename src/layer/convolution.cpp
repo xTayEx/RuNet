@@ -207,6 +207,10 @@ namespace RuNet {
 
   void Convolution::backward(const Tensor &diff) {
 
+    std::cout << diff << std::endl;
+    std::cout << "in conv bwd, diff is " << std::endl;
+    std::cin.get();
+
     if (is_bwd_first_run) {
       first_run_backward_init(diff);
     }

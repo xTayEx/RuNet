@@ -56,6 +56,11 @@ namespace RuNet {
   void Activation::first_run_backward_init(const Tensor &) {}
 
   void Activation::backward(const Tensor &diff) {
+
+    std::cout << diff << std::endl;
+    std::cout << "in activation bwd, diff is " << std::endl;
+    std::cin.get();
+
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
 
