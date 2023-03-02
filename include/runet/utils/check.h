@@ -7,38 +7,38 @@
 #include <sstream>
 #include <iostream>
 
-#define fatalError(err) do {                                           \
-  std::stringstream pos, msg;                                          \
-  pos << "In " << __FILE__ << ": " << __LINE__ << "\n";                \
-  msg << std::string(err) << "\n";                                     \
-  std::cerr << pos.str () << msg.str();                                \
-  cudaDeviceReset();                                                   \
-  exit(1);                                                             \
-} while(0)                                                             \
+inline void fatalError(const std::string &err) {
+  std::stringstream pos, msg;
+  pos << "In " << __FILE__ << ": " << __LINE__ << "n";
+  msg << std::string(err) << "n";
+  std::cerr << pos.str () << msg.str();
+  cudaDeviceReset();
+  exit(1);
+}
 
-#define checkCudnn(status) do {                                        \
-  std::stringstream err;                                               \
-  if (status != CUDNN_STATUS_SUCCESS) {                                \
-    err << "cuDNN error: " << cudnnGetErrorString(status);             \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
+inline void checkCudnn(cudnnStatus_t status) {
+  std::stringstream err;
+  if (status != CUDNN_STATUS_SUCCESS) {
+    err << "cuDNN error: " << cudnnGetErrorString(status);
+    fatalError(err.str());
+  }
+}
 
 
-#define checkCuda(status) do {                                         \
-  std::stringstream err;                                               \
-  if (status != cudaSuccess) {                                         \
-    err << "CUDA error: " << cudaGetErrorString(status);               \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
+inline void checkCuda(cudaError status) {
+  std::stringstream err;
+  if (status != cudaSuccess) {
+    err << "CUDA error: " << cudaGetErrorString(status);
+    fatalError(err.str());
+  }
+}
 
-#define checkCublas(status) do {                                       \
-  std::stringstream err;                                               \
-  if (status != CUBLAS_STATUS_SUCCESS) {                               \
-    err << "cuBLAS error: " << status;                                 \
-    fatalError(err.str());                                             \
-  }                                                                    \
-} while(0)                                                             \
+inline void checkCublas(cublasStatus_t status) {
+  std::stringstream err;
+  if (status != CUBLAS_STATUS_SUCCESS) {
+    err << "cuBLAS error: " << status;
+    fatalError(err.str());
+  }
+}
 
 #endif
