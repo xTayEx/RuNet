@@ -176,6 +176,12 @@ namespace RuNet {
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
+    int d_n, d_c, d_h, d_w, _;
+    cudnnDataType_t data_type;
+    cudnnTensorFormat_t tensor_format;
+    int f_k, f_c, f_h, f_w;
+    cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
+    cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
@@ -200,7 +206,7 @@ namespace RuNet {
 
 
   void Convolution::backward(const Tensor &diff) {
-    diff_for_prev.memset(0, diff_for_prev.size());
+
     if (is_bwd_first_run) {
       first_run_backward_init(diff);
     }
