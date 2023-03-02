@@ -176,12 +176,6 @@ namespace RuNet {
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
-    int d_n, d_c, d_h, d_w, _;
-    cudnnDataType_t data_type;
-    cudnnTensorFormat_t tensor_format;
-    int f_k, f_c, f_h, f_w;
-    cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
-    cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
@@ -206,7 +200,7 @@ namespace RuNet {
 
 
   void Convolution::backward(const Tensor &diff) {
-
+    diff_for_prev.memset(0, diff_for_prev.size());
     if (is_bwd_first_run) {
       first_run_backward_init(diff);
     }
@@ -235,6 +229,13 @@ namespace RuNet {
                                               kernel_desc->getDescriptor(),
                                               param_gradient.data()));
 
+    std::vector<float> param_gradient_from_device(10);
+    cudaMemcpy(param_gradient_from_device.data(),
+               param_gradient.data(),
+               10 * sizeof(float),
+               cudaMemcpyDeviceToHost);
+    fmt::print("after backward, the top ten value in conv param_gradient is \n{}\n", fmt::join(param_gradient_from_device, ", "));
+
 
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
@@ -254,6 +255,9 @@ namespace RuNet {
   void Convolution::update() {
     float a[1] = {-m_learning_rate};
     checkCublas(cublasSaxpy_v2(global_cublas_handle, param.size(), a, param_gradient.data(), 1, param.data(), 1));
+    std::vector<float> param_from_device(10);
+    cudaMemcpy(param_from_device.data(), param.data(), 10 * sizeof(float), cudaMemcpyDeviceToHost);
+    fmt::print("after update, the top ten value in conv param.data() is \n{}\n", fmt::join(param_from_device, ", "));
     checkCublas(
             cublasSaxpy_v2(global_cublas_handle, bias_param.size(), a, bias_gradient.data(), 1, bias_param.data(), 1));
   }

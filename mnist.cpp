@@ -14,6 +14,17 @@
 #include <fmt/core.h>
 #include <opencv4/opencv2/opencv.hpp>
 
+// extract predict label value from probability vector
+int get_predict_label_val(const std::vector<float> &class_probability) {
+  int chosen = 0;
+  for (int i = 1; i < 10; ++i) {
+    if (class_probability[chosen] < class_probability[i]) {
+      chosen = i;
+    }
+  }
+  return chosen;
+}
+
 // TODO: transform the images; shuffle; finish the network training and network test part
 int main() {
   RuNet::init_context();
@@ -76,7 +87,6 @@ int main() {
 
   float lr_decay_gamma = 0.0001;
   float lr_decay_power = 0.75;
-  float original_lr = 0.01;
   // ##############################################
 
   // ##############################################
@@ -109,18 +119,23 @@ int main() {
 
   // ##############################################
   // train the network
-  int epoch = 10;
+  int epoch = 50;
   for (int epoch_idx = 0; epoch_idx < epoch; ++epoch_idx) {
     fmt::print("epoch {}\n", epoch_idx);
     if (epoch_idx != 0) {
       mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
     }
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
-      RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size, train_data_c,
-                                                                               train_data_h, train_data_w,
+      RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size,
+                                                                               train_data_c,
+                                                                               train_data_h,
+                                                                               train_data_w,
                                                                                train_single_image_byte * image_idx);
       single_batch_train_tensor /= 255.0f;
-      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size, 1, 1, 1,
+      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size,
+                                                                         1,
+                                                                         1,
+                                                                         1,
                                                                          train_single_label_byte * image_idx);
       // setLabels will call Tensor's operator=
       mnist_network.setLabels(single_batch_label_tensor);
@@ -162,21 +177,59 @@ int main() {
   // calculate error rate
   int test_single_image_byte = test_data_c * test_data_h * test_data_w * sizeof(uint8_t);
   int test_single_label_byte = sizeof(uint8_t);
+
+  int err_count = 0;
+
   for (int image_idx = 0; image_idx < total_test_size; image_idx += network_batch_size) {
-    RuNet::Tensor single_batch_test_image = test_image_idx_file.read_data(network_batch_size, test_data_c, test_data_h,
+    RuNet::Tensor single_batch_test_image = test_image_idx_file.read_data(network_batch_size,
+                                                                          test_data_c,
+                                                                          test_data_h,
                                                                           test_data_w,
                                                                           image_idx * test_single_image_byte);
     // normalize
     single_batch_test_image /= 255.0f;
-    RuNet::Tensor single_batch_test_label = test_label_idx_file.read_data(network_batch_size, 1, 1, 1,
+    RuNet::Tensor single_batch_test_label = test_label_idx_file.read_data(network_batch_size,
+                                                                          1,
+                                                                          1,
+                                                                          1,
                                                                           image_idx * test_single_label_byte);
+    std::vector<float> test_label_from_device(network_batch_size);
+    cudaMemcpy(test_label_from_device.data(),
+               single_batch_test_label.getTensorData(),
+               network_batch_size * sizeof(float),
+               cudaMemcpyDeviceToHost);
+
     mnist_network.forward(single_batch_test_image);
     RuNet::Tensor predict = softmax->getOutput();
-    std::cout << "predict: \n" << std::endl;
-    std::cout << predict << std::endl;
+    auto [predict_n, predict_c, predict_h, predict_w] = predict.getTensorInfo(); // 100 10 1 1
 
-    std::cout << "label: \n" << std::endl;
-    std::cout << single_batch_test_label << std::endl;
+    for (int predict_class_probability_id = 0; predict_class_probability_id < predict_n; ++predict_class_probability_id) {
+      std::vector<float> class_probability(predict_c);
+      cudaMemcpy(class_probability.data(),
+                 predict.getTensorData() + predict_class_probability_id * predict_c,
+                 predict_c * predict_h * predict_w * sizeof(float),
+                 cudaMemcpyDeviceToHost);
+      int predict_class = get_predict_label_val(class_probability);
+      fmt::print("predict_class is {}\n", predict_class);
+      std::cin.get();
+
+      int label_value = static_cast<int>(test_label_from_device[predict_class_probability_id]);
+      if (predict_class != label_value) {
+        ++err_count;
+        fmt::print("predict value is {}, label value is {}\n", predict_class, label_value);
+      }
+    }
+
+    float err_rate = (static_cast<float>(err_count)) / (static_cast<float>(total_test_size));
+    fmt::print("error rate is {}\n", err_rate);
+
+//    fmt::print("predict size: {}\n", predict_n * predict_c * predict_h * predict_w);
+//    fmt::print("test label size: {}\n", network_batch_size);
+//    std::cout << "predict: \n" << std::endl;
+//    std::cout << predict << std::endl;
+
+//    std::cout << "label: \n" << std::endl;
+//    std::cout << single_batch_test_label << std::endl;
     // ##############################################
   }
 

@@ -56,6 +56,7 @@ namespace RuNet {
   void Activation::first_run_backward_init(const Tensor &) {}
 
   void Activation::backward(const Tensor &diff) {
+    diff_for_prev.memset(0, diff_for_prev.size());
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
 
@@ -71,6 +72,14 @@ namespace RuNet {
                                        beta,
                                        m_input_tensor.getTensorDescriptor(),
                                        diff_for_prev.data()));
+    std::vector<float> diff_for_prev_cpy(diff_for_prev.size());
+    checkCuda(cudaMemcpy(diff_for_prev_cpy.data(),
+                         diff_for_prev.data(),
+                         diff_for_prev.size() * sizeof(float),
+                         cudaMemcpyDeviceToHost));
+    fmt::print("in activation backward, diff_for_prev_cpy is\n [{}]\n", fmt::join(diff_for_prev_cpy, ", "));
+    std::cout << "fuck activation" << std::endl;
+    std::cin.get();
   }
 
   void Activation::update() {}

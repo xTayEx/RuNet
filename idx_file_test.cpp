@@ -9,7 +9,7 @@
 
 int main() {
   RuNet::init_context();
-  std::string idx_file_path_s = "../data/train-images-idx3-ubyte";
+  std::string idx_file_path_s = "../data/t10k-images-idx3-ubyte";
   auto idx_file_path = std::filesystem::path(idx_file_path_s);
   auto t10k_images = RuNet::IdxFile(std::filesystem::absolute(idx_file_path).string());
 
@@ -28,7 +28,7 @@ int main() {
     RuNet::Tensor t10k_images_tensor = t10k_images.read_data(n, c, h, w, image_idx * image_size);
     cv::Mat t10k_first_image = t10k_images_tensor.convert_to_opencv_image(CV_8UC1);
     std::cout << t10k_first_image << std::endl;
-    cv::imwrite(fmt::format("/home/xtayex/Documents/RuNet/data/train-images/train_image_{:06}.png", image_idx),
+    cv::imwrite(fmt::format("/home/xtayex/Documents/RuNet/data/test-images/test_image_{:06}.png", image_idx),
                 t10k_first_image);
   }
 

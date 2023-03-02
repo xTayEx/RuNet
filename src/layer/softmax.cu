@@ -30,9 +30,6 @@ namespace RuNet {
   void Softmax::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-//    std::cout << "in softmax fwd, tensor is" << std::endl;
-//    std::cout << tensor << std::endl;
-
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }
@@ -42,6 +39,10 @@ namespace RuNet {
     cudnnSoftmaxForward(global_cudnn_handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL, alpha,
                         tensor.getTensorDescriptor(), tensor.getTensorData(), beta, output_desc->getDescriptor(),
                         dev_output.data());
+//    std::vector<float> dev_output_cpy(dev_output.size());
+//    cudaMemcpy(dev_output_cpy.data(), dev_output.data(), dev_output.size() * sizeof(float), cudaMemcpyDeviceToHost);
+//    fmt::print("[{}]\n", fmt::join(dev_output_cpy, ", "));
+//    std::cin.get();
   }
 
   void Softmax::first_run_backward_init(const Tensor &diff) {}
@@ -52,8 +53,9 @@ namespace RuNet {
 
   void Softmax::backward_when_last_layer(const Tensor &labels) {
     auto [n, c, h, w] = labels.getTensorInfo();
-    int num_labels = n * c * h * w;
-    softmaxBackward<<<std::ceil((1.0f * m_batch_size)) / (1.0f * Constants::CudaBandWidth), Constants::CudaBandWidth>>>(
-            labels.getTensorData(), num_labels, m_batch_size, diff_for_prev.data());
+    int grid_dim = std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth));
+    cudaMemcpy(diff_for_prev.data(), dev_output.data(), dev_output.size() * sizeof(float), cudaMemcpyDeviceToDevice);
+    softmaxBackward<<<grid_dim, Constants::CudaBandWidth>>>(
+            labels.getTensorData(), 10, m_batch_size, diff_for_prev.data());
   }
 }

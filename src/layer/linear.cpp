@@ -23,11 +23,16 @@ namespace RuNet {
     auto [input_n, input_c, input_h, input_w] = tensor.getTensorInfo();
     // we have to allocate dev_output here instead of doing it in ctor because
     // m_batch_size is set after construction.
-    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, m_batch_size, out_features, 1,
+    output_desc = std::make_unique<TensorDescriptor>(CUDNN_TENSOR_NCHW,
+                                                     CUDNN_DATA_FLOAT,
+                                                     m_batch_size,
+                                                     out_features,
+                                                     1,
                                                      1);
     dev_output.alloc(out_features * m_batch_size);
     onevec.alloc(m_batch_size);
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
+    diff_for_prev.memset(0, input_n * input_c * input_h * input_w * sizeof(float));
     Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 1.0f);
     is_fwd_first_run = false;
   }
@@ -50,37 +55,70 @@ namespace RuNet {
                            param.data(), in_features, tensor.getTensorData(), in_features, b, dev_output.data(),
                            out_features));
 
-    auto *dev_output_cpy = new float[dev_output.size()];
-    cudaMemcpy(dev_output_cpy, dev_output.data(), dev_output.size() * sizeof(float), cudaMemcpyDeviceToHost);
-
     checkCublas(cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, out_features, m_batch_size, 1, a,
                                bias_param.data(), out_features, onevec.data(), 1, a, dev_output.data(), out_features));
-
-//    std::cout << "after linear operation, the result is" << std::endl;
-//    for (int i = 0; i < 50; ++i) {
-//      std::cout << dev_output_cpy[i] << " ";
-//    }
-//    std::cout << std::endl;
   }
 
   void Linear::first_run_backward_init(const Tensor &diff) {}
 
   void Linear::backward(const Tensor &diff) {
+    diff_for_prev.memset(0, diff_for_prev.size() * sizeof(float));
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
     checkCublas(
-            cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_T, in_features, out_features, m_batch_size, a,
-                           m_input_tensor.getTensorData(), in_features, diff.getTensorData(), out_features, b,
-                           param_gradient.data(), in_features));
+            cublasSgemm_v2(global_cublas_handle,
+                           CUBLAS_OP_N,
+                           CUBLAS_OP_T,
+                           in_features,
+                           out_features,
+                           m_batch_size,
+                           a,
+                           m_input_tensor.getTensorData(),
+                           in_features,
+                           diff.getTensorData(),
+                           out_features,
+                           b,
+                           param_gradient.data(),
+                           in_features));
 
-    checkCublas(cublasSgemv_v2(global_cublas_handle, CUBLAS_OP_N, out_features, m_batch_size, a, diff.getTensorData(),
-                               out_features, onevec.data(), 1, b, bias_gradient.data(), 1));
+    checkCublas(cublasSgemv_v2(global_cublas_handle,
+                               CUBLAS_OP_N,
+                               out_features,
+                               m_batch_size,
+                               a,
+                               diff.getTensorData(),
+                               out_features,
+                               onevec.data(),
+                               1,
+                               b,
+                               bias_gradient.data(),
+                               1));
 
     checkCublas(
-            cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, in_features, m_batch_size, out_features, a,
-                           param.data(), in_features, diff.getTensorData(), out_features, b, diff_for_prev.data(),
+            cublasSgemm_v2(global_cublas_handle,
+                           CUBLAS_OP_N,
+                           CUBLAS_OP_N,
+                           in_features,
+                           m_batch_size,
+                           out_features,
+                           a,
+                           param.data(),
+                           in_features,
+                           diff.getTensorData(),
+                           out_features,
+                           b,
+                           diff_for_prev.data(),
                            in_features));
+
+    std::vector<float> diff_for_prev_cpy(diff_for_prev.size());
+    checkCuda(cudaMemcpy(diff_for_prev_cpy.data(),
+                         diff_for_prev.data(),
+                         diff_for_prev.size() * sizeof(float),
+                        cudaMemcpyDeviceToHost));
+    fmt::print("diff_for_prev_cpy is\n [{}]\n", fmt::join(diff_for_prev_cpy, ", "));
+    std::cout << "fuck" << std::endl;
+    std::cin.get();
   }
 
   void Linear::update() {
