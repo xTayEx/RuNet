@@ -50,13 +50,35 @@ namespace RuNet {
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
-    checkCublas(
-            cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_T, CUBLAS_OP_N, out_features, m_batch_size, in_features, a,
-                           param.data(), in_features, tensor.getTensorData(), in_features, b, dev_output.data(),
-                           out_features));
+    checkCublas(cublasSgemm_v2(global_cublas_handle,
+                               CUBLAS_OP_T,
+                               CUBLAS_OP_N,
+                               out_features,
+                               m_batch_size,
+                               in_features,
+                               a,
+                               param.data(),
+                               in_features,
+                               tensor.getTensorData(),
+                               in_features,
+                               b,
+                               dev_output.data(),
+                               out_features));
 
-    checkCublas(cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, out_features, m_batch_size, 1, a,
-                               bias_param.data(), out_features, onevec.data(), 1, a, dev_output.data(), out_features));
+    checkCublas(cublasSgemm_v2(global_cublas_handle,
+                               CUBLAS_OP_N,
+                               CUBLAS_OP_N,
+                               out_features,
+                               m_batch_size,
+                               1,
+                               a,
+                               bias_param.data(),
+                               out_features,
+                               onevec.data(),
+                               1,
+                               a,
+                               dev_output.data(),
+                               out_features));
   }
 
   void Linear::first_run_backward_init(const Tensor &diff) {}
@@ -66,8 +88,7 @@ namespace RuNet {
     float a[1] = {1.0f};
     float b[1] = {0.0f};
 
-    checkCublas(
-            cublasSgemm_v2(global_cublas_handle,
+    checkCublas(cublasSgemm_v2(global_cublas_handle,
                            CUBLAS_OP_N,
                            CUBLAS_OP_T,
                            in_features,
@@ -95,8 +116,7 @@ namespace RuNet {
                                bias_gradient.data(),
                                1));
 
-    checkCublas(
-            cublasSgemm_v2(global_cublas_handle,
+    checkCublas(cublasSgemm_v2(global_cublas_handle,
                            CUBLAS_OP_N,
                            CUBLAS_OP_N,
                            in_features,
@@ -117,7 +137,7 @@ namespace RuNet {
                          diff_for_prev.size() * sizeof(float),
                         cudaMemcpyDeviceToHost));
     fmt::print("diff_for_prev_cpy is\n [{}]\n", fmt::join(diff_for_prev_cpy, ", "));
-    std::cout << "fuck" << std::endl;
+    std::cout << "fuck linear" << std::endl;
     std::cin.get();
   }
 

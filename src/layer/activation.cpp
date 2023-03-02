@@ -77,9 +77,9 @@ namespace RuNet {
                          diff_for_prev.data(),
                          diff_for_prev.size() * sizeof(float),
                          cudaMemcpyDeviceToHost));
-    fmt::print("in activation backward, diff_for_prev_cpy is\n [{}]\n", fmt::join(diff_for_prev_cpy, ", "));
+//    fmt::print("in activation backward, diff_for_prev_cpy is\n [{}]\n", fmt::join(diff_for_prev_cpy, ", "));
     std::cout << "fuck activation" << std::endl;
-    std::cin.get();
+//    std::cin.get();
   }
 
   void Activation::update() {}
