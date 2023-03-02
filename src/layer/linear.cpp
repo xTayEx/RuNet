@@ -56,11 +56,11 @@ namespace RuNet {
     checkCublas(cublasSgemm_v2(global_cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, out_features, m_batch_size, 1, a,
                                bias_param.data(), out_features, onevec.data(), 1, a, dev_output.data(), out_features));
 
-    std::cout << "after linear operation, the result is" << std::endl;
-    for (int i = 0; i < 50; ++i) {
-      std::cout << dev_output_cpy[i] << " ";
-    }
-    std::cout << std::endl;
+//    std::cout << "after linear operation, the result is" << std::endl;
+//    for (int i = 0; i < 50; ++i) {
+//      std::cout << dev_output_cpy[i] << " ";
+//    }
+//    std::cout << std::endl;
   }
 
   void Linear::first_run_backward_init(const Tensor &diff) {}

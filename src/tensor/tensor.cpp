@@ -160,11 +160,11 @@ namespace RuNet {
           for (int cur_col = 0; cur_col < w; ++cur_col) {
             std::cout << tensor_data[batch * (c * h * w) + channel * (h * w) + cur_row * w + cur_col] << ", ";
           }
-          std::cout << " ] " << std::endl;
+          std::cout << " ] ";
         }
-        std::cout << " ] " << std::endl;
+        std::cout << " ] ";
       }
-      std::cout << " ] " << std::endl;
+      std::cout << " ] ";
     }
     return os;
   }

@@ -171,12 +171,12 @@ int main() {
     RuNet::Tensor single_batch_test_label = test_label_idx_file.read_data(network_batch_size, 1, 1, 1,
                                                                           image_idx * test_single_label_byte);
     mnist_network.forward(single_batch_test_image);
-    RuNet::Tensor predict = fc2->getOutput();
-//    std::cout << "predict: \n" << std::endl;
-//    std::cout << predict << std::endl;
-//
-//    std::cout << "label: \n" << std::endl;
-//    std::cout << single_batch_test_label << std::endl;
+    RuNet::Tensor predict = softmax->getOutput();
+    std::cout << "predict: \n" << std::endl;
+    std::cout << predict << std::endl;
+
+    std::cout << "label: \n" << std::endl;
+    std::cout << single_batch_test_label << std::endl;
     // ##############################################
   }
 
