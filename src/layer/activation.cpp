@@ -49,8 +49,8 @@ namespace RuNet {
                                       output_desc->getDescriptor(),
                                       dev_output.data()));
 
-    std::cout << "activation forward result" << std::endl;
-    debugCudaMemory(dev_output)
+//    std::cout << "activation forward result" << std::endl;
+//    debugCudaMemory(dev_output)
 //    std::cin.get();
   }
 

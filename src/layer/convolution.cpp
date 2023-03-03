@@ -144,8 +144,8 @@ namespace RuNet {
                               output_desc->getDescriptor(),
                               dev_output.data()));
 
-    std::cout << "conv forward result" << std::endl;
-    debugCudaMemory(dev_output)
+//    std::cout << "conv forward result" << std::endl;
+//    debugCudaMemory(dev_output)
 //    std::cin.get();
 
   }
@@ -229,8 +229,6 @@ namespace RuNet {
                                               kernel_desc->getDescriptor(),
                                               param_gradient.data()));
 
-    // FIXME: gradient is too big!!!! the magnitude reaches 10^2!
-
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
                                             kernel_desc->getDescriptor(),
@@ -264,6 +262,10 @@ namespace RuNet {
                                bias_param.data(),
                                1));
 
+    std::cout << "after update in conv, param and bias_param is " << std::endl;
+    debugCudaMemory(param)
+    debugCudaMemory(bias_param)
+    std::cin.get();
   }
 
 };  // namespace RuNet
