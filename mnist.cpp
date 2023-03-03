@@ -125,6 +125,7 @@ int main() {
     if (epoch_idx != 0) {
       mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
     }
+    int batch_idx = 0;
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
       RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size,
                                                                                train_data_c,
@@ -142,7 +143,8 @@ int main() {
       mnist_network.forward(single_batch_train_tensor);
       mnist_network.backward();
       mnist_network.update();
-      std::cout << "==========done a batch==========" << std::endl;
+      fmt::print("==========finish batch {} of batch {}==========", batch_idx, epoch_idx);
+      ++batch_idx;
     }
   }
   // ##############################################
