@@ -38,10 +38,6 @@ namespace RuNet {
     // Tensor.cpp for more information.
     m_input_tensor = tensor;
 
-//    std::cout << tensor << std::endl;
-//    std::cout << "in activation fwd, tensor is" << std::endl;
-//    std::cin.get();
-
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
     checkCudnn(cudnnActivationForward(RuNet::global_cudnn_handle,
@@ -52,15 +48,15 @@ namespace RuNet {
                                       beta,
                                       output_desc->getDescriptor(),
                                       dev_output.data()));
+
+    std::cout << "activation forward result" << std::endl;
+    debugCudaMemory(dev_output)
+    std::cin.get();
   }
 
   void Activation::first_run_backward_init(const Tensor &) {}
 
   void Activation::backward(const Tensor &diff) {
-
-//    std::cout << diff << std::endl;
-//    std::cout << "in activation bwd, diff is " << std::endl;
-//    std::cin.get();
 
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};

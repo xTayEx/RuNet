@@ -113,10 +113,6 @@ namespace RuNet {
   void Convolution::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-//    std::cout << tensor << std::endl;
-//    std::cout << "in conv fwd, tensor is" << std::endl;
-//    std::cin.get();
-
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }
@@ -148,6 +144,10 @@ namespace RuNet {
                               output_desc->getDescriptor(),
                               dev_output.data()));
 
+    std::cout << "conv forward result" << std::endl;
+    debugCudaMemory(dev_output)
+    std::cin.get();
+
   }
 
   void Convolution::first_run_backward_init(const Tensor &diff) {
@@ -176,12 +176,6 @@ namespace RuNet {
     conv_bwd_filter_workspace.alloc(conv_bwd_filter_workspace_size);
 
     cudnnConvolutionBwdDataAlgoPerf_t conv_bwd_data_perf;
-    int d_n, d_c, d_h, d_w, _;
-    cudnnDataType_t data_type;
-    cudnnTensorFormat_t tensor_format;
-    int f_k, f_c, f_h, f_w;
-    cudnnGetTensor4dDescriptor(output_desc->getDescriptor(), &data_type, &d_n, &d_c, &d_h, &d_w, &_, &_, &_, &_);
-    cudnnGetFilter4dDescriptor(kernel_desc->getDescriptor(), &data_type, &tensor_format, &f_k, &f_c, &f_h, &f_w);
     checkCudnn(cudnnGetConvolutionBackwardDataAlgorithm_v7(global_cudnn_handle,
                                                            kernel_desc->getDescriptor(),
                                                            diff.getTensorDescriptor(),
@@ -236,10 +230,6 @@ namespace RuNet {
                                               param_gradient.data()));
 
     // FIXME: gradient is too big!!!! the magnitude reaches 10^2!
-    debugTensor(diff)
-    debugCudaMemory(param_gradient)
-    debugCudaMemory(bias_gradient)
-    std::cin.get();
 
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,

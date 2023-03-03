@@ -72,7 +72,7 @@ namespace RuNet {
   }
 
   __global__ void cudaScalarDevideAssignment(float *src, float scalar, int n) {
-    int i = blockDim.x * blockIdx.x * threadIdx.x;
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i < n) {
       src[i] /= scalar;
     }

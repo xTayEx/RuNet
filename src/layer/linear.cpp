@@ -44,10 +44,6 @@ namespace RuNet {
   void Linear::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-//    std::cout << tensor << std::endl;
-//    std::cout << "in linear fwd, tensor is" << std::endl;
-//    std::cin.get();
-
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }
@@ -85,6 +81,10 @@ namespace RuNet {
                                a,
                                dev_output.data(),
                                out_features));
+
+    std::cout << "linear forward result" << std::endl;
+    debugCudaMemory(dev_output)
+    std::cin.get();
 
   }
 
@@ -138,9 +138,6 @@ namespace RuNet {
                                diff_for_prev.data(),
                                in_features));
 
-    debugCudaMemory(param_gradient)
-    debugCudaMemory(bias_gradient)
-    std::cin.get();
 
   }
 

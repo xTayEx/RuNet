@@ -142,6 +142,7 @@ int main() {
       mnist_network.forward(single_batch_train_tensor);
       mnist_network.backward();
       mnist_network.update();
+      std::cout << "==========done a batch==========" << std::endl;
     }
   }
   // ##############################################

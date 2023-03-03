@@ -33,8 +33,6 @@ namespace RuNet {
                                                      output_h,
                                                      output_w);
 
-    fmt::print("output dim of pool is {}\n", std::make_tuple(output_n, output_c, output_h, output_w));
-    std::cin.get();
 
     size_t output_size = output_n * output_c * output_h * output_w;
     dev_output.alloc(output_size);
@@ -45,10 +43,6 @@ namespace RuNet {
 
   void Pooling::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
-
-//    std::cout << tensor << std::endl;
-//    std::cout << "in pooling fwd, tensor is" << std::endl;
-//    std::cin.get();
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -64,15 +58,15 @@ namespace RuNet {
                                    b,
                                    output_desc->getDescriptor(),
                                    dev_output.data()));
+
+    std::cout << "pooling forward result" << std::endl;
+    debugCudaMemory(dev_output)
+    std::cin.get();
   }
 
   void Pooling::first_run_backward_init(const Tensor &diff) {}
 
   void Pooling::backward(const Tensor &diff) {
-
-//    std::cout << diff << std::endl;
-//    std::cout << "this is pooling diff" << std::endl;
-//    std::cin.get();
 
     float a[1] = {1.0f};
     float b[1] = {0.0f};
