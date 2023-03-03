@@ -29,9 +29,14 @@ namespace RuNet {
                                                      out_features,
                                                      1,
                                                      1);
+
     dev_output.alloc(out_features * m_batch_size);
-    onevec.alloc(m_batch_size);
+    dev_output.memset(0, out_features * m_batch_size * sizeof(float));
+
     diff_for_prev.alloc(input_n * input_c * input_h * input_w);
+    diff_for_prev.memset(0, input_n * input_c * input_h * input_w * sizeof(float));
+
+    onevec.alloc(m_batch_size);
     Utils::setGpuValue(onevec.data(), onevec.size(), m_batch_size, 1.0f);
     is_fwd_first_run = false;
   }
@@ -39,12 +44,9 @@ namespace RuNet {
   void Linear::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-//    std::cout << "in linear fwd, tensor shape is ";
-//    fmt::print("{}\n", tensor.getTensorInfo());
-//    std::cin.get();
-
-//    std::cout << "in linear fwd, tensor is" << std::endl;
 //    std::cout << tensor << std::endl;
+//    std::cout << "in linear fwd, tensor is" << std::endl;
+//    std::cin.get();
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -154,6 +156,14 @@ namespace RuNet {
                                1,
                                bias_param.data(),
                                1));
+
+    std::cout << "after update in linear, param is" << std::endl;
+    debugCudaMemory(param)
+    std::cout << "after update in linear, bias_param is " << std::endl;
+    debugCudaMemory(bias_param)
+    std::cin.get();
+//    debugCudaMemory(param)
+//    debugCudaMemory(bias_param)
   }
 
 }

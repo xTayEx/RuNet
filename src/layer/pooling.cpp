@@ -46,8 +46,9 @@ namespace RuNet {
   void Pooling::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
-//    std::cout << "in pooling fwd, tensor is" << std::endl;
 //    std::cout << tensor << std::endl;
+//    std::cout << "in pooling fwd, tensor is" << std::endl;
+//    std::cin.get();
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -69,9 +70,9 @@ namespace RuNet {
 
   void Pooling::backward(const Tensor &diff) {
 
-    // FIXME: the diff input from fc1's backward is so weird.
-    //  the front part of diff is some non-zero float number.
-    //  While the remaining part arr all zero!
+//    std::cout << diff << std::endl;
+//    std::cout << "this is pooling diff" << std::endl;
+//    std::cin.get();
 
     float a[1] = {1.0f};
     float b[1] = {0.0f};
