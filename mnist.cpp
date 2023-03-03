@@ -73,6 +73,7 @@ int main() {
   int conv1_out_channel = 20;
   int conv1_out_w = conv1_in_w - conv_kernel_size + 1;
   int conv1_out_h = conv1_in_h - conv_kernel_size + 1;
+  int conv_padding = 0;
 
   int pooling_window_size = 2;
   int pooling_pad = 0;
@@ -80,7 +81,7 @@ int main() {
 
   int conv2_in_w = conv1_out_w / pooling_stride;
   int conv2_in_h = conv1_out_h / pooling_stride;
-  int conv2_in_channel = 20;
+  int conv2_in_channel = conv1_out_channel;
   int conv2_out_channel = 50;
   int conv2_out_w = conv2_in_w - conv_kernel_size + 1;
   int conv2_out_h = conv2_in_h - conv_kernel_size + 1;
@@ -92,12 +93,11 @@ int main() {
   // ##############################################
   // define the network
   std::cout << "Network building start" << std::endl;
-  auto conv1 = std::make_unique<RuNet::Convolution>(conv1_in_channel, conv1_out_channel, conv_kernel_size);
-  auto conv2 = std::make_unique<RuNet::Convolution>(conv2_in_channel, conv2_out_channel, conv_kernel_size);
+  auto conv1 = std::make_unique<RuNet::Convolution>(conv1_in_channel, conv1_out_channel, conv_kernel_size, conv_padding, conv_padding);
+  auto conv2 = std::make_unique<RuNet::Convolution>(conv2_in_channel, conv2_out_channel, conv_kernel_size, conv_padding, conv_padding);
   auto pool1 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
   auto pool2 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
-  auto fc1 = std::make_unique<RuNet::Linear>(
-          (conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
+  auto fc1 = std::make_unique<RuNet::Linear>((conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
   auto relu = std::make_unique<RuNet::Activation>(CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, 0.0);
   auto fc2 = std::make_unique<RuNet::Linear>(500, 10);
   auto softmax = std::make_unique<RuNet::Softmax>();

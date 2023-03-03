@@ -16,8 +16,6 @@ inline void fatalError(const std::string &err, const char *filename, int lineno)
   exit(1);
 }
 
-#define checkCudnn(status) checkCudnnImpl(status, __FILE__, __LINE__)
-
 inline void checkCudnnImpl(cudnnStatus_t status, const char *filename, int lineno) {
   std::stringstream err;
   if (status != CUDNN_STATUS_SUCCESS) {
@@ -26,7 +24,7 @@ inline void checkCudnnImpl(cudnnStatus_t status, const char *filename, int linen
   }
 }
 
-#define checkCuda(status) checkCudaImpl(status, __FILE__, __LINE__)
+#define checkCudnn(status) checkCudnnImpl(status, __FILE__, __LINE__)
 
 inline void checkCudaImpl(cudaError status, const char *filename, int lineno) {
   std::stringstream err;
@@ -36,7 +34,7 @@ inline void checkCudaImpl(cudaError status, const char *filename, int lineno) {
   }
 }
 
-#define checkCublas(status) checkCublasImpl(status, __FILE__, __LINE__)
+#define checkCuda(status) checkCudaImpl(status, __FILE__, __LINE__)
 
 inline void checkCublasImpl(cublasStatus_t status, const char *filename, int lineno) {
   std::stringstream err;
@@ -45,5 +43,7 @@ inline void checkCublasImpl(cublasStatus_t status, const char *filename, int lin
     fatalError(err.str(), filename, lineno);
   }
 }
+
+#define checkCublas(status) checkCublasImpl(status, __FILE__, __LINE__)
 
 #endif

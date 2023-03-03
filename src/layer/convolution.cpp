@@ -95,8 +95,7 @@ namespace RuNet {
                                            &fwd_algo_perf);
     conv_fwd_algo = fwd_algo_perf.algo;
     // get workspace size
-    checkCudnn(
-            cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
+    checkCudnn(cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
                                                     tensor.getTensorDescriptor(),
                                                     kernel_desc->getDescriptor(),
                                                     conv_desc->getDescriptor(),
