@@ -51,10 +51,7 @@ namespace RuNet {
                         output_desc->getDescriptor(),
                         dev_output.data());
 
-    std::vector<float> dev_output_cpy(dev_output.size());
-    cudaMemcpy(dev_output_cpy.data(), dev_output.data(), dev_output_cpy.size() * sizeof(float), cudaMemcpyDeviceToHost);
-//    fmt::print("[{}]\n", fmt::join(dev_output_cpy, ", "));
-//    std::cout << "this is the result of softmax forward" << std::endl;
+    debugCudaMemory(dev_output)
   }
 
   void Softmax::first_run_backward_init(const Tensor &diff) {}
@@ -69,5 +66,7 @@ namespace RuNet {
     int grid_dim = std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth));
     softmaxBackward<<<grid_dim, Constants::CudaBandWidth>>>(
             labels.getTensorData(), 10, m_batch_size, diff_for_prev.data());
+    debugCudaMemory(diff_for_prev)
+
   }
 }
