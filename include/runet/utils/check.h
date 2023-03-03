@@ -7,37 +7,42 @@
 #include <sstream>
 #include <iostream>
 
-inline void fatalError(const std::string &err) {
+inline void fatalError(const std::string &err, const char *filename, int lineno) {
   std::stringstream pos, msg;
-  pos << "In " << __FILE__ << ": " << __LINE__ << "n";
-  msg << std::string(err) << "n";
+  pos << "In " << filename << ": " << lineno << "\n";
+  msg << err << "\n";
   std::cerr << pos.str () << msg.str();
   cudaDeviceReset();
   exit(1);
 }
 
-inline void checkCudnn(cudnnStatus_t status) {
+#define checkCudnn(status) checkCudnnImpl(status, __FILE__, __LINE__)
+
+inline void checkCudnnImpl(cudnnStatus_t status, const char *filename, int lineno) {
   std::stringstream err;
   if (status != CUDNN_STATUS_SUCCESS) {
-    err << "cuDNN error: " << cudnnGetErrorString(status);
-    fatalError(err.str());
+    err << "cuDNN error: " << cudnnGetErrorString(status) << "\n";
+    fatalError(err.str(), filename, lineno);
   }
 }
 
+#define checkCuda(status) checkCudaImpl(status, __FILE__, __LINE__)
 
-inline void checkCuda(cudaError status) {
+inline void checkCudaImpl(cudaError status, const char *filename, int lineno) {
   std::stringstream err;
   if (status != cudaSuccess) {
-    err << "CUDA error: " << cudaGetErrorString(status);
-    fatalError(err.str());
+    err << "CUDA error: " << cudaGetErrorString(status) << "\n";
+    fatalError(err.str(), filename, lineno);
   }
 }
 
-inline void checkCublas(cublasStatus_t status) {
+#define checkCublas(status) checkCublasImpl(status, __FILE__, __LINE__)
+
+inline void checkCublasImpl(cublasStatus_t status, const char *filename, int lineno) {
   std::stringstream err;
   if (status != CUBLAS_STATUS_SUCCESS) {
-    err << "cuBLAS error: " << status;
-    fatalError(err.str());
+    err << "cuBLAS error: " << status << "\n";
+    fatalError(err.str(), filename, lineno);
   }
 }
 

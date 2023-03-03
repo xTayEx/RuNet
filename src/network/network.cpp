@@ -31,14 +31,17 @@ namespace RuNet {
 
     last_layer->backward_when_last_layer(m_labels);
     Tensor _diff = last_layer->getDiff();
-    std::cout << "softmax diff is " << std::endl;
     std::cout << _diff << std::endl;
+    std::cout << "softmax diff is " << std::endl;
     std::cin.get();
 
     for (auto iter = m_layers.rbegin() + 1; iter != m_layers.rend(); ++iter) {
       (*iter)->backward(_diff);
       if (iter != m_layers.rend() - 1) {
         _diff = (*iter)->getDiff();
+        std::cout << _diff << std::endl;
+        std::cout << "_diff is " << std::endl;
+        std::cin.get();
       }
     }
   }

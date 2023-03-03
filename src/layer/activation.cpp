@@ -57,9 +57,9 @@ namespace RuNet {
 
   void Activation::backward(const Tensor &diff) {
 
-    std::cout << diff << std::endl;
-    std::cout << "in activation bwd, diff is " << std::endl;
-    std::cin.get();
+//    std::cout << diff << std::endl;
+//    std::cout << "in activation bwd, diff is " << std::endl;
+//    std::cin.get();
 
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
@@ -69,13 +69,14 @@ namespace RuNet {
                                        alpha,
                                        output_desc->getDescriptor(),
                                        dev_output.data(),
-                                       output_desc->getDescriptor(),
+                                       diff.getTensorDescriptor(),
                                        diff.getTensorData(),
                                        m_input_tensor.getTensorDescriptor(),
                                        m_input_tensor.getTensorData(),
                                        beta,
                                        m_input_tensor.getTensorDescriptor(),
                                        diff_for_prev.data()));
+
   }
 
   void Activation::update() {}

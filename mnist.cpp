@@ -98,7 +98,7 @@ int main() {
   auto pool2 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
   auto fc1 = std::make_unique<RuNet::Linear>(
           (conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
-  auto relu = std::make_unique<RuNet::Activation>(CUDNN_ACTIVATION_RELU, CUDNN_NOT_PROPAGATE_NAN, 0.0);
+  auto relu = std::make_unique<RuNet::Activation>(CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, 0.0);
   auto fc2 = std::make_unique<RuNet::Linear>(500, 10);
   auto softmax = std::make_unique<RuNet::Softmax>();
 

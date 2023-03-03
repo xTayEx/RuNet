@@ -48,11 +48,7 @@ namespace RuNet {
   void Softmax::update() {}
 
   void Softmax::backward_when_last_layer(const Tensor &labels) {
-    std::cout << "in when_last_layer, labels is " << std::endl;
-    std::cout << labels << std::endl;
-    std::cin.get();
     auto [n, c, h, w] = labels.getTensorInfo();
-    fmt::print("gridDim is {}\n", std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth)));
     int grid_dim = std::ceil((1.0f * m_batch_size) / (1.0f * Constants::CudaBandWidth));
     softmaxBackward<<<grid_dim, Constants::CudaBandWidth>>>(
             labels.getTensorData(), 10, m_batch_size, diff_for_prev.data());

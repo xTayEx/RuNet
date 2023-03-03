@@ -33,6 +33,9 @@ namespace RuNet {
                                                      output_h,
                                                      output_w);
 
+    fmt::print("output dim of pool is {}\n", std::make_tuple(output_n, output_c, output_h, output_w));
+    std::cin.get();
+
     size_t output_size = output_n * output_c * output_h * output_w;
     dev_output.alloc(output_size);
     dev_output.memset(0, output_size * sizeof(float));
@@ -66,12 +69,9 @@ namespace RuNet {
 
   void Pooling::backward(const Tensor &diff) {
 
-    std::cout << diff << std::endl;
     // FIXME: the diff input from fc1's backward is so weird.
     //  the front part of diff is some non-zero float number.
-    // While the remaining part arr all zero!
-    std::cout << "in pooling bwd, diff is " << std::endl;
-    std::cin.get();
+    //  While the remaining part arr all zero!
 
     float a[1] = {1.0f};
     float b[1] = {0.0f};
