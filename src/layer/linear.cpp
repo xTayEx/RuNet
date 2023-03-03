@@ -138,6 +138,10 @@ namespace RuNet {
                                diff_for_prev.data(),
                                in_features));
 
+    debugCudaMemory(param_gradient)
+    debugCudaMemory(bias_gradient)
+    std::cin.get();
+
   }
 
   void Linear::update() {
@@ -157,13 +161,6 @@ namespace RuNet {
                                bias_param.data(),
                                1));
 
-    std::cout << "after update in linear, param is" << std::endl;
-    debugCudaMemory(param)
-    std::cout << "after update in linear, bias_param is " << std::endl;
-    debugCudaMemory(bias_param)
-    std::cin.get();
-//    debugCudaMemory(param)
-//    debugCudaMemory(bias_param)
   }
 
 }

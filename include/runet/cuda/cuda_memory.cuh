@@ -48,8 +48,8 @@ namespace RuNet {
 #define debugCudaMemory(cuda_memory) do { \
    std::vector<float> cuda_memory##_copy(10); \
    cudaMemcpy(cuda_memory##_copy.data(), cuda_memory.data(), 10 * sizeof(float), cudaMemcpyDeviceToHost); \
+   std::cout << "debug " << #cuda_memory << " in " << __FILE__ << std::endl;\
    fmt::print("[{}]\n", fmt::join(cuda_memory##_copy, ", "));                 \
-   std::cout << "debug "#cuda_memory << " in " << __FILE__ << std::endl;\
 } while(0);
 }
 

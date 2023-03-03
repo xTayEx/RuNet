@@ -52,6 +52,13 @@ namespace RuNet {
   };
 
   std::ostream &operator<<(std::ostream &os, const Tensor &tensor);
+
+#define debugTensor(tensor) do { \
+  std::vector<float> tensor##_copy(10); \
+  cudaMemcpy(tensor##_copy.data(), tensor.getTensorData(), 10 * sizeof(float), cudaMemcpyDeviceToHost); \
+  std::cout << "debug " << #tensor << " in " << __FILE__ << std::endl;                                       \
+  fmt::print("[{}]\n", fmt::join(tensor##_copy, ", "));\
+} while(0);
 }  // namespace RuNet
 
 #endif // RUNET_TENSOR_H

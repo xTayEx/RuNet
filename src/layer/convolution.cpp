@@ -236,13 +236,10 @@ namespace RuNet {
                                               param_gradient.data()));
 
     // FIXME: gradient is too big!!!! the magnitude reaches 10^2!
-    std::vector<float> param_gradient_from_device(10);
-    cudaMemcpy(param_gradient_from_device.data(),
-               param_gradient.data(),
-               10 * sizeof(float),
-               cudaMemcpyDeviceToHost);
-//    fmt::print("after backward, the top ten value in conv param_gradient is \n{}\n", fmt::join(param_gradient_from_device, ", "));
-//    std::cin.get();
+    debugTensor(diff)
+    debugCudaMemory(param_gradient)
+    debugCudaMemory(bias_gradient)
+    std::cin.get();
 
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
@@ -277,11 +274,6 @@ namespace RuNet {
                                bias_param.data(),
                                1));
 
-    std::cout << "after update in conv, param is " << std::endl;
-    debugCudaMemory(param)
-    std::cout << "after update in conv, bias_param is " << std::endl;
-    debugCudaMemory(bias_param)
-    std::cin.get();
   }
 
 };  // namespace RuNet
