@@ -51,7 +51,7 @@ namespace RuNet {
 
     std::cout << "softmax forward" << std::endl;
     debugCudaMemory(dev_output)
-    std::cin.get();
+//    std::cin.get();
   }
 
   void Softmax::first_run_backward_init(const Tensor &diff) {}

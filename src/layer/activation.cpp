@@ -51,7 +51,7 @@ namespace RuNet {
 
     std::cout << "activation forward result" << std::endl;
     debugCudaMemory(dev_output)
-    std::cin.get();
+//    std::cin.get();
   }
 
   void Activation::first_run_backward_init(const Tensor &) {}

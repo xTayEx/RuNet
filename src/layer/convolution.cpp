@@ -146,7 +146,7 @@ namespace RuNet {
 
     std::cout << "conv forward result" << std::endl;
     debugCudaMemory(dev_output)
-    std::cin.get();
+//    std::cin.get();
 
   }
 

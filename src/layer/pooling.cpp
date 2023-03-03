@@ -61,7 +61,7 @@ namespace RuNet {
 
     std::cout << "pooling forward result" << std::endl;
     debugCudaMemory(dev_output)
-    std::cin.get();
+//    std::cin.get();
   }
 
   void Pooling::first_run_backward_init(const Tensor &diff) {}
