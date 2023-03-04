@@ -4,7 +4,7 @@
 namespace RuNet {
   Pooling::Pooling(int window_size, cudnnPoolingMode_t mode, int pad, int stride) {
     pooling_desc = std::make_unique<PoolingDescriptor>(mode,
-                                                       CUDNN_NOT_PROPAGATE_NAN,
+                                                       CUDNN_PROPAGATE_NAN,
                                                        window_size,
                                                        window_size,
                                                        pad,
@@ -61,6 +61,7 @@ namespace RuNet {
 
     std::cout << "pooling forward result" << std::endl;
     debugCudaMemory(dev_output)
+    std::cout << std::endl;
 //    std::cin.get();
   }
 

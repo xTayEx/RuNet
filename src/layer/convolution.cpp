@@ -113,6 +113,11 @@ namespace RuNet {
   void Convolution::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
 
+    std::cout << "\nconv forward input tensor" << std::endl;
+    std::vector<float> tensor_cpy(784);
+    cudaMemcpy(tensor_cpy.data(), tensor.getTensorData(), 784 * sizeof(float), cudaMemcpyDeviceToHost);
+    fmt::print("[{}]\n", fmt::join(tensor_cpy, ", "));
+
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
     }
@@ -146,6 +151,7 @@ namespace RuNet {
 
     std::cout << "conv forward result" << std::endl;
     debugCudaMemory(dev_output)
+    std::cout << std::endl;
 //    std::cin.get();
 
   }

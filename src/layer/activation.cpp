@@ -51,6 +51,7 @@ namespace RuNet {
 
     std::cout << "activation forward result" << std::endl;
     debugCudaMemory(dev_output)
+    std::cout << std::endl;
 //    std::cin.get();
   }
 

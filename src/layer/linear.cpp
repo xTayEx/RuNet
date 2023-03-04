@@ -84,6 +84,7 @@ namespace RuNet {
 
     std::cout << "linear forward result" << std::endl;
     debugCudaMemory(dev_output)
+    std::cout << std::endl;
 //    std::cin.get();
 
   }
@@ -158,9 +159,9 @@ namespace RuNet {
                                bias_param.data(),
                                1));
 
-    std::cout << "after update in linear, param and bias_param is " << std::endl;
-    debugCudaMemory(param)
-    debugCudaMemory(bias_param)
+//    std::cout << "after update in linear, param and bias_param is " << std::endl;
+//    debugCudaMemory(param)
+//    debugCudaMemory(bias_param)
 
   }
 

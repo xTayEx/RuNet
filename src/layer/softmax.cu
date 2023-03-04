@@ -41,7 +41,7 @@ namespace RuNet {
     float beta[1] = {0.0f};
     cudnnSoftmaxForward(global_cudnn_handle,
                         CUDNN_SOFTMAX_ACCURATE,
-                        CUDNN_SOFTMAX_MODE_INSTANCE,
+                        CUDNN_SOFTMAX_MODE_CHANNEL,
                         alpha,
                         tensor.getTensorDescriptor(),
                         tensor.getTensorData(),
@@ -51,6 +51,7 @@ namespace RuNet {
 
     std::cout << "softmax forward" << std::endl;
     debugCudaMemory(dev_output)
+    std::cout << std::endl;
 //    std::cin.get();
   }
 

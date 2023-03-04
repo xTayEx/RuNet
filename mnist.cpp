@@ -143,7 +143,7 @@ int main() {
       mnist_network.forward(single_batch_train_tensor);
       mnist_network.backward();
       mnist_network.update();
-      fmt::print("==========finish batch {} of batch {}==========", batch_idx, epoch_idx);
+      fmt::print("==========finish batch {} of epoch {}==========", batch_idx, epoch_idx);
       ++batch_idx;
     }
   }
