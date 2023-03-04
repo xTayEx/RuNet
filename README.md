@@ -27,6 +27,7 @@ The main goal of RuNet is to be a small but fully functional deep learning frame
 * g++ supporting c++17 standard
 * CMake >= 3.24
 * [fmt](https://fmt.dev/latest/index.html)
+* [OpenCV](https://opencv.org/)
 
 ### Example
 
