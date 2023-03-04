@@ -93,11 +93,14 @@ int main() {
   // ##############################################
   // define the network
   std::cout << "Network building start" << std::endl;
-  auto conv1 = std::make_unique<RuNet::Convolution>(conv1_in_channel, conv1_out_channel, conv_kernel_size, conv_padding, conv_padding);
-  auto conv2 = std::make_unique<RuNet::Convolution>(conv2_in_channel, conv2_out_channel, conv_kernel_size, conv_padding, conv_padding);
+  auto conv1 = std::make_unique<RuNet::Convolution>(conv1_in_channel, conv1_out_channel, conv_kernel_size, conv_padding,
+                                                    conv_padding);
+  auto conv2 = std::make_unique<RuNet::Convolution>(conv2_in_channel, conv2_out_channel, conv_kernel_size, conv_padding,
+                                                    conv_padding);
   auto pool1 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
   auto pool2 = std::make_unique<RuNet::Pooling>(pooling_window_size, CUDNN_POOLING_MAX, pooling_pad, pooling_stride);
-  auto fc1 = std::make_unique<RuNet::Linear>((conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
+  auto fc1 = std::make_unique<RuNet::Linear>(
+          (conv2_out_channel * conv2_out_w * conv2_out_h) / (pooling_stride * pooling_stride), 500);
   auto relu = std::make_unique<RuNet::Activation>(CUDNN_ACTIVATION_RELU, CUDNN_PROPAGATE_NAN, 0.0);
   auto fc2 = std::make_unique<RuNet::Linear>(500, 10);
   auto softmax = std::make_unique<RuNet::Softmax>();
@@ -119,33 +122,29 @@ int main() {
 
   // ##############################################
   // train the network
-  int epoch = 50;
-  for (int epoch_idx = 0; epoch_idx < epoch; ++epoch_idx) {
-    fmt::print("epoch {}\n", epoch_idx);
-    if (epoch_idx != 0) {
-      mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
-    }
-    int batch_idx = 0;
-    for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
-      RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size,
-                                                                               train_data_c,
-                                                                               train_data_h,
-                                                                               train_data_w,
-                                                                               train_single_image_byte * image_idx);
-      single_batch_train_tensor /= 255.0f;
-      RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size,
-                                                                         1,
-                                                                         1,
-                                                                         1,
-                                                                         train_single_label_byte * image_idx);
-      // setLabels will call Tensor's operator=
-      mnist_network.setLabels(single_batch_label_tensor);
-      mnist_network.forward(single_batch_train_tensor);
-      mnist_network.backward();
-      mnist_network.update();
-      fmt::print("==========finish batch {} of batch {}==========", batch_idx, epoch_idx);
-      ++batch_idx;
-    }
+  int iteration = 1000;
+  for (int iter = 0; iter < iteration; ++iter) {
+    fmt::print("iteration {}\n", iter);
+    int image_id = iter % (train_data_size / network_batch_size);
+    RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size,
+                                                                             train_data_c,
+                                                                             train_data_h,
+                                                                             train_data_w,
+                                                                             train_single_image_byte * image_id);
+    single_batch_train_tensor /= 255.0f;
+    RuNet::Tensor single_batch_label_tensor = label_idx_file.read_data(network_batch_size,
+                                                                       1,
+                                                                       1,
+                                                                       1,
+                                                                       train_single_label_byte * image_id);
+    // setLabels will call Tensor's operator=
+    mnist_network.setLabels(single_batch_label_tensor);
+    mnist_network.forward(single_batch_train_tensor);
+    mnist_network.backward();
+    mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, iter);
+    mnist_network.update();
+
+    fmt::print("==========finish iter {}==========", iter);
   }
   // ##############################################
 
@@ -206,7 +205,8 @@ int main() {
     RuNet::Tensor predict = softmax->getOutput();
     auto [predict_n, predict_c, predict_h, predict_w] = predict.getTensorInfo(); // 100 10 1 1
 
-    for (int predict_class_probability_id = 0; predict_class_probability_id < predict_n; ++predict_class_probability_id) {
+    for (int predict_class_probability_id = 0;
+         predict_class_probability_id < predict_n; ++predict_class_probability_id) {
       std::vector<float> class_probability(predict_c);
       cudaMemcpy(class_probability.data(),
                  predict.getTensorData() + predict_class_probability_id * predict_c,
