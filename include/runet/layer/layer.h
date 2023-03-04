@@ -17,7 +17,7 @@ namespace RuNet {
 
   class Layer {
   public:
-    explicit Layer(float learning_rate = 0.01);
+    explicit Layer(float learning_rate = 0.003);
 
     virtual ~Layer() = default;
 

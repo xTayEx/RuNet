@@ -59,9 +59,9 @@ namespace RuNet {
                                    output_desc->getDescriptor(),
                                    dev_output.data()));
 
-    std::cout << "pooling forward result" << std::endl;
-    debugCudaMemory(dev_output)
-    std::cout << std::endl;
+//    std::cout << "pooling forward result" << std::endl;
+//    debugCudaMemory(dev_output)
+//    std::cout << std::endl;
 //    std::cin.get();
   }
 

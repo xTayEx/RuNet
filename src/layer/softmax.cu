@@ -34,8 +34,8 @@ namespace RuNet {
       first_run_forward_init(tensor);
     }
 
-    std::cout << "softmax forward input tensor" << std::endl;
-    debugTensor(tensor)
+//    std::cout << "softmax forward input tensor" << std::endl;
+//    debugTensor(tensor)
 
     float alpha[1] = {1.0f};
     float beta[1] = {0.0f};
@@ -49,9 +49,9 @@ namespace RuNet {
                         output_desc->getDescriptor(),
                         dev_output.data());
 
-    std::cout << "softmax forward" << std::endl;
-    debugCudaMemory(dev_output)
-    std::cout << std::endl;
+//    std::cout << "softmax forward" << std::endl;
+//    debugCudaMemory(dev_output)
+//    std::cout << std::endl;
 //    std::cin.get();
   }
 

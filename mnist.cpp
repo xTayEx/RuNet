@@ -122,9 +122,6 @@ int main() {
   int epoch = 50;
   for (int epoch_idx = 0; epoch_idx < epoch; ++epoch_idx) {
     fmt::print("epoch {}\n", epoch_idx);
-    if (epoch_idx != 0) {
-      mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
-    }
     int batch_idx = 0;
     for (int image_idx = 0; image_idx < train_data_size; image_idx += network_batch_size) {
       RuNet::Tensor single_batch_train_tensor = train_image_idx_file.read_data(network_batch_size,
@@ -142,8 +139,9 @@ int main() {
       mnist_network.setLabels(single_batch_label_tensor);
       mnist_network.forward(single_batch_train_tensor);
       mnist_network.backward();
+      mnist_network.adjust_learning_rate(lr_decay_gamma, lr_decay_power, epoch_idx);
       mnist_network.update();
-      fmt::print("==========finish batch {} of epoch {}==========", batch_idx, epoch_idx);
+//      fmt::print("==========finish batch {} of epoch {}==========\n", batch_idx, epoch_idx);
       ++batch_idx;
     }
   }
@@ -214,7 +212,6 @@ int main() {
                  cudaMemcpyDeviceToHost);
       int predict_class = get_predict_label_val(class_probability);
       fmt::print("predict_class is {}\n", predict_class);
-      std::cin.get();
 
       int label_value = static_cast<int>(test_label_from_device[predict_class_probability_id]);
       if (predict_class != label_value) {

@@ -82,9 +82,9 @@ namespace RuNet {
                                dev_output.data(),
                                out_features));
 
-    std::cout << "linear forward result" << std::endl;
-    debugCudaMemory(dev_output)
-    std::cout << std::endl;
+//    std::cout << "linear forward result" << std::endl;
+//    debugCudaMemory(dev_output)
+//    std::cout << std::endl;
 //    std::cin.get();
 
   }
