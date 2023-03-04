@@ -223,13 +223,6 @@ int main() {
     float err_rate = (static_cast<float>(err_count)) / (static_cast<float>(total_test_size));
     fmt::print("error rate is {}\n", err_rate);
 
-//    fmt::print("predict size: {}\n", predict_n * predict_c * predict_h * predict_w);
-//    fmt::print("test label size: {}\n", network_batch_size);
-//    std::cout << "predict: \n" << std::endl;
-//    std::cout << predict << std::endl;
-
-//    std::cout << "label: \n" << std::endl;
-//    std::cout << single_batch_test_label << std::endl;
     // ##############################################
   }
 
