@@ -58,4 +58,4 @@ You may need the MNIST dataset, download at http://yann.lecun.com/exdb/mnist/.
 
  ### Acknowledgement
 
-Thanks for [XNet](https://github.com/lyx-x/XNet) and (cudnn-training)[https://github.com/tbennun/cudnn-training]. I have drawn a lot of references from these two wonderful projects.
+Thanks for [XNet](https://github.com/lyx-x/XNet) and [cudnn-training](https://github.com/tbennun/cudnn-training). I have drawn a lot of references from these two wonderful projects.
