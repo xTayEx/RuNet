@@ -235,8 +235,6 @@ namespace RuNet {
                                               kernel_desc->getDescriptor(),
                                               param_gradient.data()));
 
-    // FIXME: gradient is too big!!!! the magnitude reaches 10^2!
-
     checkCudnn(cudnnConvolutionBackwardData(global_cudnn_handle,
                                             a,
                                             kernel_desc->getDescriptor(),
