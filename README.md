@@ -2,7 +2,7 @@
 
 ### Introduction
 
-RuNet is a simple deep learning framework based on cuDNN v8 and CUDA 11.4. It's still under active development now. It's a project for learning CUDA programming and HPC for AI. Any suggestions are welcome!
+RuNet is a simple deep learning framework based on cuDNN v8 and CUDA 11.4. It's still under active development now. It's my hobby project for learning CUDA programming and HPC for AI. Any suggestions are welcome!
 
 ### Goals
 
@@ -31,7 +31,7 @@ The main goal of RuNet is to be a small but fully functional deep learning frame
 
 ### Example
 
-RuNet is currently in the initial stages of development. If you want to try it, there is a MNIST example. To run it, you should first clone the repo. Then, create a `build` subdirectory in the root path of repo.
+RuNet is currently in the initial stages of development. If you want to try it, there is a MNIST example. To run the example, you should first clone the repo. Then, create a `build` subdirectory in the root path of repo.
 
 ```bash
 git clone https://github.com/xTayEx/RuNet.git
@@ -59,4 +59,5 @@ You may need the MNIST dataset, download at http://yann.lecun.com/exdb/mnist/.
 
  ### Acknowledgement
 
-Thanks for [XNet](https://github.com/lyx-x/XNet) and [cudnn-training](https://github.com/tbennun/cudnn-training). I have drawn a lot of references from these two wonderful projects.
+* [XNet](https://github.com/lyx-x/XNet) 
+*  [cudnn-training](https://github.com/tbennun/cudnn-training)
