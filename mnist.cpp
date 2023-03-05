@@ -25,7 +25,7 @@ int get_predict_label_val(const std::vector<float> &class_probability) {
   return chosen;
 }
 
-// TODO: transform the images; shuffle; finish the network training and network test part
+// TODO: shuffle samples
 int main() {
   RuNet::init_context();
   // ##############################################
