@@ -96,12 +96,12 @@ namespace RuNet {
     conv_fwd_algo = fwd_algo_perf.algo;
     // get workspace size
     checkCudnn(cudnnGetConvolutionForwardWorkspaceSize(global_cudnn_handle,
-                                                    tensor.getTensorDescriptor(),
-                                                    kernel_desc->getDescriptor(),
-                                                    conv_desc->getDescriptor(),
-                                                    output_desc->getDescriptor(),
-                                                    conv_fwd_algo,
-                                                    &conv_fwd_workspace_size));
+                                                       tensor.getTensorDescriptor(),
+                                                       kernel_desc->getDescriptor(),
+                                                       conv_desc->getDescriptor(),
+                                                       output_desc->getDescriptor(),
+                                                       conv_fwd_algo,
+                                                       &conv_fwd_workspace_size));
 
 
     // allocate workspace
@@ -112,11 +112,6 @@ namespace RuNet {
 
   void Convolution::forward(const Tensor &tensor) {
     m_input_tensor = tensor;
-
-//    std::cout << "\nconv forward input tensor" << std::endl;
-//    std::vector<float> tensor_cpy(784);
-//    cudaMemcpy(tensor_cpy.data(), tensor.getTensorData(), 784 * sizeof(float), cudaMemcpyDeviceToHost);
-//    fmt::print("[{}]\n", fmt::join(tensor_cpy, ", "));
 
     if (is_fwd_first_run) {
       first_run_forward_init(tensor);
@@ -148,12 +143,6 @@ namespace RuNet {
                               a,
                               output_desc->getDescriptor(),
                               dev_output.data()));
-
-//    std::cout << "conv forward result" << std::endl;
-//    debugCudaMemory(dev_output)
-//    std::cout << std::endl;
-//    std::cin.get();
-
   }
 
   void Convolution::first_run_backward_init(const Tensor &diff) {
