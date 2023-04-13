@@ -41,14 +41,15 @@ namespace RuNet {
 
     void setLearningRate(float learning_rate);
 
-  protected:
-    float m_learning_rate;
-    int m_batch_size;
-    bool is_fwd_first_run = true;
-    bool is_bwd_first_run = true;
-
     CudaMemory param;
     CudaMemory bias_param;
+
+    float m_learning_rate;
+    int m_batch_size;
+
+  protected:
+    bool is_fwd_first_run = true;
+    bool is_bwd_first_run = true;
 
     CudaMemory param_gradient;
     CudaMemory bias_gradient;

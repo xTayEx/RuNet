@@ -35,10 +35,11 @@ add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_SOURCE} ${SRC_FILES} ${INCLUDE_FI
 target_include_directories(${EXECUTABLE_NAME} PUBLIC include)
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${googletest_SOURCE_DIR}/googletest/include)
+target_include_directories(${EXECUTABLE_NAME} PUBLIC ${googletest_SOURCE_DIR}/googlemock/include)
 target_include_directories(${EXECUTABLE_NAME} PUBLIC /usr/local/lib/libtorch/include)
 target_include_directories(${EXECUTABLE_NAME} PUBLIC /usr/local/lib/libtorch/include/torch/csrc/api/include)
 
-target_link_libraries(${EXECUTABLE_NAME} ${CUDNN_LIB} ${OpenCV_LIBS} fmt CUDA::cudart CUDA::cublas CUDA::curand gtest_main ${TORCH_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} ${CUDNN_LIB} ${OpenCV_LIBS} fmt CUDA::cudart CUDA::cublas CUDA::curand gtest_main gmock_main ${TORCH_LIBRARIES})
 target_compile_options(${EXECUTABLE_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
                        -G -g>)
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
