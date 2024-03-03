@@ -1,8 +1,8 @@
-# RuNet: A deep learning framework based on cuDNN (WIP)
+# RuNet: Deep learning based on cuDNN
 
 ### Introduction
 
-RuNet is a simple deep learning framework based on cuDNN v8 and CUDA 11.4. It's still under active development now. It's my hobby project for learning CUDA programming and HPC for AI. Any suggestions are welcome!
+RuNet is a simple deep learning wrapper based on cuDNN v8 and CUDA 11.4. It's still under active development now. It's my hobby project for learning CUDA programming and HPC for AI. Any suggestions are welcome!
 
 ### Goals
 
